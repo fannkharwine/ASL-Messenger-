@@ -274,3 +274,323 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ASL Messenger - E2EE Private Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --bg-surface: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --bg-hover: #212121;
+      --primary-red: #8b0000;
+      --primary-red-bright: #b71c1c;
+      --primary-red-glow: rgba(183, 28, 28, 0.35);
+      --gold-accent: #ffd700;
+      --gold-dim: #d4af37;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #2a2a2a;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .app-container { display: flex; width: 100%; height: 100vh; }
+    .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
+
+    /* Header */
+    .brand-header {
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo-group { display: flex; align-items: center; gap: 12px; }
+
+    .app-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--gold-dim);
+      box-shadow: 0 0 10px var(--primary-red-glow);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-e2ee {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      background: rgba(183, 28, 28, 0.2);
+      color: var(--gold-accent);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    /* Status Bar */
+    .connection-status {
+      padding: 10px 16px;
+      background: rgba(10, 10, 10, 0.8);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ff9800;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-dot.connected { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+
+    /* Recipient Add Bar */
+    .recipient-bar {
+      padding: 12px 16px;
+      display: flex;
+      gap: 8px;
+      background: #141414;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .recipient-input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .add-btn {
+      background: var(--primary-red-bright);
+      color: #fff;
+      border: none;
+      padding: 0 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Messages Stream */
+    .message-stream {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .msg-bubble.sent {
+      align-self: flex-end;
+      background: var(--primary-red-bright);
+      color: #fff;
+      border-bottom-right-radius: 2px;
+    }
+
+    .msg-bubble.received {
+      align-self: flex-start;
+      background: #212121;
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-bottom-left-radius: 2px;
+    }
+
+    /* Input Box */
+    .input-container {
+      padding: 16px 20px;
+      background: #0f0f0f;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      gap: 12px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #1a1a1a;
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 18px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .send-btn {
+      padding: 12px 24px;
+      border-radius: 12px;
+      background: var(--primary-red-bright);
+      border: none;
+      color: #ffffff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="chat-main">
+      
+      <!-- App Header -->
+      <div class="brand-header">
+        <div class="brand-logo-group">
+          <img src="logo.png" alt="ASL Logo" class="app-logo" onerror="this.src='https://via.placeholder.com/44/8b0000/ffd700?text=ASL'">
+          <div>
+            <div class="brand-title">
+              ASL Messenger <span class="badge-e2ee">E2EE</span>
+            </div>
+            <div style="font-size: 11px; color: var(--gold-dim);">Zero-Knowledge Chat</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connection Status Bar -->
+      <div class="connection-status">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">CONNECTING TO RELAY...</span>
+      </div>
+
+      <!-- Recipient Input Bar -->
+      <div class="recipient-bar">
+        <input type="text" class="recipient-input" id="recipientId" placeholder="Enter recipient User ID...">
+        <button class="add-btn" onclick="setRecipient()">Set</button>
+      </div>
+
+      <!-- Messages Area -->
+      <div class="message-stream" id="messageStream">
+        <div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 20px;" id="myUserIdText">
+          Generating User ID...
+        </div>
+      </div>
+
+      <!-- Message Input Bar -->
+      <div class="input-container">
+        <input type="text" class="chat-input" id="messageInput" placeholder="Type a secure message...">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Relay Server Config
+    const SERVER_URL = "https://asl-messenger-server.onrender.com"; 
+    let socket;
+    let myUserId = "USER_" + Math.floor(1000 + Math.random() * 9000);
+    let targetUser = "";
+
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const messageStream = document.getElementById('messageStream');
+    const myUserIdText = document.getElementById('myUserIdText');
+
+    try {
+      socket = io(SERVER_URL, { transports: ['websocket', 'polling'] });
+
+      socket.on('connect', () => {
+        statusDot.classList.add('connected');
+        statusText.innerText = `CONNECTED | YOUR ID: ${myUserId}`;
+        statusText.style.color = '#22c55e';
+        myUserIdText.innerText = `🔑 Your ID is ${myUserId}. Share this ID to get messages.`;
+        socket.emit('register_user', myUserId);
+      });
+
+      socket.on('disconnect', () => {
+        statusDot.classList.remove('connected');
+        statusText.innerText = 'DISCONNECTED - RECONNECTING...';
+        statusText.style.color = '#ef4444';
+      });
+
+      socket.on('receive_message', (data) => {
+        appendMessage(data.text, 'received');
+      });
+    } catch(e) {
+      statusText.innerText = 'SERVER CONNECTION FAILED';
+    }
+
+    function setRecipient() {
+      const val = document.getElementById('recipientId').value.trim();
+      if(val) {
+        targetUser = val;
+        alert(`Target set to ${targetUser}`);
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      appendMessage(text, 'sent');
+      
+      if(socket && socket.connected) {
+        socket.emit('send_message', {
+          to: targetUser,
+          from: myUserId,
+          text: text
+        });
+      }
+
+      input.value = '';
+    }
+
+    function appendMessage(text, type) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `msg-bubble ${type}`;
+      msgDiv.innerText = text;
+      messageStream.appendChild(msgDiv);
+      messageStream.scrollTop = messageStream.scrollHeight;
+    }
+  </script>
+</body>
+</html>
