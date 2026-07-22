@@ -5,47 +5,95 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASL Messenger</title>
   <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
-    #auth-screen, #chat-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; }
-    #chat-screen { display: none; height: 100vh; justify-content: space-between; padding: 10px; }
-    #messages { flex: 1; width: 100%; max-width: 500px; overflow-y: auto; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 10px; }
-    .msg { margin: 8px 0; padding: 8px 12px; border-radius: 12px; max-width: 75%; word-wrap: break-word; }
-    .sent { background: #0084ff; color: white; align-self: flex-end; margin-left: auto; }
+    * { box-sizing: border-box; font-family: sans-serif; }
+    body { margin: 0; padding: 0; background: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
+    
+    #auth-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    #app-container { display: none; width: 100%; height: 100vh; flex-direction: row; }
+    
+    /* Sidebar Section */
+    #sidebar { width: 300px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 15px; background: #0084ff; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .tabs { display: flex; background: #eee; }
+    .tab-btn { flex: 1; padding: 10px; border: none; background: #eee; cursor: pointer; font-weight: bold; }
+    .tab-btn.active { background: #fff; border-bottom: 2px solid #0084ff; }
+    .list-container { flex: 1; overflow-y: auto; }
+    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .list-item:hover { background: #f5f5f5; }
+    .create-group-area { padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 5px; }
+
+    /* Main Chat Section */
+    #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; }
+    .chat-header { padding: 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; }
+    #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; }
+    .sent { background: #0084ff; color: white; align-self: flex-end; }
     .received { background: #e4e6eb; color: black; align-self: flex-start; }
-    #input-area { display: flex; width: 100%; max-width: 500px; gap: 8px; }
+    .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
+    
+    #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
     button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
-    button:hover { background: #006bce; }
+    
+    @media (max-width: 600px) {
+      #sidebar { width: 100%; display: flex; }
+      #chat-main { display: none; width: 100%; }
+      .show-chat #sidebar { display: none; }
+      .show-chat #chat-main { display: flex; }
+    }
   </style>
 </head>
 <body>
 
   <!-- Login Screen -->
   <div id="auth-screen">
-    <h2>ASL Messenger မှ ကြိုဆိုပါသည်</h2>
+    <h2>ASL Messenger</h2>
     <button id="btn-google">Google ဖြင့် အကောင့်ဝင်ရန်</button>
   </div>
 
-  <!-- Chat Screen -->
-  <div id="chat-screen">
-    <div style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center;">
-      <span id="user-info"></span>
-      <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 12px;">Logout</button>
+  <!-- Main App Layout -->
+  <div id="app-container">
+    <!-- Left Sidebar -->
+    <div id="sidebar">
+      <div class="sidebar-header">
+        <span id="user-display-name">Profile</span>
+        <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 11px;">Logout</button>
+      </div>
+      
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
+        <button class="tab-btn" id="tab-groups" onclick="switchTab('groups')">Groups</button>
+      </div>
+
+      <!-- Group Create Input (Only in Groups tab) -->
+      <div class="create-group-area" id="group-create-box" style="display: none;">
+        <input type="text" id="group-name-input" placeholder="Group အမည်..." style="font-size: 12px;">
+        <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
+      </div>
+
+      <div class="list-container" id="list-content"></div>
     </div>
-    <div id="messages"></div>
-    <div id="input-area">
-      <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
-      <button id="btn-send">ပို့မည်</button>
+
+    <!-- Right Chat View -->
+    <div id="chat-main">
+      <div class="chat-header">
+        <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:10px; padding:2px 8px;">←</button>
+        <span id="chat-title">Chat ကို ရွေးချယ်ပါ</span>
+      </div>
+      <div id="messages"></div>
+      <div id="input-area">
+        <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
+        <button id="btn-send">ပို့မည်</button>
+      </div>
     </div>
   </div>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-    // သင်၏ Firebase Configuration
     const firebaseConfig = {
       apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
       authDomain: "asl-messenger-85a1b.firebaseapp.com",
@@ -56,73 +104,156 @@
       measurementId: "G-2KMFNYYZTK"
     };
 
-    // Firebase Initialize
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const authScreen = document.getElementById('auth-screen');
-    const chatScreen = document.getElementById('chat-screen');
-    const userInfo = document.getElementById('user-info');
-    const messagesDiv = document.getElementById('messages');
-    const msgInput = document.getElementById('msg-input');
+    let activeTab = 'contacts';
+    let activeChatId = null;
+    let activeChatType = null; // 'direct' or 'group'
+    let unsubscribeMessages = null;
 
-    // Google Login
+    // Login logic
     document.getElementById('btn-google').onclick = () => {
-      const provider = new GoogleAuthProvider();
-      signInWithPopup(auth, provider).catch(err => alert(err.message));
+      signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert(err.message));
     };
-
-    // Logout
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // Auth State Check (Login ဝင်ထားခြင်း ရှိ/မရှိ စစ်ဆေးခြင်း)
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (user) {
-        authScreen.style.display = 'none';
-        chatScreen.style.display = 'flex';
-        userInfo.innerText = `👤 ${user.displayName || user.email}`;
-        loadMessages();
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-container').style.display = 'flex';
+        document.getElementById('user-display-name').innerText = user.displayName || user.email;
+
+        // Save User Profile in Contacts List
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          name: user.displayName || user.email,
+          email: user.email
+        }, { merge: true });
+
+        switchTab('contacts');
       } else {
-        authScreen.style.display = 'flex';
-        chatScreen.style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('app-container').style.display = 'none';
       }
     });
 
-    // မက်ဆေ့ချ် ပို့ရန်
-    document.getElementById('btn-send').onclick = sendMessage;
-    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+    // Tab Switching System
+    window.switchTab = (type) => {
+      activeTab = type;
+      document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
+      document.getElementById('tab-groups').classList.toggle('active', type === 'groups');
+      document.getElementById('group-create-box').style.display = type === 'groups' ? 'flex' : 'none';
 
-    async function sendMessage() {
-      const text = msgInput.value.trim();
-      if (!text || !auth.currentUser) return;
+      if (type === 'contacts') loadContacts();
+      else loadGroups();
+    };
 
-      msgInput.value = '';
-      await addDoc(collection(db, "chats"), {
-        text: text,
-        uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName || "User",
-        createdAt: serverTimestamp()
+    // Load All Registered Users (Contacts)
+    function loadContacts() {
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        const listContent = document.getElementById('list-content');
+        listContent.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+          const u = docSnap.data();
+          if (u.uid !== auth.currentUser.uid) {
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `<div><b>${u.name}</b></div>`;
+            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u.name, 'direct');
+            listContent.appendChild(item);
+          }
+        });
       });
     }
 
-    // Realtime မက်ဆေ့ချ်များ ဖတ်ရန်
-    function loadMessages() {
-      const q = query(collection(db, "chats"), orderBy("createdAt", "asc"));
-      onSnapshot(q, (snapshot) => {
+    // Load Groups
+    function loadGroups() {
+      onSnapshot(collection(db, "groups"), (snapshot) => {
+        const listContent = document.getElementById('list-content');
+        listContent.innerHTML = '';
+        snapshot.forEach((docSnap) => {
+          const g = docSnap.data();
+          const item = document.createElement('div');
+          item.className = 'list-item';
+          item.innerHTML = `<div><b>👥 ${g.name}</b></div>`;
+          item.onclick = () => openChat(docSnap.id, g.name, 'group');
+          listContent.appendChild(item);
+        });
+      });
+    }
+
+    // Create New Group
+    window.createGroup = async () => {
+      const gInput = document.getElementById('group-name-input');
+      const gName = gInput.value.trim();
+      if (!gName) return;
+
+      await addDoc(collection(db, "groups"), {
+        name: gName,
+        createdBy: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      gInput.value = '';
+    };
+
+    function getDirectChatId(uid1, uid2) {
+      return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+    }
+
+    // Open Selected Chat
+    function openChat(chatId, title, type) {
+      activeChatId = chatId;
+      activeChatType = type;
+      document.getElementById('chat-title').innerText = title;
+      
+      // Responsive layout support
+      document.body.classList.add('show-chat');
+      document.getElementById('btn-back').style.display = 'inline-block';
+
+      if (unsubscribeMessages) unsubscribeMessages();
+
+      const msgsRef = collection(db, type === 'direct' ? 'direct_chats' : 'group_chats', chatId, 'messages');
+      const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+      unsubscribeMessages = onSnapshot(q, (snapshot) => {
+        const messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML = '';
         snapshot.forEach((doc) => {
           const data = doc.data();
           const isMe = data.uid === auth.currentUser.uid;
           const msgEl = document.createElement('div');
           msgEl.className = `msg ${isMe ? 'sent' : 'received'}`;
-          msgEl.innerText = `${isMe ? '' : data.name + ': '}${data.text}`;
+          msgEl.innerHTML = `${type === 'group' && !isMe ? `<div class="msg-sender">${data.name}</div>` : ''}${data.text}`;
           messagesDiv.appendChild(msgEl);
         });
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
+
+    window.closeChat = () => {
+      document.body.classList.remove('show-chat');
+    };
+
+    // Send Message
+    document.getElementById('btn-send').onclick = sendMessage;
+    document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    async function sendMessage() {
+      const input = document.getElementById('msg-input');
+      const text = input.value.trim();
+      if (!text || !activeChatId) return;
+
+      input.value = '';
+      const colName = activeChatType === 'direct' ? 'direct_chats' : 'group_chats';
+      await addDoc(collection(db, colName, activeChatId, 'messages'), {
+        text: text,
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName || "User",
+        createdAt: serverTimestamp()
+      });
+    }
   </script>
 </body>
 </html>
-
