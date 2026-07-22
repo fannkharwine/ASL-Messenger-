@@ -22,14 +22,14 @@
     /* Contacts & Groups Item */
     .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; }
     .list-item:hover { background: #f5f5f5; }
-    .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #ccc; }
-    .item-info { display: flex; flex-direction: column; gap: 2px; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #ccc; }
+    .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
     .item-name { font-weight: bold; font-size: 14px; color: #333; }
     .item-sub { font-size: 12px; color: #777; }
 
     .create-group-area { padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 5px; }
 
-    /* Profile View Tab (Viber Style) */
+    /* Profile View Tab */
     #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; }
     .profile-avatar-large { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
     .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
@@ -38,7 +38,12 @@
 
     /* Main Chat Section */
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; }
-    .chat-header { padding: 12px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+    .chat-header { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+    .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .call-actions { display: flex; gap: 10px; }
+    .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+    .call-btn:hover { background: #0084ff; color: white; }
+
     #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
     .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; font-size: 14px; }
     .sent { background: #0084ff; color: white; align-self: flex-end; }
@@ -48,7 +53,10 @@
     #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
     button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
-    button:hover { background: #006bce; }
+
+    /* Contact Profile Modal (Popup) */
+    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
@@ -75,7 +83,7 @@
         <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 11px;">Logout</button>
       </div>
       
-      <!-- Tabs (Contacts / Groups / My Profile) -->
+      <!-- Tabs -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
         <button class="tab-btn" id="tab-groups" onclick="switchTab('groups')">Groups</button>
@@ -91,13 +99,17 @@
       <!-- Contacts & Groups List -->
       <div class="list-container" id="list-content"></div>
 
-      <!-- Profile Tab View (Viber Style) -->
+      <!-- Profile Tab View -->
       <div id="profile-tab-view">
         <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150" alt="Profile">
         <h3 id="my-profile-name" style="margin: 5px 0 0 0;">-</h3>
         <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
 
         <div class="profile-card">
+          <div>
+            <label>Profile ဓာတ်ပုံ URL</label>
+            <input type="text" id="edit-photo" placeholder="https://example.com/photo.jpg">
+          </div>
           <div>
             <label>အမည် (Display Name)</label>
             <input type="text" id="edit-name">
@@ -122,15 +134,41 @@
     <!-- Right Chat View -->
     <div id="chat-main">
       <div class="chat-header">
-        <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
-        <img id="chat-header-avatar" class="avatar" style="width:30px; height:30px; display:none;" src="" alt="">
-        <span id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</span>
+        <div class="chat-user-info" id="chat-header-user" onclick="viewCurrentContactProfile()">
+          <button id="btn-back" onclick="event.stopPropagation(); closeChat();" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
+          <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="" alt="">
+          <span id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</span>
+        </div>
+        
+        <!-- Voice / Video Call Buttons -->
+        <div class="call-actions" id="call-box" style="display:none;">
+          <button class="call-btn" onclick="startCall('Voice')">📞</button>
+          <button class="call-btn" onclick="startCall('Video')">📹</button>
+        </div>
       </div>
+
       <div id="messages"></div>
+
       <div id="input-area">
         <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
         <button id="btn-send">ပို့မည်</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Contact Profile Detail Modal (Popup Window) -->
+  <div id="contact-modal" class="modal">
+    <div class="modal-content">
+      <img id="modal-avatar" class="profile-avatar-large" src="" alt="Avatar">
+      <h3 id="modal-name" style="margin:0;">-</h3>
+      <p id="modal-about" style="font-size:13px; color:#666; margin:0;">-</p>
+      <hr style="width:100%; border:0.5px solid #eee;">
+      <div style="text-align:left; width:100%; font-size:13px; display:flex; flex-direction:column; gap:8px;">
+        <div><b>📞 Phone:</b> <span id="modal-phone">-</span></div>
+        <div><b>📍 City:</b> <span id="modal-city">-</span></div>
+        <div><b>✉️ Email:</b> <span id="modal-email">-</span></div>
+      </div>
+      <button onclick="closeModal()" style="border-radius:6px; margin-top:10px; background:#ff4d4f;">ပိတ်မည်</button>
     </div>
   </div>
 
@@ -157,6 +195,7 @@
     let activeTab = 'contacts';
     let activeChatId = null;
     let activeChatType = null;
+    let activeTargetUserData = null;
     let unsubscribeMessages = null;
 
     // Login
@@ -171,7 +210,6 @@
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
 
-        // Check or Create User Data
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
 
@@ -194,7 +232,7 @@
       }
     });
 
-    // Tab Switching System
+    // Tab Switching
     window.switchTab = (type) => {
       activeTab = type;
       document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
@@ -210,7 +248,7 @@
       else if (type === 'profile') loadMyProfile();
     };
 
-    // 1. Load Contacts List (Viber Style)
+    // Load Contacts
     function loadContacts() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -226,17 +264,16 @@
               <div class="item-info">
                 <div class="item-name">${u.name}</div>
                 <div class="item-sub">📞 ${u.phone || 'မရှိပါ'} | 📍 ${u.city || '-'}</div>
-                <div class="item-sub" style="font-style:italic; color:#999;">"${u.about || ''}"</div>
               </div>
             `;
-            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u.name, 'direct', imgUrl);
+            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u, 'direct');
             listContent.appendChild(item);
           }
         });
       });
     }
 
-    // 2. Load Groups List
+    // Load Groups
     function loadGroups() {
       onSnapshot(collection(db, "groups"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -252,22 +289,23 @@
               <div class="item-sub">Group Chat</div>
             </div>
           `;
-          item.onclick = () => openChat(docSnap.id, g.name, 'group', '');
+          item.onclick = () => openChat(docSnap.id, { name: g.name }, 'group');
           listContent.appendChild(item);
         });
       });
     }
 
-    // 3. Load & Edit My Profile Tab
+    // Load My Profile
     async function loadMyProfile() {
       const user = auth.currentUser;
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const data = userDoc.data();
-        document.getElementById('my-profile-img').src = data.photoURL || user.photoURL || "https://via.placeholder.com/150";
+        document.getElementById('my-profile-img').src = data.photoURL || "https://via.placeholder.com/150";
         document.getElementById('my-profile-name').innerText = data.name;
         document.getElementById('my-profile-email').innerText = data.email;
 
+        document.getElementById('edit-photo').value = data.photoURL || '';
         document.getElementById('edit-name').value = data.name || '';
         document.getElementById('edit-phone').value = data.phone || '';
         document.getElementById('edit-city').value = data.city || '';
@@ -278,52 +316,40 @@
     // Save Profile Update
     document.getElementById('btn-save-profile').onclick = async () => {
       const user = auth.currentUser;
+      const photo = document.getElementById('edit-photo').value.trim();
       const name = document.getElementById('edit-name').value.trim();
       const phone = document.getElementById('edit-phone').value.trim();
       const city = document.getElementById('edit-city').value.trim();
       const about = document.getElementById('edit-about').value.trim();
 
       await setDoc(doc(db, "users", user.uid), {
+        photoURL: photo || user.photoURL,
         name: name || user.displayName,
         phone: phone,
         city: city,
         about: about
       }, { merge: true });
 
-      alert("Profile အချက်အလက်များ ပြောင်းလဲသိမ်းဆည်းပြီးပါပြီ ✨");
+      alert("Profile အချက်အလက်များ သိမ်းဆည်းပြီးပါပြီ ✨");
       loadMyProfile();
     };
 
-    // Create Group
-    window.createGroup = async () => {
-      const gInput = document.getElementById('group-name-input');
-      const gName = gInput.value.trim();
-      if (!gName) return;
-
-      await addDoc(collection(db, "groups"), {
-        name: gName,
-        createdBy: auth.currentUser.uid,
-        createdAt: serverTimestamp()
-      });
-      gInput.value = '';
-    };
-
-    function getDirectChatId(uid1, uid2) {
-      return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
-    }
-
-    // Open Chat
-    function openChat(chatId, title, type, avatarUrl) {
+    // Open Chat & Enable Calls
+    function openChat(chatId, targetData, type) {
       activeChatId = chatId;
       activeChatType = type;
-      document.getElementById('chat-title').innerText = title;
-      
+      activeTargetUserData = type === 'direct' ? targetData : null;
+
+      document.getElementById('chat-title').innerText = targetData.name;
       const headerAvatar = document.getElementById('chat-header-avatar');
-      if (avatarUrl) {
-        headerAvatar.src = avatarUrl;
+      
+      if (type === 'direct') {
+        headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
         headerAvatar.style.display = 'inline-block';
+        document.getElementById('call-box').style.display = 'flex';
       } else {
         headerAvatar.style.display = 'none';
+        document.getElementById('call-box').style.display = 'none';
       }
 
       document.body.classList.add('show-chat');
@@ -349,9 +375,51 @@
       });
     }
 
+    // View Contact Profile Modal
+    window.viewCurrentContactProfile = () => {
+      if (!activeTargetUserData) return;
+      document.getElementById('modal-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
+      document.getElementById('modal-name').innerText = activeTargetUserData.name;
+      document.getElementById('modal-about').innerText = `"${activeTargetUserData.about || 'Bio မရှိပါ'}"`;
+      document.getElementById('modal-phone').innerText = activeTargetUserData.phone || '-';
+      document.getElementById('modal-city').innerText = activeTargetUserData.city || '-';
+      document.getElementById('modal-email').innerText = activeTargetUserData.email || '-';
+
+      document.getElementById('contact-modal').style.display = 'flex';
+    };
+
+    window.closeModal = () => {
+      document.getElementById('contact-modal').style.display = 'none';
+    };
+
+    // Voice & Video Call Action
+    window.startCall = (callType) => {
+      if (activeTargetUserData) {
+        alert(`📞 ${activeTargetUserData.name} ထံသို့ ${callType} Call ခေါ်ဆိုနေပါသည်...`);
+      }
+    };
+
     window.closeChat = () => {
       document.body.classList.remove('show-chat');
     };
+
+    // Create Group
+    window.createGroup = async () => {
+      const gInput = document.getElementById('group-name-input');
+      const gName = gInput.value.trim();
+      if (!gName) return;
+
+      await addDoc(collection(db, "groups"), {
+        name: gName,
+        createdBy: auth.currentUser.uid,
+        createdAt: serverTimestamp()
+      });
+      gInput.value = '';
+    };
+
+    function getDirectChatId(uid1, uid2) {
+      return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+    }
 
     // Send Message
     document.getElementById('btn-send').onclick = sendMessage;
@@ -367,10 +435,4 @@
       await addDoc(collection(db, colName, activeChatId, 'messages'), {
         text: text,
         uid: auth.currentUser.uid,
-        name: auth.currentUser.displayName || "User",
-        createdAt: serverTimestamp()
-      });
-    }
-  </script>
-</body>
-</html>
+        name: auth.currentUs
