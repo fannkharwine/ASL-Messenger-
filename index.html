@@ -244,7 +244,29 @@
 
     </div>
   </div>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
 
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
+    authDomain: "asl-messenger-85a1b.firebaseapp.com",
+    projectId: "asl-messenger-85a1b",
+    storageBucket: "asl-messenger-85a1b.firebasestorage.app",
+    messagingSenderId: "593020086365",
+    appId: "1:593020086365:web:666da320bf6917e4ef05b4",
+    measurementId: "G-2KMFNYYZTK"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
   <script>
     const SERVER_URL = "https://asl-messenger-server.vercel.app"; 
     let socket;
