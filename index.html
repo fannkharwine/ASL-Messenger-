@@ -8,31 +8,39 @@
     * { box-sizing: border-box; font-family: sans-serif; }
     body { margin: 0; padding: 0; background: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
     
-    #auth-screen, #bio-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
-    #bio-screen { display: none; }
-    .bio-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; }
-    .bio-card h3 { margin-top: 0; text-align: center; color: #0084ff; }
-    .bio-card input, .bio-card textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; outline: none; font-size: 14px; }
-
+    #auth-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
     #app-container { display: none; width: 100%; height: 100vh; flex-direction: row; }
     
     /* Sidebar Section */
     #sidebar { width: 320px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 15px; background: #0084ff; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .sidebar-header { padding: 15px; background: #0084ff; color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
     .tabs { display: flex; background: #e4e6eb; }
-    .tab-btn { flex: 1; padding: 12px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; }
+    .tab-btn { flex: 1; padding: 12px 5px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 13px; }
     .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
     .list-container { flex: 1; overflow-y: auto; }
-    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; flex-direction: column; gap: 3px; }
+    
+    /* Contacts & Groups Item */
+    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; }
     .list-item:hover { background: #f5f5f5; }
-    .user-bio-text { font-size: 12px; color: #666; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: #ccc; }
+    .item-info { display: flex; flex-direction: column; gap: 2px; }
+    .item-name { font-weight: bold; font-size: 14px; color: #333; }
+    .item-sub { font-size: 12px; color: #777; }
+
     .create-group-area { padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 5px; }
+
+    /* Profile View Tab (Viber Style) */
+    #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; }
+    .profile-avatar-large { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
+    .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
+    .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
+    .profile-card input, .profile-card textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
 
     /* Main Chat Section */
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; }
-    .chat-header { padding: 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; }
+    .chat-header { padding: 12px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; gap: 10px; }
     #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; }
+    .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; font-size: 14px; }
     .sent { background: #0084ff; color: white; align-self: flex-end; }
     .received { background: #e4e6eb; color: black; align-self: flex-start; }
     .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
@@ -40,7 +48,8 @@
     #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
     button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
-    
+    button:hover { background: #006bce; }
+
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
       #chat-main { display: none; width: 100%; }
@@ -57,29 +66,20 @@
     <button id="btn-google">Google ဖြင့် အကောင့်ဝင်ရန်</button>
   </div>
 
-  <!-- 2. Bio Data Fill Screen -->
-  <div id="bio-screen">
-    <div class="bio-card">
-      <h3>Bio Data ဖြည့်စွက်ပါ</h3>
-      <input type="text" id="bio-phone" placeholder="ဖုန်းနံပါတ် (ဥပမာ- 09123456789)">
-      <input type="text" id="bio-city" placeholder="နေရပ်လိပ်စာ / မြို့">
-      <textarea id="bio-about" rows="3" placeholder="ကိုယ်ရေးအချက်အလက် အကျဉ်း (About Me)..."></textarea>
-      <button id="btn-save-bio">သိမ်းဆည်းမည်</button>
-    </div>
-  </div>
-
-  <!-- 3. Main App Layout -->
+  <!-- 2. Main App Layout -->
   <div id="app-container">
     <!-- Left Sidebar -->
     <div id="sidebar">
       <div class="sidebar-header">
-        <span id="user-display-name">Profile</span>
+        <span>ASL Messenger</span>
         <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 11px;">Logout</button>
       </div>
       
+      <!-- Tabs (Contacts / Groups / My Profile) -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
         <button class="tab-btn" id="tab-groups" onclick="switchTab('groups')">Groups</button>
+        <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
       <!-- Group Create Input -->
@@ -88,14 +88,43 @@
         <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
       </div>
 
+      <!-- Contacts & Groups List -->
       <div class="list-container" id="list-content"></div>
+
+      <!-- Profile Tab View (Viber Style) -->
+      <div id="profile-tab-view">
+        <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150" alt="Profile">
+        <h3 id="my-profile-name" style="margin: 5px 0 0 0;">-</h3>
+        <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
+
+        <div class="profile-card">
+          <div>
+            <label>အမည် (Display Name)</label>
+            <input type="text" id="edit-name">
+          </div>
+          <div>
+            <label>ဖုန်းနံပါတ် (Phone)</label>
+            <input type="text" id="edit-phone" placeholder="09xxxxxxxxx">
+          </div>
+          <div>
+            <label>နေရပ်လိပ်စာ (City)</label>
+            <input type="text" id="edit-city" placeholder="ရန်ကုန် / မန္တလေး ...">
+          </div>
+          <div>
+            <label>About / Bio Status</label>
+            <textarea id="edit-about" rows="2" placeholder="Viber Bio စာသား..."></textarea>
+          </div>
+          <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
+        </div>
+      </div>
     </div>
 
     <!-- Right Chat View -->
     <div id="chat-main">
       <div class="chat-header">
-        <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:10px; padding:2px 8px;">←</button>
-        <span id="chat-title">Chat ကို ရွေးချယ်ပါ</span>
+        <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
+        <img id="chat-header-avatar" class="avatar" style="width:30px; height:30px; display:none;" src="" alt="">
+        <span id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</span>
       </div>
       <div id="messages"></div>
       <div id="input-area">
@@ -129,9 +158,8 @@
     let activeChatId = null;
     let activeChatType = null;
     let unsubscribeMessages = null;
-    let currentUserData = null;
 
-    // Login logic
+    // Login
     document.getElementById('btn-google').onclick = () => {
       signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert(err.message));
     };
@@ -141,71 +169,48 @@
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.getElementById('auth-screen').style.display = 'none';
-        
-        // User Bio Data ရှိမရှိ စစ်ဆေးခြင်း
+        document.getElementById('app-container').style.display = 'flex';
+
+        // Check or Create User Data
         const userDocRef = doc(db, "users", user.uid);
         const userDoc = await getDoc(userDocRef);
 
-        if (userDoc.exists() && userDoc.data().bioCompleted) {
-          currentUserData = userDoc.data();
-          showAppScreen(user);
-        } else {
-          // Bio Data မဖြည့်ရသေးပါက Bio Screen ပြမည်
-          document.getElementById('bio-screen').style.display = 'flex';
+        if (!userDoc.exists()) {
+          await setDoc(userDocRef, {
+            uid: user.uid,
+            name: user.displayName || "User",
+            email: user.email,
+            photoURL: user.photoURL || "https://via.placeholder.com/150",
+            phone: "",
+            city: "",
+            about: "Hey there! I am using ASL Messenger."
+          });
         }
+
+        switchTab('contacts');
       } else {
         document.getElementById('auth-screen').style.display = 'flex';
-        document.getElementById('bio-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'none';
       }
     });
 
-    // Bio Data သိမ်းဆည်းခြင်း
-    document.getElementById('btn-save-bio').onclick = async () => {
-      const phone = document.getElementById('bio-phone').value.trim();
-      const city = document.getElementById('bio-city').value.trim();
-      const about = document.getElementById('bio-about').value.trim();
-
-      if (!phone || !city) {
-        alert("ဖုန်းနံပါတ်နှင့် မြို့အမည်ကို ဖြည့်ပေးပါခင်ဗျာ။");
-        return;
-      }
-
-      const user = auth.currentUser;
-      const userData = {
-        uid: user.uid,
-        name: user.displayName || user.email,
-        email: user.email,
-        phone: phone,
-        city: city,
-        about: about,
-        bioCompleted: true
-      };
-
-      await setDoc(doc(db, "users", user.uid), userData, { merge: true });
-      currentUserData = userData;
-      document.getElementById('bio-screen').style.display = 'none';
-      showAppScreen(user);
-    };
-
-    function showAppScreen(user) {
-      document.getElementById('app-container').style.display = 'flex';
-      document.getElementById('user-display-name').innerText = user.displayName || user.email;
-      switchTab('contacts');
-    }
-
-    // Tab Switching
+    // Tab Switching System
     window.switchTab = (type) => {
       activeTab = type;
       document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
       document.getElementById('tab-groups').classList.toggle('active', type === 'groups');
+      document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
+
       document.getElementById('group-create-box').style.display = type === 'groups' ? 'flex' : 'none';
+      document.getElementById('list-content').style.display = type === 'profile' ? 'none' : 'block';
+      document.getElementById('profile-tab-view').style.display = type === 'profile' ? 'flex' : 'none';
 
       if (type === 'contacts') loadContacts();
-      else loadGroups();
+      else if (type === 'groups') loadGroups();
+      else if (type === 'profile') loadMyProfile();
     };
 
-    // Load Contacts + Bio Data
+    // 1. Load Contacts List (Viber Style)
     function loadContacts() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -215,19 +220,23 @@
           if (u.uid !== auth.currentUser.uid) {
             const item = document.createElement('div');
             item.className = 'list-item';
+            const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
             item.innerHTML = `
-              <div><b>👤 ${u.name}</b></div>
-              <div class="user-bio-text">📍 ${u.city || '-'} | 📞 ${u.phone || '-'}</div>
-              <div class="user-bio-text" style="font-style: italic; color:#888;">"${u.about || ''}"</div>
+              <img class="avatar" src="${imgUrl}" alt="Avatar">
+              <div class="item-info">
+                <div class="item-name">${u.name}</div>
+                <div class="item-sub">📞 ${u.phone || 'မရှိပါ'} | 📍 ${u.city || '-'}</div>
+                <div class="item-sub" style="font-style:italic; color:#999;">"${u.about || ''}"</div>
+              </div>
             `;
-            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u.name, 'direct');
+            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u.name, 'direct', imgUrl);
             listContent.appendChild(item);
           }
         });
       });
     }
 
-    // Load Groups
+    // 2. Load Groups List
     function loadGroups() {
       onSnapshot(collection(db, "groups"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -236,12 +245,54 @@
           const g = docSnap.data();
           const item = document.createElement('div');
           item.className = 'list-item';
-          item.innerHTML = `<div><b>👥 ${g.name}</b></div>`;
-          item.onclick = () => openChat(docSnap.id, g.name, 'group');
+          item.innerHTML = `
+            <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">👥</div>
+            <div class="item-info">
+              <div class="item-name">${g.name}</div>
+              <div class="item-sub">Group Chat</div>
+            </div>
+          `;
+          item.onclick = () => openChat(docSnap.id, g.name, 'group', '');
           listContent.appendChild(item);
         });
       });
     }
+
+    // 3. Load & Edit My Profile Tab
+    async function loadMyProfile() {
+      const user = auth.currentUser;
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+        document.getElementById('my-profile-img').src = data.photoURL || user.photoURL || "https://via.placeholder.com/150";
+        document.getElementById('my-profile-name').innerText = data.name;
+        document.getElementById('my-profile-email').innerText = data.email;
+
+        document.getElementById('edit-name').value = data.name || '';
+        document.getElementById('edit-phone').value = data.phone || '';
+        document.getElementById('edit-city').value = data.city || '';
+        document.getElementById('edit-about').value = data.about || '';
+      }
+    }
+
+    // Save Profile Update
+    document.getElementById('btn-save-profile').onclick = async () => {
+      const user = auth.currentUser;
+      const name = document.getElementById('edit-name').value.trim();
+      const phone = document.getElementById('edit-phone').value.trim();
+      const city = document.getElementById('edit-city').value.trim();
+      const about = document.getElementById('edit-about').value.trim();
+
+      await setDoc(doc(db, "users", user.uid), {
+        name: name || user.displayName,
+        phone: phone,
+        city: city,
+        about: about
+      }, { merge: true });
+
+      alert("Profile အချက်အလက်များ ပြောင်းလဲသိမ်းဆည်းပြီးပါပြီ ✨");
+      loadMyProfile();
+    };
 
     // Create Group
     window.createGroup = async () => {
@@ -262,11 +313,19 @@
     }
 
     // Open Chat
-    function openChat(chatId, title, type) {
+    function openChat(chatId, title, type, avatarUrl) {
       activeChatId = chatId;
       activeChatType = type;
       document.getElementById('chat-title').innerText = title;
       
+      const headerAvatar = document.getElementById('chat-header-avatar');
+      if (avatarUrl) {
+        headerAvatar.src = avatarUrl;
+        headerAvatar.style.display = 'inline-block';
+      } else {
+        headerAvatar.style.display = 'none';
+      }
+
       document.body.classList.add('show-chat');
       document.getElementById('btn-back').style.display = 'inline-block';
 
