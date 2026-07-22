@@ -1,0 +1,2437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ASL Messenger - E2EE Private Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Socket.io Client -->
+  <script src="/socket.io/socket.io.js" onerror="this.onerror=null;this.src='https://cdn.socket.io/4.7.5/socket.io.min.js'"></script>
+  
+  <style>
+    :root {
+      --bg-dark: #0a0a0a;
+      --bg-surface: #0f0f0f;
+      --bg-card: #1a1a1a;
+      --bg-hover: #212121;
+      --primary-red: #8b0000;
+      --primary-red-bright: #b71c1c;
+      --primary-red-glow: rgba(183, 28, 28, 0.35);
+      --gold-accent: #ffd700;
+      --gold-dim: #d4af37;
+      --gold-glow: rgba(255, 215, 0, 0.2);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border-subtle: #2a2a2a;
+      --border-bright: #333333;
+      --font-brand: 'Cinzel', serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--bg-dark);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #2a2a2a;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-red-bright);
+    }
+
+    /* App Container Layout */
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100vh;
+      background: #0a0a0a;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Atmospheric Ambient Glows */
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(183, 28, 28, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app-container::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Sidebar / Chat List */
+    .sidebar {
+      width: 320px;
+      min-width: 290px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+      transition: transform 0.3s ease;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        transform: translateX(0);
+      }
+      .sidebar.hidden-mobile {
+        transform: translateX(-100%);
+      }
+    }
+
+    /* Brand Header */
+    .brand-header {
+      padding: 18px 20px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-emblem {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary-red-bright) 0%, var(--primary-red) 100%);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      box-shadow: 0 4px 14px rgba(183, 28, 28, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-brand);
+      font-weight: 800;
+      font-size: 18px;
+      color: var(--gold-accent);
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .brand-emblem img, .app-logo {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brand-title .badge-e2ee {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      background: rgba(183, 28, 28, 0.2);
+      color: var(--gold-accent);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      padding: 2px 6px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .icon-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-hover);
+      color: var(--gold-accent);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    /* Connection Banner */
+    .connection-status {
+      padding: 10px 16px;
+      background: rgba(10, 10, 10, 0.6);
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 8px rgba(34, 197, 94, 0.6);
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .status-dot.connecting {
+      background: var(--gold-accent);
+      box-shadow: 0 0 8px var(--gold-accent);
+    }
+
+    /* User Search & Add */
+    .search-section {
+      padding: 14px 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .search-input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary-red-bright);
+      box-shadow: 0 0 10px rgba(183, 28, 28, 0.25);
+    }
+
+    /* Chat List */
+    .chat-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(42, 42, 42, 0.5);
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .chat-item:hover {
+      background: var(--bg-hover);
+    }
+
+    .chat-item.active {
+      background: rgba(183, 28, 28, 0.12);
+      border-left: 4px solid var(--primary-red-bright);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #1f1f2e;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: var(--gold-accent);
+      font-family: var(--font-body);
+      font-size: 15px;
+    }
+
+    .online-badge {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #22c55e;
+      border: 2px solid var(--bg-surface);
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+    }
+
+    .chat-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .chat-name-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .chat-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .chat-time {
+      font-size: 10px;
+      color: var(--gold-accent);
+      opacity: 0.8;
+      font-weight: 500;
+    }
+
+    .chat-preview {
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .lock-icon-sm {
+      color: var(--gold-dim);
+      font-size: 10px;
+    }
+
+    /* Quick Test / Share Section */
+    .quick-test-panel {
+      padding: 14px 16px;
+      background: #0a0a0a;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, var(--primary-red-bright) 0%, var(--primary-red) 100%);
+      color: #fff;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(183, 28, 28, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: var(--primary-red-bright);
+      box-shadow: 0 0 14px rgba(183, 28, 28, 0.4);
+    }
+
+    /* Main Chat Window */
+    .chat-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-dark);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Chat Header */
+    .chat-header {
+      height: 64px;
+      padding: 0 24px;
+      background: rgba(15, 15, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 5;
+    }
+
+    .header-user-info {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .mobile-back-btn {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-back-btn {
+        display: flex;
+      }
+    }
+
+    .header-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: #fff;
+    }
+
+    .header-subtitle {
+      font-size: 11px;
+      color: rgba(255, 215, 0, 0.8);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 500;
+    }
+
+    .e2ee-shield-tag {
+      background: rgba(255, 215, 0, 0.08);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: var(--gold-accent);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .e2ee-shield-tag:hover {
+      background: rgba(255, 215, 0, 0.18);
+      border-color: var(--gold-accent);
+    }
+
+    /* Message Stream */
+    .message-stream {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .system-notice {
+      align-self: center;
+      background: #1a1a1a;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 10px;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      text-align: center;
+      max-width: 90%;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .system-notice strong {
+      color: var(--gold-accent);
+    }
+
+    /* Message Bubbles */
+    .message-group {
+      display: flex;
+      flex-direction: column;
+      max-width: 68%;
+    }
+
+    .message-group.sent {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message-group.received {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .message-sender-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+      padding: 0 4px;
+    }
+
+    .message-bubble {
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      position: relative;
+      word-break: break-word;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+
+    .message-group.sent .message-bubble {
+      background: var(--primary-red-bright);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      border: none;
+      box-shadow: 0 4px 16px rgba(183, 28, 28, 0.35);
+    }
+
+    .message-group.received .message-bubble {
+      background: #212121;
+      color: var(--text-main);
+      border: 1px solid #333333;
+      border-bottom-left-radius: 4px;
+    }
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      margin-top: 4px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    .message-group.received .message-meta {
+      color: var(--text-muted);
+    }
+
+    .status-ticks {
+      color: var(--gold-accent);
+      font-weight: bold;
+    }
+
+    /* Ciphertext Viewer Toggle */
+    .cipher-toggle {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--gold-dim);
+      background: rgba(0,0,0,0.3);
+      padding: 3px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 8px;
+      display: inline-block;
+      border: 1px dashed var(--border-subtle);
+    }
+
+    .cipher-toggle:hover {
+      background: rgba(255,215,0,0.15);
+      color: #fff;
+    }
+
+    .raw-cipher-box {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      background: #08080c;
+      color: #00ffaa;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 6px;
+      word-break: break-all;
+      border: 1px solid #1a3a20;
+    }
+
+    /* Input Area */
+    .input-container {
+      padding: 16px 24px;
+      background: #0f0f0f;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .input-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 12px 44px 12px 18px;
+      color: #fff;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .chat-input:focus {
+      border-color: var(--primary-red-bright);
+      box-shadow: 0 0 16px rgba(183, 28, 28, 0.25);
+    }
+
+    .input-lock-badge {
+      position: absolute;
+      right: 16px;
+      color: var(--gold-accent);
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .send-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--primary-red-bright);
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(183, 28, 28, 0.4);
+      transition: transform 0.2s, background 0.2s;
+      flex-shrink: 0;
+    }
+
+    .send-btn:hover {
+      background: var(--primary-red);
+      transform: scale(1.04);
+    }
+
+    /* Typing Bar */
+    .typing-indicator {
+      font-size: 11px;
+      color: var(--gold-accent);
+      padding: 4px 24px;
+      font-style: italic;
+      height: 20px;
+    }
+
+    /* Modal Windows */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #0f0f0f;
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 18px 24px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: var(--font-body);
+      font-weight: 700;
+      color: var(--gold-accent);
+      font-size: 17px;
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-subtle);
+      gap: 8px;
+      padding-bottom: 10px;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: rgba(183, 28, 28, 0.2);
+      color: var(--gold-accent);
+      border-color: rgba(212, 175, 55, 0.4);
+    }
+
+    .key-display-box {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: #08080c;
+      border: 1px solid var(--border-subtle);
+      padding: 14px;
+      border-radius: 10px;
+      color: #e0e0ff;
+      word-break: break-all;
+    }
+
+    .fingerprint-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--gold-accent);
+      text-align: center;
+      background: rgba(183, 28, 28, 0.1);
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* VPS Code Block */
+    .code-block {
+      background: #08080c;
+      color: #00ffaa;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 14px;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: pre;
+      border: 1px solid var(--border-subtle);
+      max-height: 250px;
+    }
+
+    /* Google Sign In Material Button */
+    .gsi-material-button {
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      webkit-appearance: none;
+      background-color: WHITE;
+      background-image: none;
+      border: 1px solid #747775;
+      -webkit-border-radius: 20px;
+      border-radius: 20px;
+      box-sizing: border-box;
+      color: #1f1f1f;
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      height: 40px;
+      letter-spacing: 0.25px;
+      outline: none;
+      overflow: hidden;
+      padding: 0 16px;
+      position: relative;
+      text-align: center;
+      transition: background-color .218s, border-color .218s, box-shadow .218s;
+      vertical-align: middle;
+      white-space: nowrap;
+      width: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gsi-material-button-content-wrapper {
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      height: 100%;
+      justify-content: space-between;
+      position: relative;
+      width: 100%;
+    }
+    .gsi-material-button-icon {
+      height: 18px;
+      margin-right: 10px;
+      min-width: 18px;
+      width: 18px;
+    }
+    .gsi-material-button-contents {
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .gsi-material-button:hover {
+      box-shadow: 0 1px 3px 1px rgba(60, 64, 67, .15), 0 1px 2px 0 rgba(60, 64, 67, .30);
+      background-color: #f8fafd;
+    }
+
+    /* Drive & Sheets UI Components */
+    .drive-file-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+    .drive-file-card:hover {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: var(--bg-hover);
+    }
+    .drive-file-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    .drive-file-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .drive-file-name {
+      font-weight: 600;
+      font-size: 13px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .drive-file-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .drive-file-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+    .sheets-table-wrapper {
+      max-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      background: #08080c;
+    }
+    .sheets-data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: #e0e0ff;
+    }
+    .sheets-data-table th, .sheets-data-table td {
+      border: 1px solid var(--border-subtle);
+      padding: 8px 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .sheets-data-table th {
+      background: #15151f;
+      color: var(--gold-accent);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    .chat-drive-embed {
+      background: rgba(15, 15, 20, 0.9);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-top: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .chat-drive-embed-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold-accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- SIDEBAR / CONTACTS -->
+    <div class="sidebar" id="sidebar">
+      <div class="brand-header">
+        <div class="brand-logo-group">
+          <div class="brand-emblem">
+            <img src="logo.png" alt="ASL Messenger Logo" class="app-logo">
+          </div>
+          <div>
+            <div class="brand-title">
+              ASL Messenger
+              <span class="badge-e2ee">E2EE</span>
+            </div>
+            <div style="font-size: 11px; color: var(--gold-dim);">Zero-Knowledge Chat</div>
+          </div>
+        </div>
+        <button class="icon-btn" id="openSettingsBtn" title="Security & Settings">
+          ⚙️
+        </button>
+      </div>
+
+      <div class="connection-status">
+        <div>
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Connecting to Relay...</span>
+        </div>
+        <span id="myUserIdBadge" style="font-family: var(--font-mono); font-size: 11px; color: var(--gold-accent);"></span>
+      </div>
+
+      <div class="search-section">
+        <input type="text" class="search-input" id="searchUserInput" placeholder="Enter recipient User ID...">
+        <button class="btn-secondary" id="addContactBtn">Add</button>
+      </div>
+
+      <div class="chat-list" id="chatList">
+        <!-- Dynamic Contact Items populated here -->
+      </div>
+
+      <div class="quick-test-panel">
+        <div style="font-size: 11px; color: var(--gold-dim); font-weight: 600;">🧪 Dual-User Testing Panel</div>
+        <div style="display: flex; gap: 6px;">
+          <button class="btn-secondary" id="openDualTabBtn" style="flex: 1;" title="Open second tab to test multi-user chat">
+            👯 Open 2nd Client Tab
+          </button>
+          <button class="btn-secondary" id="switchUserBtn" style="flex: 1;" title="Switch session profile">
+            🔄 Switch Profile
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN CHAT PANEL -->
+    <div class="chat-main" id="chatMain">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="header-user-info">
+          <button class="icon-btn mobile-back-btn" id="mobileBackBtn">⬅️</button>
+          <div class="avatar-wrapper">
+            <div class="avatar" id="activeContactAvatar">?</div>
+            <div class="online-badge" id="activeContactOnlineBadge" style="display: none;"></div>
+          </div>
+          <div>
+            <div class="header-title" id="activeContactTitle">Select a contact</div>
+            <div class="header-subtitle" id="activeContactSubtitle">
+              <span id="activeContactStatus">End-to-End Encrypted Tunnel</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <div class="e2ee-shield-tag" id="openWorkspaceModalBtn" title="Google Drive & Sheets Integration">
+            📂 Drive & Sheets
+          </div>
+          <div class="e2ee-shield-tag" id="verifyKeyBtn" title="Verify E2EE Safety Fingerprint">
+            🛡️ Safety Fingerprint
+          </div>
+          <button class="icon-btn" id="openVpsBtn" title="VPS Self-Hosting Guide">
+            🖥️
+          </button>
+        </div>
+      </div>
+
+      <!-- Message Stream -->
+      <div class="message-stream" id="messageStream">
+        <div class="system-notice">
+          🔒 <strong>ASL Messenger Zero-Knowledge Architecture</strong><br>
+          Messages are encrypted on your device using Web Crypto API (AES-GCM 256 + ECDH P-256). The relay server cannot read or store your messages.
+        </div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="typing-indicator" id="typingIndicator"></div>
+
+      <!-- Input Bar -->
+      <div class="input-container">
+        <button class="icon-btn" id="attachDriveBtn" title="Attach Google Drive File" style="flex-shrink: 0;">
+          📁
+        </button>
+        <button class="icon-btn" id="attachSheetBtn" title="Google Sheets Integration" style="flex-shrink: 0;">
+          📊
+        </button>
+        <div class="input-wrapper">
+          <input type="text" class="chat-input" id="messageInput" placeholder="Type an encrypted message..." disabled>
+          <span class="input-lock-badge">🔒</span>
+        </div>
+        <button class="send-btn" id="sendBtn" disabled>
+          ➤
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: SETTINGS & E2EE VAULT -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title">🔐 Security Vault & Settings</div>
+        <button class="icon-btn" id="closeSettingsBtn">✖</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-tabs">
+          <button class="tab-btn active" id="tabProfileBtn">My Profile</button>
+          <button class="tab-btn" id="tabKeysBtn">E2EE Keys</button>
+          <button class="tab-btn" id="tabVpsBtn">VPS Deployment</button>
+        </div>
+
+        <!-- TAB: PROFILE -->
+        <div id="tabProfileContent">
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; color: var(--gold-dim);">Your User ID (Public Handle):</label>
+            <input type="text" id="myUserIdInput" class="search-input" style="width: 100%; margin-top: 4px;" readonly>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 12px; color: var(--gold-dim);">Display Name:</label>
+            <input type="text" id="myDisplayNameInput" class="search-input" style="width: 100%; margin-top: 4px;">
+          </div>
+          <button class="btn-secondary" id="saveProfileBtn">Save Profile</button>
+        </div>
+
+        <!-- TAB: KEYS -->
+        <div id="tabKeysContent" style="display: none;">
+          <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+            Your ECDH Public Key (Shared via Relay for key exchange):
+          </div>
+          <div class="key-display-box" id="myPublicKeyDisplay">Generating keypair...</div>
+          
+          <div style="margin-top: 12px; font-size: 12px; color: var(--text-muted); margin-bottom: 8px;">
+            Your E2EE Safety Number (Fingerprint):
+          </div>
+          <div class="fingerprint-grid" id="myFingerprintDisplay">
+            ---- ---- ---- ----
+          </div>
+
+          <div style="margin-top: 16px; display: flex; gap: 8px;">
+            <button class="btn-secondary" id="regenerateKeysBtn" style="background: #a00;">Regenerate Identity Keypair</button>
+          </div>
+        </div>
+
+        <!-- TAB: VPS -->
+        <div id="tabVpsContent" style="display: none;">
+          <div style="font-size: 13px; color: var(--gold-accent); font-weight: 600; margin-bottom: 8px;">
+            🚀 Self-Host on your Ubuntu VPS
+          </div>
+          <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+            You can deploy this complete zero-knowledge backend server on your own server with Docker and Nginx SSL.
+          </p>
+
+          <label style="font-size: 11px; color: var(--gold-dim);">docker-compose.yml</label>
+          <div class="code-block" id="vpsDockerComposeCode">
+version: '3.8'
+services:
+  asl-messenger:
+    build: .
+    container_name: asl_messenger_server
+    restart: always
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - PORT=3000
+          </div>
+
+          <label style="font-size: 11px; color: var(--gold-dim); margin-top: 10px; display: block;">Terminal Quick Deploy Command:</label>
+          <div class="code-block">
+git clone https://github.com/your-repo/asl-messenger.git
+cd asl-messenger
+docker-compose up -d --build
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SAFETY FINGERPRINT VERIFY -->
+  <div class="modal-overlay" id="fingerprintModal">
+    <div class="modal-card" style="max-width: 460px;">
+      <div class="modal-header">
+        <div class="modal-title">🛡️ Verify Safety Numbers</div>
+        <button class="icon-btn" id="closeFingerprintBtn">✖</button>
+      </div>
+      <div class="modal-body" style="text-align: center;">
+        <p style="font-size: 13px; color: var(--text-muted);">
+          Compare these Safety Numbers with <strong id="verifyContactName" style="color: #fff;">contact</strong> to ensure your end-to-end encryption is secure against man-in-the-middle interception.
+        </p>
+
+        <div class="fingerprint-grid" id="sharedFingerprintDisplay" style="margin: 16px 0;">
+          ---- ---- ---- ----
+        </div>
+
+        <div style="font-size: 11px; color: #4caf50; background: rgba(76,175,80,0.1); padding: 8px; border-radius: 6px; border: 1px solid #4caf50;">
+          ✓ Cryptographic ECDH P-256 Shared Key Verification Match
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GOOGLE WORKSPACE HUB (DRIVE & SHEETS) -->
+  <div class="modal-overlay" id="workspaceModal">
+    <div class="modal-card" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title" style="display: flex; align-items: center; gap: 8px;">
+          <span>📂</span> Google Workspace Integration (Drive & Sheets)
+        </div>
+        <button class="icon-btn" id="closeWorkspaceBtn">✖</button>
+      </div>
+      <div class="modal-body">
+        <!-- Auth Banner if not signed in -->
+        <div id="workspaceAuthNotice" style="background: rgba(183,28,28,0.12); border: 1px solid rgba(212,175,55,0.4); padding: 16px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+          <div>
+            <div style="font-weight: 700; color: #fff; font-size: 14px; margin-bottom: 4px;">Connect Your Google Account</div>
+            <div style="font-size: 12px; color: var(--text-muted);">Access Google Drive files & Google Sheets audit logs with explicit permission.</div>
+          </div>
+          <button class="gsi-material-button" id="googleSignInBtn">
+            <div class="gsi-material-button-state"></div>
+            <div class="gsi-material-button-content-wrapper">
+              <div class="gsi-material-button-icon">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="display: block;">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                  <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                  <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                  <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                  <path fill="none" d="M0 0h48v48H0z"></path>
+                </svg>
+              </div>
+              <span class="gsi-material-button-contents">Sign in with Google</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Auth Status Bar if signed in -->
+        <div id="workspaceUserInfo" style="display: none; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); padding: 12px 16px; border-radius: 12px; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <img id="googleUserAvatar" src="" style="width: 32px; height: 32px; border-radius: 50%; display: none;">
+            <div>
+              <div id="googleUserName" style="font-weight: 700; font-size: 13px; color: #fff;">Connected Account</div>
+              <div id="googleUserEmail" style="font-size: 11px; color: #86efac;">Ready for Drive & Sheets API</div>
+            </div>
+          </div>
+          <button class="btn-secondary" id="googleSignOutBtn" style="background: #333; padding: 6px 12px; font-size: 11px;">Sign Out</button>
+        </div>
+
+        <div class="modal-tabs" style="margin-top: 14px;">
+          <button class="tab-btn active" id="tabDriveBtn">📁 Google Drive</button>
+          <button class="tab-btn" id="tabSheetsBtn">📊 Google Sheets</button>
+        </div>
+
+        <!-- TAB: GOOGLE DRIVE -->
+        <div id="tabDriveContent">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+            <input type="text" id="driveSearchInput" class="search-input" placeholder="Search files in Google Drive..." style="flex: 1; min-width: 200px;">
+            <button class="btn-secondary" id="searchDriveBtn">Search</button>
+            <button class="btn-secondary" id="exportChatToDriveBtn" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%);">
+              📤 Export Chat Transcript
+            </button>
+          </div>
+
+          <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+            <button class="tab-btn active" id="filterDriveAllBtn" style="font-size: 11px; padding: 4px 10px;">All Files</button>
+            <button class="tab-btn" id="filterDriveSheetsBtn" style="font-size: 11px; padding: 4px 10px;">Spreadsheets</button>
+          </div>
+
+          <div id="driveFileList" style="display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto;">
+            <div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">
+              Connect Google Account to browse your Drive files.
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: GOOGLE SHEETS -->
+        <div id="tabSheetsContent" style="display: none;">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;">
+            <button class="btn-secondary" id="createNewSheetBtn" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%);">
+              ➕ Create New Chat Log Sheet
+            </button>
+            <button class="btn-secondary" id="exportAuditToSheetBtn">
+              📊 Append Chat Audit Log to Sheet
+            </button>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <label style="font-size: 11px; color: var(--gold-dim); margin-bottom: 4px; display: block;">Select Google Sheet to View Data:</label>
+            <select id="sheetsSelector" class="search-input" style="width: 100%; background: #1a1a1a;">
+              <option value="">-- Sign in & Load Spreadsheets --</option>
+            </select>
+          </div>
+
+          <div id="sheetDataDisplay" class="sheets-table-wrapper">
+            <div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 12px;">
+              Select a spreadsheet above to view its contents and rows.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: MUTATING OPERATION CONFIRMATION -->
+  <div class="modal-overlay" id="confirmationModal">
+    <div class="modal-card" style="max-width: 480px;">
+      <div class="modal-header">
+        <div class="modal-title">⚠️ Confirm Google Workspace Action</div>
+        <button class="icon-btn" id="closeConfirmationBtn">✖</button>
+      </div>
+      <div class="modal-body" style="gap: 16px;">
+        <p id="confirmationText" style="font-size: 13px; color: var(--text-main); line-height: 1.5;">
+          Are you sure you want to perform this operation on Google Workspace?
+        </p>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 8px;">
+          <button class="btn-secondary" id="cancelConfirmationBtn" style="background: #2a2a2a; border-color: #444;">
+            Cancel
+          </button>
+          <button class="btn-secondary" id="proceedConfirmationBtn" style="background: linear-gradient(135deg, #15803d 0%, #166534 100%);">
+            Confirm & Proceed
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC JS -->
+  <script type="module">
+    import {
+      initWorkspaceAuth,
+      signInWithGoogle,
+      googleSignOut,
+      fetchDriveFiles,
+      createDriveTextFile,
+      fetchSpreadsheetsList,
+      createNewSpreadsheet,
+      getSpreadsheetDetails,
+      appendSpreadsheetRows,
+      getAccessToken,
+      getCurrentUser
+    } from './google-workspace.js';
+
+    /**
+     * ASL Messenger E2EE Cryptographic Module
+     * Web Crypto API (ECDH P-256 + AES-GCM 256)
+     */
+    class ASLCryptoEngine {
+      static async generateKeyPair() {
+        const keyPair = await window.crypto.subtle.generateKey(
+          {
+            name: 'ECDH',
+            namedCurve: 'P-256'
+          },
+          true, // extractable
+          ['deriveKey', 'deriveBits']
+        );
+        return keyPair;
+      }
+
+      static async exportPublicKey(publicKey) {
+        const exported = await window.crypto.subtle.exportKey('jwk', publicKey);
+        return exported;
+      }
+
+      static async exportPrivateKey(privateKey) {
+        const exported = await window.crypto.subtle.exportKey('jwk', privateKey);
+        return exported;
+      }
+
+      static async importPublicKey(jwk) {
+        return await window.crypto.subtle.importKey(
+          'jwk',
+          jwk,
+          { name: 'ECDH', namedCurve: 'P-256' },
+          true,
+          []
+        );
+      }
+
+      static async importPrivateKey(jwk) {
+        return await window.crypto.subtle.importKey(
+          'jwk',
+          jwk,
+          { name: 'ECDH', namedCurve: 'P-256' },
+          true,
+          ['deriveKey', 'deriveBits']
+        );
+      }
+
+      // Derive shared AES-GCM 256 key from local private key and target public key
+      static async deriveSharedSecret(myPrivateKey, peerPublicKey) {
+        return await window.crypto.subtle.deriveKey(
+          {
+            name: 'ECDH',
+            public: peerPublicKey
+          },
+          myPrivateKey,
+          {
+            name: 'AES-GCM',
+            length: 256
+          },
+          false, // non-extractable
+          ['encrypt', 'decrypt']
+        );
+      }
+
+      // Encrypt plaintext with AES-GCM 256
+      static async encryptMessage(sharedKey, plainText) {
+        const enc = new TextEncoder();
+        const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV
+        const encodedText = enc.encode(plainText);
+
+        const cipherBuffer = await window.crypto.subtle.encrypt(
+          {
+            name: 'AES-GCM',
+            iv: iv
+          },
+          sharedKey,
+          encodedText
+        );
+
+        return {
+          cipherText: ASLCryptoEngine.arrayBufferToBase64(cipherBuffer),
+          iv: ASLCryptoEngine.arrayBufferToBase64(iv)
+        };
+      }
+
+      // Decrypt ciphertext with AES-GCM 256
+      static async decryptMessage(sharedKey, cipherTextBase64, ivBase64) {
+        try {
+          const cipherBuffer = ASLCryptoEngine.base64ToArrayBuffer(cipherTextBase64);
+          const iv = ASLCryptoEngine.base64ToArrayBuffer(ivBase64);
+
+          const decryptedBuffer = await window.crypto.subtle.decrypt(
+            {
+              name: 'AES-GCM',
+              iv: iv
+            },
+            sharedKey,
+            cipherBuffer
+          );
+
+          const dec = new TextDecoder();
+          return dec.decode(decryptedBuffer);
+        } catch (err) {
+          console.error("Decryption failed:", err);
+          return "⚠️ [Decryption Error: Invalid Key or Corrupted Ciphertext]";
+        }
+      }
+
+      // Compute Safety Fingerprint from Public Keys
+      static async computeFingerprint(pubKeyJwk1, pubKeyJwk2) {
+        const str1 = JSON.stringify(pubKeyJwk1);
+        const str2 = pubKeyJwk2 ? JSON.stringify(pubKeyJwk2) : '';
+        const combined = [str1, str2].sort().join('::');
+
+        const enc = new TextEncoder();
+        const hashBuf = await window.crypto.subtle.digest('SHA-256', enc.encode(combined));
+        const hashArray = Array.from(new Uint8Array(hashBuf));
+        const hex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+
+        return `${hex.substring(0,4)} - ${hex.substring(4,8)} - ${hex.substring(8,12)} - ${hex.substring(12,16)}`;
+      }
+
+      static arrayBufferToBase64(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary);
+      }
+
+      static base64ToArrayBuffer(base64) {
+        const binaryString = window.atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+      }
+    }
+
+    /**
+     * Local Persistence Engine (IndexedDB + LocalStorage)
+     */
+    class ASLStorage {
+      static async getKeys() {
+        const priv = localStorage.getItem('asl_private_key');
+        const pub = localStorage.getItem('asl_public_key');
+        if (priv && pub) {
+          return {
+            privateKeyJWK: JSON.parse(priv),
+            publicKeyJWK: JSON.parse(pub)
+          };
+        }
+        return null;
+      }
+
+      static async saveKeys(privJwk, pubJwk) {
+        localStorage.setItem('asl_private_key', JSON.stringify(privJwk));
+        localStorage.setItem('asl_public_key', JSON.stringify(pubJwk));
+      }
+
+      static saveChatHistory(contactId, messages) {
+        localStorage.setItem(`asl_chat_${contactId}`, JSON.stringify(messages));
+      }
+
+      static getChatHistory(contactId) {
+        const data = localStorage.getItem(`asl_chat_${contactId}`);
+        return data ? JSON.parse(data) : [];
+      }
+
+      static saveContacts(contacts) {
+        localStorage.setItem('asl_contacts', JSON.stringify(contacts));
+      }
+
+      static getContacts() {
+        const data = localStorage.getItem('asl_contacts');
+        return data ? JSON.parse(data) : {};
+      }
+    }
+
+    /**
+     * Main ASL Messenger Application Controller
+     */
+    class ASLMessengerApp {
+      constructor() {
+        this.socket = null;
+        this.myUserId = '';
+        this.myDisplayName = '';
+        this.myKeyPair = null;
+        this.myPublicKeyJWK = null;
+        this.myPrivateKeyJWK = null;
+
+        this.contacts = {}; // Map<userId, { displayName, publicKeyJWK, online, unread }>
+        this.activeContactId = null;
+        this.sharedKeysCache = new Map(); // Map<contactId, CryptoKey>
+
+        this.init();
+      }
+
+      async init() {
+        this.setupUserIdentity();
+        await this.initCryptographicKeys();
+        this.loadContacts();
+        this.setupSocketConnection();
+        this.setupWorkspaceAuthListener();
+        this.bindUIEvents();
+        this.renderContactsList();
+      }
+
+      setupUserIdentity() {
+        let storedId = localStorage.getItem('asl_my_user_id');
+        if (!storedId) {
+          const rand = Math.floor(1000 + Math.random() * 9000);
+          storedId = `asl_user_${rand}`;
+          localStorage.setItem('asl_my_user_id', storedId);
+        }
+        this.myUserId = storedId;
+
+        let storedName = localStorage.getItem('asl_my_display_name');
+        if (!storedName) {
+          storedName = `Agent_${storedId.split('_')[2]}`;
+          localStorage.setItem('asl_my_display_name', storedName);
+        }
+        this.myDisplayName = storedName;
+
+        document.getElementById('myUserIdBadge').textContent = this.myUserId;
+        document.getElementById('myUserIdInput').value = this.myUserId;
+        document.getElementById('myDisplayNameInput').value = this.myDisplayName;
+      }
+
+      async initCryptographicKeys(forceRegenerate = false) {
+        let stored = forceRegenerate ? null : await ASLStorage.getKeys();
+        if (!stored) {
+          console.log('[ASL Crypto] Generating new ECDH P-256 Keypair...');
+          this.myKeyPair = await ASLCryptoEngine.generateKeyPair();
+          this.myPublicKeyJWK = await ASLCryptoEngine.exportPublicKey(this.myKeyPair.publicKey);
+          this.myPrivateKeyJWK = await ASLCryptoEngine.exportPrivateKey(this.myKeyPair.privateKey);
+          await ASLStorage.saveKeys(this.myPrivateKeyJWK, this.myPublicKeyJWK);
+        } else {
+          this.myPublicKeyJWK = stored.publicKeyJWK;
+          this.myPrivateKeyJWK = stored.privateKeyJWK;
+          const privKey = await ASLCryptoEngine.importPrivateKey(this.myPrivateKeyJWK);
+          const pubKey = await ASLCryptoEngine.importPublicKey(this.myPublicKeyJWK);
+          this.myKeyPair = { privateKey: privKey, publicKey: pubKey };
+        }
+
+        document.getElementById('myPublicKeyDisplay').textContent = JSON.stringify(this.myPublicKeyJWK, null, 2);
+        
+        const fp = await ASLCryptoEngine.computeFingerprint(this.myPublicKeyJWK);
+        document.getElementById('myFingerprintDisplay').textContent = fp;
+      }
+
+      setupSocketConnection() {
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+
+        statusDot.className = 'status-dot connecting';
+        statusText.textContent = 'Connecting...';
+
+        this.socket = io({
+          reconnection: true,
+          reconnectionAttempts: 20
+        });
+
+        this.socket.on('connect', () => {
+          statusDot.className = 'status-dot';
+          statusText.textContent = 'Zero-Knowledge Relay Online';
+
+          this.socket.emit('register_user', {
+            userId: this.myUserId,
+            displayName: this.myDisplayName,
+            publicKey: this.myPublicKeyJWK
+          });
+
+          this.socket.emit('get_active_users');
+        });
+
+        this.socket.on('disconnect', () => {
+          statusDot.className = 'status-dot connecting';
+          statusText.textContent = 'Disconnected (Reconnecting...)';
+        });
+
+        this.socket.on('user_presence', ({ userId, displayName, publicKey, online }) => {
+          if (userId === this.myUserId) return;
+
+          if (!this.contacts[userId]) {
+            this.contacts[userId] = {
+              displayName: displayName || userId,
+              publicKeyJWK: publicKey,
+              online: online,
+              unread: 0
+            };
+          } else {
+            this.contacts[userId].online = online;
+            if (publicKey) this.contacts[userId].publicKeyJWK = publicKey;
+          }
+
+          ASLStorage.saveContacts(this.contacts);
+          this.renderContactsList();
+
+          if (this.activeContactId === userId) {
+            this.updateActiveContactHeader();
+          }
+        });
+
+        this.socket.on('active_users_list', ({ users }) => {
+          users.forEach(u => {
+            if (u.userId !== this.myUserId) {
+              if (!this.contacts[u.userId]) {
+                this.contacts[u.userId] = {
+                  displayName: u.displayName || u.userId,
+                  publicKeyJWK: u.publicKey,
+                  online: u.online,
+                  unread: 0
+                };
+              } else {
+                this.contacts[u.userId].online = u.online;
+                if (u.publicKey) this.contacts[u.userId].publicKeyJWK = u.publicKey;
+              }
+            }
+          });
+          ASLStorage.saveContacts(this.contacts);
+          this.renderContactsList();
+        });
+
+        this.socket.on('user_info', (userInfo) => {
+          if (userInfo.userId !== this.myUserId) {
+            this.contacts[userInfo.userId] = {
+              displayName: userInfo.displayName || userInfo.userId,
+              publicKeyJWK: userInfo.publicKey,
+              online: userInfo.online,
+              unread: 0
+            };
+            ASLStorage.saveContacts(this.contacts);
+            this.renderContactsList();
+            this.selectContact(userInfo.userId);
+          }
+        });
+
+        this.socket.on('user_not_found', ({ targetUserId }) => {
+          alert(`User ID "${targetUserId}" is not registered on the relay.`);
+        });
+
+        this.socket.on('encrypted_message', async (packet) => {
+          console.log('[ASL Relay] Encrypted packet received:', packet);
+          await this.handleIncomingEncryptedMessage(packet);
+        });
+
+        this.socket.on('message_status', ({ messageId, recipientId, status }) => {
+          this.updateMessageStatus(recipientId, messageId, status);
+        });
+
+        this.socket.on('user_typing', ({ senderId, isTyping }) => {
+          if (senderId === this.activeContactId) {
+            const el = document.getElementById('typingIndicator');
+            el.textContent = isTyping ? `${this.contacts[senderId]?.displayName || senderId} is typing encrypted message...` : '';
+          }
+        });
+      }
+
+      setupWorkspaceAuthListener() {
+        initWorkspaceAuth((user, token) => {
+          const authNotice = document.getElementById('workspaceAuthNotice');
+          const userInfo = document.getElementById('workspaceUserInfo');
+          if (user && token) {
+            authNotice.style.display = 'none';
+            userInfo.style.display = 'flex';
+            document.getElementById('googleUserName').textContent = user.displayName || 'Google Account';
+            document.getElementById('googleUserEmail').textContent = user.email || 'Workspace Integration Active';
+            if (user.photoURL) {
+              const img = document.getElementById('googleUserAvatar');
+              img.src = user.photoURL;
+              img.style.display = 'block';
+            }
+            this.loadDriveFiles();
+            this.loadSpreadsheetsDropdown();
+          } else {
+            authNotice.style.display = 'flex';
+            userInfo.style.display = 'none';
+            document.getElementById('driveFileList').innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">
+                Connect Google Account to browse your Drive files.
+              </div>
+            `;
+            document.getElementById('sheetsSelector').innerHTML = `<option value="">-- Sign in & Load Spreadsheets --</option>`;
+            document.getElementById('sheetDataDisplay').innerHTML = `
+              <div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 12px;">
+                Select a spreadsheet above to view its contents and rows.
+              </div>
+            `;
+          }
+        });
+      }
+
+      async confirmWorkspaceAction(description) {
+        return new Promise((resolve) => {
+          document.getElementById('confirmationText').textContent = description;
+          const modal = document.getElementById('confirmationModal');
+          modal.classList.add('open');
+
+          const cleanup = () => {
+            modal.classList.remove('open');
+            document.getElementById('proceedConfirmationBtn').onclick = null;
+            document.getElementById('cancelConfirmationBtn').onclick = null;
+            document.getElementById('closeConfirmationBtn').onclick = null;
+          };
+
+          document.getElementById('proceedConfirmationBtn').onclick = () => {
+            cleanup();
+            resolve(true);
+          };
+
+          document.getElementById('cancelConfirmationBtn').onclick = () => {
+            cleanup();
+            resolve(false);
+          };
+
+          document.getElementById('closeConfirmationBtn').onclick = () => {
+            cleanup();
+            resolve(false);
+          };
+        });
+      }
+
+      async loadDriveFiles(searchQuery = '', mimeFilter = '') {
+        const container = document.getElementById('driveFileList');
+        if (!getAccessToken()) {
+          container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">Sign in with Google to access your Drive.</div>`;
+          return;
+        }
+
+        container.innerHTML = `<div style="text-align: center; color: var(--gold-accent); padding: 20px; font-size: 12px;">Loading files from Google Drive...</div>`;
+
+        try {
+          const files = await fetchDriveFiles(searchQuery, mimeFilter);
+          if (files.length === 0) {
+            container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 20px; font-size: 12px;">No matching files found in Drive.</div>`;
+            return;
+          }
+
+          container.innerHTML = '';
+          files.forEach(file => {
+            const card = document.createElement('div');
+            card.className = 'drive-file-card';
+            
+            let icon = '📄';
+            if (file.mimeType.includes('spreadsheet')) icon = '📊';
+            else if (file.mimeType.includes('document')) icon = '📝';
+            else if (file.mimeType.includes('pdf')) icon = '📕';
+            else if (file.mimeType.includes('image')) icon = '🖼️';
+
+            const modDate = file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : '';
+
+            card.innerHTML = `
+              <div class="drive-file-info">
+                <div class="drive-file-icon">${icon}</div>
+                <div style="min-width: 0; flex: 1;">
+                  <div class="drive-file-name" title="${this.escapeHtml(file.name)}">${this.escapeHtml(file.name)}</div>
+                  <div class="drive-file-meta">${file.mimeType.split('.').pop()} • ${modDate}</div>
+                </div>
+              </div>
+              <div class="drive-file-actions">
+                <button class="btn-secondary share-file-btn" style="padding: 5px 10px; font-size: 11px;">
+                  🔗 Share to Chat
+                </button>
+                <a href="${file.webViewLink}" target="_blank" rel="noopener" class="btn-secondary" style="padding: 5px 10px; font-size: 11px; text-decoration: none; background: #2a2a2a;">
+                  ↗️ Open
+                </a>
+              </div>
+            `;
+
+            card.querySelector('.share-file-btn').onclick = () => {
+              this.shareDriveFileToChat(file);
+              document.getElementById('workspaceModal').classList.remove('open');
+            };
+
+            container.appendChild(card);
+          });
+        } catch (err) {
+          console.error('Failed to fetch Drive files:', err);
+          container.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px; font-size: 12px;">Error: ${this.escapeHtml(err.message)}</div>`;
+        }
+      }
+
+      shareDriveFileToChat(file) {
+        if (!this.activeContactId) {
+          alert('Please select a contact first to share files.');
+          return;
+        }
+        let icon = '📄';
+        if (file.mimeType.includes('spreadsheet')) icon = '📊';
+        else if (file.mimeType.includes('document')) icon = '📝';
+
+        const input = document.getElementById('messageInput');
+        input.value = `Attached Google Drive File ${icon} "${file.name}": ${file.webViewLink}`;
+        input.focus();
+      }
+
+      async exportChatToDrive() {
+        if (!this.activeContactId) {
+          alert('Please select a chat conversation first.');
+          return;
+        }
+        if (!getAccessToken()) {
+          alert('Please sign in with Google first.');
+          return;
+        }
+
+        const contact = this.contacts[this.activeContactId];
+        const history = ASLStorage.getChatHistory(this.activeContactId);
+        if (history.length === 0) {
+          alert('No chat history available to export.');
+          return;
+        }
+
+        const filename = `ASL_Chat_Export_${contact.displayName.replace(/\s+/g, '_')}_${Date.now()}.txt`;
+        
+        const confirmed = await this.confirmWorkspaceAction(
+          `Create a new text file "${filename}" in your Google Drive containing ${history.length} chat message record(s)?`
+        );
+        if (!confirmed) return;
+
+        let textContent = `====================================================\n`;
+        textContent += ` ASL Messenger E2EE Encrypted Chat Export\n`;
+        textContent += ` Contact: ${contact.displayName} (${this.activeContactId})\n`;
+        textContent += ` Export Date: ${new Date().toLocaleString()}\n`;
+        textContent += ` Total Messages: ${history.length}\n`;
+        textContent += `====================================================\n\n`;
+
+        history.forEach(m => {
+          const sender = m.senderId === this.myUserId ? 'You' : contact.displayName;
+          textContent += `[${m.timestamp}] ${sender}: ${m.plainText}\n`;
+          textContent += `  (Cipher IV: ${m.iv} | Status: ${m.status})\n\n`;
+        });
+
+        try {
+          const result = await createDriveTextFile(filename, textContent);
+          alert(`Chat transcript exported successfully to Google Drive!\nFile ID: ${result.id}`);
+          this.loadDriveFiles();
+        } catch (err) {
+          console.error('Export error:', err);
+          alert(`Failed to export to Drive: ${err.message}`);
+        }
+      }
+
+      async loadSpreadsheetsDropdown() {
+        const select = document.getElementById('sheetsSelector');
+        if (!getAccessToken()) return;
+
+        try {
+          const sheets = await fetchSpreadsheetsList();
+          select.innerHTML = '<option value="">-- Select a Google Sheet to inspect --</option>';
+          sheets.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s.id;
+            opt.textContent = `${s.name} (Updated: ${new Date(s.modifiedTime).toLocaleDateString()})`;
+            select.appendChild(opt);
+          });
+
+          select.onchange = () => {
+            if (select.value) {
+              this.renderSpreadsheetData(select.value);
+            }
+          };
+        } catch (err) {
+          console.error('Failed to load spreadsheets:', err);
+        }
+      }
+
+      async createChatLogSheet() {
+        if (!getAccessToken()) {
+          alert('Please sign in with Google first.');
+          return;
+        }
+
+        const title = `ASL_Messenger_Audit_Log_${Date.now().toString().slice(-4)}`;
+        const confirmed = await this.confirmWorkspaceAction(
+          `Create a new Google Sheet spreadsheet titled "${title}" in your Google Drive with header columns [Timestamp, Sender, Recipient, Message Snippet, Status]?`
+        );
+        if (!confirmed) return;
+
+        try {
+          const newSheet = await createNewSpreadsheet(title);
+          const spreadsheetId = newSheet.spreadsheetId;
+
+          const headerRow = [['Timestamp', 'Sender ID', 'Recipient ID', 'Message Snippet', 'Status / Verification']];
+          await appendSpreadsheetRows(spreadsheetId, 'Chat Log!A1:E1', headerRow);
+
+          alert(`Google Sheet "${title}" created successfully in Drive!`);
+          await this.loadSpreadsheetsDropdown();
+          document.getElementById('sheetsSelector').value = spreadsheetId;
+          this.renderSpreadsheetData(spreadsheetId);
+        } catch (err) {
+          console.error('Failed to create sheet:', err);
+          alert(`Sheet Creation Error: ${err.message}`);
+        }
+      }
+
+      async exportAuditLogToSelectedSheet() {
+        if (!this.activeContactId) {
+          alert('Please select a contact chat first.');
+          return;
+        }
+        const select = document.getElementById('sheetsSelector');
+        const spreadsheetId = select.value;
+        if (!spreadsheetId) {
+          alert('Please select or create a Google Sheet spreadsheet first.');
+          return;
+        }
+
+        const history = ASLStorage.getChatHistory(this.activeContactId);
+        if (history.length === 0) {
+          alert('No chat messages to log.');
+          return;
+        }
+
+        const contact = this.contacts[this.activeContactId];
+        const confirmed = await this.confirmWorkspaceAction(
+          `Append ${history.length} chat message audit row(s) to Google Sheet "${select.selectedOptions[0]?.text || 'Selected Sheet'}"?`
+        );
+        if (!confirmed) return;
+
+        const rows = history.map(m => [
+          m.timestamp,
+          m.senderId === this.myUserId ? 'Me' : contact.displayName,
+          m.recipientId === this.myUserId ? 'Me' : contact.displayName,
+          m.plainText.substring(0, 100),
+          `E2EE Verified (${m.status})`
+        ]);
+
+        try {
+          await appendSpreadsheetRows(spreadsheetId, 'Chat Log!A1', rows);
+          alert(`Appended ${rows.length} message audit row(s) to Google Sheet!`);
+          this.renderSpreadsheetData(spreadsheetId);
+        } catch (err) {
+          console.error('Failed to append rows:', err);
+          alert(`Append Rows Error: ${err.message}`);
+        }
+      }
+
+      async renderSpreadsheetData(spreadsheetId) {
+        const display = document.getElementById('sheetDataDisplay');
+        display.innerHTML = `<div style="text-align: center; color: var(--gold-accent); padding: 30px; font-size: 12px;">Fetching spreadsheet cells from Google Sheets API...</div>`;
+
+        try {
+          const details = await getSpreadsheetDetails(spreadsheetId);
+          const sheets = details.sheets || [];
+          if (sheets.length === 0 || !sheets[0].data || !sheets[0].data[0].rowData) {
+            display.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px; font-size: 12px;">Spreadsheet is empty or has no row data.</div>`;
+            return;
+          }
+
+          const rowData = sheets[0].data[0].rowData;
+          let html = `<table class="sheets-data-table">`;
+          
+          rowData.forEach((row, idx) => {
+            html += `<tr>`;
+            const values = row.values || [];
+            values.forEach(v => {
+              const text = v.formattedValue || v.userEnteredValue?.stringValue || '';
+              if (idx === 0) {
+                html += `<th>${this.escapeHtml(text)}</th>`;
+              } else {
+                html += `<td>${this.escapeHtml(text)}</td>`;
+              }
+            });
+            html += `</tr>`;
+          });
+          html += `</table>`;
+
+          display.innerHTML = html;
+        } catch (err) {
+          console.error('Failed to render sheet data:', err);
+          display.innerHTML = `<div style="text-align: center; color: #ef4444; padding: 20px; font-size: 12px;">Error reading spreadsheet: ${this.escapeHtml(err.message)}</div>`;
+        }
+      }
+
+      async getSharedKeyForContact(contactId) {
+        if (this.sharedKeysCache.has(contactId)) {
+          return this.sharedKeysCache.get(contactId);
+        }
+
+        const contact = this.contacts[contactId];
+        if (!contact || !contact.publicKeyJWK) {
+          throw new Error('Contact public key unavailable');
+        }
+
+        const peerPubKey = await ASLCryptoEngine.importPublicKey(contact.publicKeyJWK);
+        const sharedKey = await ASLCryptoEngine.deriveSharedSecret(this.myKeyPair.privateKey, peerPubKey);
+        
+        this.sharedKeysCache.set(contactId, sharedKey);
+        return sharedKey;
+      }
+
+      async sendMessage() {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        if (!text || !this.activeContactId) return;
+
+        input.value = '';
+
+        try {
+          const sharedKey = await this.getSharedKeyForContact(this.activeContactId);
+          const encrypted = await ASLCryptoEngine.encryptMessage(sharedKey, text);
+
+          const messageId = `msg_${Date.now()}_${Math.random().toString(36).substring(2,7)}`;
+          const timestamp = new Date().toISOString();
+
+          const messageObj = {
+            id: messageId,
+            senderId: this.myUserId,
+            recipientId: this.activeContactId,
+            plainText: text,
+            cipherText: encrypted.cipherText,
+            iv: encrypted.iv,
+            timestamp: timestamp,
+            status: 'sending'
+          };
+
+          const history = ASLStorage.getChatHistory(this.activeContactId);
+          history.push(messageObj);
+          ASLStorage.saveChatHistory(this.activeContactId, history);
+
+          this.renderMessages();
+
+          this.socket.emit('send_encrypted_message', {
+            messageId: messageId,
+            senderId: this.myUserId,
+            recipientId: this.activeContactId,
+            cipherText: encrypted.cipherText,
+            iv: encrypted.iv,
+            timestamp: timestamp
+          });
+
+        } catch (err) {
+          console.error("Failed to encrypt and send message:", err);
+          alert("Encryption Error: Could not generate shared key for recipient.");
+        }
+      }
+
+      async handleIncomingEncryptedMessage(packet) {
+        const { senderId, messageId, cipherText, iv, timestamp } = packet;
+
+        if (!this.contacts[senderId]) {
+          this.socket.emit('lookup_user', { targetUserId: senderId });
+          this.contacts[senderId] = {
+            displayName: senderId,
+            publicKeyJWK: null,
+            online: true,
+            unread: 1
+          };
+        }
+
+        let decryptedText = "⚠️ [Decrypting...]";
+        try {
+          const sharedKey = await this.getSharedKeyForContact(senderId);
+          decryptedText = await ASLCryptoEngine.decryptMessage(sharedKey, cipherText, iv);
+        } catch (e) {
+          console.error("Decryption error:", e);
+          decryptedText = "⚠️ [Decryption Failed - Key Mismatch]";
+        }
+
+        const messageObj = {
+          id: messageId,
+          senderId: senderId,
+          recipientId: this.myUserId,
+          plainText: decryptedText,
+          cipherText: cipherText,
+          iv: iv,
+          timestamp: timestamp,
+          status: 'received'
+        };
+
+        const history = ASLStorage.getChatHistory(senderId);
+        history.push(messageObj);
+        ASLStorage.saveChatHistory(senderId, history);
+
+        if (this.activeContactId === senderId) {
+          this.renderMessages();
+          this.socket.emit('mark_as_read', { senderId, messageId });
+        } else {
+          if (this.contacts[senderId]) {
+            this.contacts[senderId].unread = (this.contacts[senderId].unread || 0) + 1;
+            ASLStorage.saveContacts(this.contacts);
+            this.renderContactsList();
+          }
+        }
+      }
+
+      updateMessageStatus(contactId, messageId, status) {
+        const history = ASLStorage.getChatHistory(contactId);
+        const msg = history.find(m => m.id === messageId);
+        if (msg) {
+          msg.status = status;
+          ASLStorage.saveChatHistory(contactId, history);
+          if (this.activeContactId === contactId) {
+            this.renderMessages();
+          }
+        }
+      }
+
+      loadContacts() {
+        this.contacts = ASLStorage.getContacts();
+      }
+
+      renderContactsList() {
+        const chatList = document.getElementById('chatList');
+        chatList.innerHTML = '';
+
+        const keys = Object.keys(this.contacts);
+        if (keys.length === 0) {
+          chatList.innerHTML = `
+            <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 13px;">
+              No contacts yet.<br>Enter a User ID above or open a 2nd tab to test!
+            </div>
+          `;
+          return;
+        }
+
+        keys.forEach(userId => {
+          const contact = this.contacts[userId];
+          const history = ASLStorage.getChatHistory(userId);
+          const lastMsg = history[history.length - 1];
+
+          const item = document.createElement('div');
+          item.className = `chat-item ${this.activeContactId === userId ? 'active' : ''}`;
+          
+          item.innerHTML = `
+            <div class="avatar-wrapper">
+              <div class="avatar">${contact.displayName.substring(0,2).toUpperCase()}</div>
+              ${contact.online ? '<div class="online-badge"></div>' : ''}
+            </div>
+            <div class="chat-info">
+              <div class="chat-name-row">
+                <div class="chat-name">${this.escapeHtml(contact.displayName)}</div>
+                <div class="chat-time">${lastMsg ? this.formatTime(lastMsg.timestamp) : ''}</div>
+              </div>
+              <div class="chat-preview">
+                <span class="lock-icon-sm">🔒</span>
+                ${lastMsg ? this.escapeHtml(lastMsg.plainText) : 'End-to-End Encrypted'}
+              </div>
+            </div>
+          `;
+
+          item.onclick = () => this.selectContact(userId);
+          chatList.appendChild(item);
+        });
+      }
+
+      selectContact(userId) {
+        this.activeContactId = userId;
+        if (this.contacts[userId]) {
+          this.contacts[userId].unread = 0;
+          ASLStorage.saveContacts(this.contacts);
+        }
+
+        this.renderContactsList();
+        this.updateActiveContactHeader();
+
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendBtn').disabled = false;
+        document.getElementById('messageInput').focus();
+
+        if (window.innerWidth <= 768) {
+          document.getElementById('sidebar').classList.add('hidden-mobile');
+        }
+
+        this.renderMessages();
+      }
+
+      updateActiveContactHeader() {
+        const contact = this.contacts[this.activeContactId];
+        if (!contact) return;
+
+        document.getElementById('activeContactTitle').textContent = contact.displayName;
+        document.getElementById('activeContactAvatar').textContent = contact.displayName.substring(0,2).toUpperCase();
+        document.getElementById('activeContactOnlineBadge').style.display = contact.online ? 'block' : 'none';
+        document.getElementById('activeContactStatus').textContent = contact.online ? 'Online • AES-GCM Encrypted' : 'Offline • Messages Queued in RAM';
+      }
+
+      renderMessages() {
+        const stream = document.getElementById('messageStream');
+        stream.innerHTML = `
+          <div class="system-notice">
+            🔒 <strong>ASL Messenger Zero-Knowledge Architecture</strong><br>
+            End-to-End Encrypted Tunnel active with ${this.escapeHtml(this.contacts[this.activeContactId]?.displayName || this.activeContactId)}
+          </div>
+        `;
+
+        if (!this.activeContactId) return;
+
+        const history = ASLStorage.getChatHistory(this.activeContactId);
+        history.forEach(msg => {
+          const isSent = msg.senderId === this.myUserId;
+
+          const group = document.createElement('div');
+          group.className = `message-group ${isSent ? 'sent' : 'received'}`;
+
+          let ticksHtml = '🕒';
+          if (msg.status === 'delivered') ticksHtml = '<span class="status-ticks">✓✓</span>';
+          else if (msg.status === 'queued') ticksHtml = '<span class="status-ticks">✓</span>';
+
+          // Detect Drive links
+          let driveCardHtml = '';
+          if (msg.plainText.includes('drive.google.com') || msg.plainText.includes('Google Drive File')) {
+            const urlMatch = msg.plainText.match(/https:\/\/drive\.google\.com[^\s]+/);
+            if (urlMatch) {
+              driveCardHtml = `
+                <div class="chat-drive-embed">
+                  <div class="chat-drive-embed-title">📂 Shared Google Drive Attachment</div>
+                  <a href="${urlMatch[0]}" target="_blank" rel="noopener" style="color: var(--gold-accent); font-size: 11px; word-break: break-all;">
+                    ${urlMatch[0]}
+                  </a>
+                </div>
+              `;
+            }
+          }
+
+          group.innerHTML = `
+            <div class="message-sender-label">${isSent ? 'You' : this.escapeHtml(this.contacts[this.activeContactId]?.displayName || msg.senderId)}</div>
+            <div class="message-bubble">
+              ${this.escapeHtml(msg.plainText)}
+              ${driveCardHtml}
+              <div class="cipher-toggle" onclick="this.parentElement.querySelector('.raw-cipher-box').style.display = this.parentElement.querySelector('.raw-cipher-box').style.display === 'block' ? 'none' : 'block'">
+                🔍 Inspect Raw Cipher Payload
+              </div>
+              <div class="raw-cipher-box" style="display: none;">
+                <strong>IV:</strong> ${msg.iv}<br>
+                <strong>Ciphertext:</strong> ${msg.cipherText}
+              </div>
+            </div>
+            <div class="message-meta">
+              <span>${this.formatTime(msg.timestamp)}</span>
+              ${isSent ? ticksHtml : ''}
+            </div>
+          `;
+
+          stream.appendChild(group);
+        });
+
+        stream.scrollTop = stream.scrollHeight;
+      }
+
+      bindUIEvents() {
+        document.getElementById('sendBtn').onclick = () => this.sendMessage();
+        document.getElementById('messageInput').onkeypress = (e) => {
+          if (e.key === 'Enter') this.sendMessage();
+        };
+
+        let typingTimeout = null;
+        document.getElementById('messageInput').oninput = () => {
+          if (!this.activeContactId) return;
+          this.socket.emit('typing_indicator', { recipientId: this.activeContactId, isTyping: true });
+
+          clearTimeout(typingTimeout);
+          typingTimeout = setTimeout(() => {
+            this.socket.emit('typing_indicator', { recipientId: this.activeContactId, isTyping: false });
+          }, 1500);
+        };
+
+        document.getElementById('addContactBtn').onclick = () => {
+          const targetId = document.getElementById('searchUserInput').value.trim();
+          if (!targetId) return;
+          if (targetId === this.myUserId) {
+            alert("Cannot add yourself as a contact.");
+            return;
+          }
+          this.socket.emit('lookup_user', { targetUserId: targetId });
+          document.getElementById('searchUserInput').value = '';
+        };
+
+        document.getElementById('mobileBackBtn').onclick = () => {
+          document.getElementById('sidebar').classList.remove('hidden-mobile');
+        };
+
+        document.getElementById('openDualTabBtn').onclick = () => {
+          window.open(window.location.href, '_blank');
+        };
+
+        document.getElementById('switchUserBtn').onclick = () => {
+          const newName = prompt("Enter a new username / test profile ID:", `User_${Math.floor(Math.random()*1000)}`);
+          if (newName) {
+            localStorage.setItem('asl_my_user_id', newName);
+            localStorage.setItem('asl_my_display_name', newName);
+            window.location.reload();
+          }
+        };
+
+        document.getElementById('openSettingsBtn').onclick = () => {
+          document.getElementById('settingsModal').classList.add('open');
+        };
+        document.getElementById('closeSettingsBtn').onclick = () => {
+          document.getElementById('settingsModal').classList.remove('open');
+        };
+        document.getElementById('openVpsBtn').onclick = () => {
+          document.getElementById('settingsModal').classList.add('open');
+          document.getElementById('tabVpsBtn').click();
+        };
+
+        // Workspace Modal triggers
+        document.getElementById('openWorkspaceModalBtn').onclick = () => {
+          document.getElementById('workspaceModal').classList.add('open');
+        };
+        document.getElementById('closeWorkspaceBtn').onclick = () => {
+          document.getElementById('workspaceModal').classList.remove('open');
+        };
+        document.getElementById('attachDriveBtn').onclick = () => {
+          document.getElementById('workspaceModal').classList.add('open');
+          document.getElementById('tabDriveBtn').click();
+        };
+        document.getElementById('attachSheetBtn').onclick = () => {
+          document.getElementById('workspaceModal').classList.add('open');
+          document.getElementById('tabSheetsBtn').click();
+        };
+
+        // Workspace Tabs Navigation
+        document.getElementById('tabDriveBtn').onclick = () => {
+          document.getElementById('tabDriveBtn').classList.add('active');
+          document.getElementById('tabSheetsBtn').classList.remove('active');
+          document.getElementById('tabDriveContent').style.display = 'block';
+          document.getElementById('tabSheetsContent').style.display = 'none';
+        };
+        document.getElementById('tabSheetsBtn').onclick = () => {
+          document.getElementById('tabSheetsBtn').classList.add('active');
+          document.getElementById('tabDriveBtn').classList.remove('active');
+          document.getElementById('tabSheetsContent').style.display = 'block';
+          document.getElementById('tabDriveContent').style.display = 'none';
+        };
+
+        // Google Sign In / Sign Out
+        document.getElementById('googleSignInBtn').onclick = async () => {
+          try {
+            await signInWithGoogle();
+          } catch (err) {
+            alert(`Google Sign-In failed: ${err.message}`);
+          }
+        };
+        document.getElementById('googleSignOutBtn').onclick = async () => {
+          await googleSignOut();
+        };
+
+        // Drive Search & Filters
+        document.getElementById('searchDriveBtn').onclick = () => {
+          const q = document.getElementById('driveSearchInput').value.trim();
+          this.loadDriveFiles(q);
+        };
+        document.getElementById('exportChatToDriveBtn').onclick = () => {
+          this.exportChatToDrive();
+        };
+
+        // Sheets Actions
+        document.getElementById('createNewSheetBtn').onclick = () => {
+          this.createChatLogSheet();
+        };
+        document.getElementById('exportAuditToSheetBtn').onclick = () => {
+          this.exportAuditLogToSelectedSheet();
+        };
+
+        // Modal Tab Navigation
+        const tabs = ['Profile', 'Keys', 'Vps'];
+        tabs.forEach(tab => {
+          document.getElementById(`tab${tab}Btn`).onclick = () => {
+            tabs.forEach(t => {
+              document.getElementById(`tab${t}Btn`).classList.remove('active');
+              document.getElementById(`tab${t}Content`).style.display = 'none';
+            });
+            document.getElementById(`tab${tab}Btn`).classList.add('active');
+            document.getElementById(`tab${tab}Content`).style.display = 'block';
+          };
+        });
+
+        document.getElementById('saveProfileBtn').onclick = () => {
+          const newName = document.getElementById('myDisplayNameInput').value.trim();
+          if (newName) {
+            this.myDisplayName = newName;
+            localStorage.setItem('asl_my_display_name', newName);
+            this.socket.emit('register_user', {
+              userId: this.myUserId,
+              displayName: this.myDisplayName,
+              publicKey: this.myPublicKeyJWK
+            });
+            alert("Profile updated!");
+            document.getElementById('settingsModal').classList.remove('open');
+          }
+        };
+
+        document.getElementById('regenerateKeysBtn').onclick = async () => {
+          if (confirm("Regenerating identity keys will replace your current cryptographic identity. Continue?")) {
+            await this.initCryptographicKeys(true);
+            this.socket.emit('register_user', {
+              userId: this.myUserId,
+              displayName: this.myDisplayName,
+              publicKey: this.myPublicKeyJWK
+            });
+            alert("Identity keys regenerated!");
+          }
+        };
+
+        document.getElementById('verifyKeyBtn').onclick = async () => {
+          if (!this.activeContactId) {
+            alert("Please select a contact to verify safety fingerprint.");
+            return;
+          }
+          const contact = this.contacts[this.activeContactId];
+          document.getElementById('verifyContactName').textContent = contact.displayName;
+
+          const sharedFp = await ASLCryptoEngine.computeFingerprint(this.myPublicKeyJWK, contact.publicKeyJWK);
+          document.getElementById('sharedFingerprintDisplay').textContent = sharedFp;
+          document.getElementById('fingerprintModal').classList.add('open');
+        };
+
+        document.getElementById('closeFingerprintBtn').onclick = () => {
+          document.getElementById('fingerprintModal').classList.remove('open');
+        };
+      }
+
+      escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+      }
+
+      formatTime(isoStr) {
+        if (!isoStr) return '';
+        const d = new Date(isoStr);
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      window.app = new ASLMessengerApp();
+    });
+  </script>
+</body>
+</html>
