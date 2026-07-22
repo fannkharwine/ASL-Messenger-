@@ -1,340 +1,128 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="my">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>ASL Messenger - E2EE Private Chat</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
-  <!-- Socket.io Client -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASL Messenger</title>
   <style>
-    :root {
-      --bg-dark: #0a0a0a;
-      --bg-surface: #0f0f0f;
-      --bg-card: #1a1a1a;
-      --primary-red: #8b0000;
-      --primary-red-bright: #b71c1c;
-      --primary-red-glow: rgba(183, 28, 28, 0.35);
-      --gold-accent: #ffd700;
-      --gold-dim: #d4af37;
-      --text-main: #e5e7eb;
-      --text-muted: #9ca3af;
-      --border-subtle: #2a2a2a;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow: auto;
-    }
-
-    .app-container { display: flex; width: 100%; height: 100vh; }
-    .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-dark); }
-
-    /* Header */
-    .brand-header {
-      padding: 14px 20px;
-      background: var(--bg-surface);
-      border-bottom: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand-logo-group { display: flex; align-items: center; gap: 12px; }
-
-    .app-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--gold-dim);
-      box-shadow: 0 0 10px var(--primary-red-glow);
-    }
-
-    .brand-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-e2ee {
-      font-size: 9px;
-      font-family: var(--font-mono);
-      background: rgba(183, 28, 28, 0.2);
-      color: var(--gold-accent);
-      border: 1px solid rgba(212, 175, 55, 0.4);
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
-
-    /* Status Bar */
-    .connection-status {
-      padding: 8px 16px;
-      background: rgba(10, 10, 10, 0.9);
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #ff9800;
-      display: inline-block;
-      margin-right: 8px;
-    }
-
-    .status-dot.connected { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
-
-    /* Recipient Add Bar */
-    .recipient-bar {
-      padding: 10px 16px;
-      display: flex;
-      gap: 8px;
-      background: #141414;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .recipient-input {
-      flex: 1;
-      background: #1a1a1a;
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      padding: 8px 12px;
-      color: #fff;
-      font-size: 13px;
-      outline: none;
-    }
-
-    .add-btn {
-      background: var(--primary-red-bright);
-      color: #fff;
-      border: none;
-      padding: 0 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    /* Messages Stream */
-    .message-stream {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .msg-bubble {
-      max-width: 80%;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.4;
-      word-break: break-word;
-    }
-
-    .msg-bubble.sent {
-      align-self: flex-end;
-      background: var(--primary-red-bright);
-      color: #fff;
-      border-bottom-right-radius: 2px;
-    }
-
-    .msg-bubble.received {
-      align-self: flex-start;
-      background: #212121;
-      color: var(--text-main);
-      border: 1px solid var(--border-subtle);
-      border-bottom-left-radius: 2px;
-    }
-
-    /* Input Box */
-    .input-container {
-      padding: 12px 16px;
-      background: #0f0f0f;
-      border-top: 1px solid var(--border-subtle);
-      display: flex;
-      gap: 10px;
-    }
-
-    .chat-input {
-      flex: 1;
-      background: #1a1a1a;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #fff;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .send-btn {
-      padding: 10px 20px;
-      border-radius: 10px;
-      background: var(--primary-red-bright);
-      border: none;
-      color: #ffffff;
-      font-weight: bold;
-      cursor: pointer;
-    }
+    body { font-family: sans-serif; margin: 0; padding: 0; background: #f0f2f5; display: flex; flex-direction: column; height: 100vh; }
+    #auth-screen, #chat-screen { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; box-sizing: border-box; }
+    #chat-screen { display: none; height: 100vh; justify-content: space-between; padding: 10px; }
+    #messages { flex: 1; width: 100%; max-width: 500px; overflow-y: auto; background: white; border-radius: 8px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 10px; }
+    .msg { margin: 8px 0; padding: 8px 12px; border-radius: 12px; max-width: 75%; word-wrap: break-word; }
+    .sent { background: #0084ff; color: white; align-self: flex-end; margin-left: auto; }
+    .received { background: #e4e6eb; color: black; align-self: flex-start; }
+    #input-area { display: flex; width: 100%; max-width: 500px; gap: 8px; }
+    input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+    button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
+    button:hover { background: #006bce; }
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <div class="chat-main">
-      
-      <!-- App Header -->
-      <div class="brand-header">
-        <div class="brand-logo-group">
-          <img src="logo.png" alt="ASL Logo" class="app-logo" onerror="this.src='https://via.placeholder.com/42/8b0000/ffd700?text=ASL'">
-          <div>
-            <div class="brand-title">
-              ASL Messenger <span class="badge-e2ee">E2EE</span>
-            </div>
-            <div style="font-size: 11px; color: var(--gold-dim);">Zero-Knowledge Chat</div>
-          </div>
-        </div>
-      </div>
+  <!-- Login Screen -->
+  <div id="auth-screen">
+    <h2>ASL Messenger မှ ကြိုဆိုပါသည်</h2>
+    <button id="btn-google">Google ဖြင့် အကောင့်ဝင်ရန်</button>
+  </div>
 
-      <!-- Connection Status Bar -->
-      <div class="connection-status">
-        <span class="status-dot" id="statusDot"></span>
-        <span id="statusText">CONNECTING TO RELAY SERVER...</span>
-      </div>
-
-      <!-- Recipient Input Bar -->
-      <div class="recipient-bar">
-        <input type="text" class="recipient-input" id="recipientId" placeholder="Enter recipient User ID...">
-        <button class="add-btn" onclick="setRecipient()">Set</button>
-      </div>
-
-      <!-- Messages Stream -->
-      <div class="message-stream" id="messageStream">
-        <div style="text-align: center; color: var(--text-muted); font-size: 12px; margin-top: 10px;" id="myUserIdText">
-          🔒 Generating your Secure ID...
-        </div>
-      </div>
-
-      <!-- Message Input -->
-      <div class="input-container">
-        <input type="text" class="chat-input" id="messageInput" placeholder="Type a message...">
-        <button class="send-btn" onclick="sendMessage()">Send</button>
-      </div>
-
+  <!-- Chat Screen -->
+  <div id="chat-screen">
+    <div style="width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center;">
+      <span id="user-info"></span>
+      <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 12px;">Logout</button>
+    </div>
+    <div id="messages"></div>
+    <div id="input-area">
+      <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
+      <button id="btn-send">ပို့မည်</button>
     </div>
   </div>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
-    authDomain: "asl-messenger-85a1b.firebaseapp.com",
-    projectId: "asl-messenger-85a1b",
-    storageBucket: "asl-messenger-85a1b.firebasestorage.app",
-    messagingSenderId: "593020086365",
-    appId: "1:593020086365:web:666da320bf6917e4ef05b4",
-    measurementId: "G-2KMFNYYZTK"
-  };
+  <!-- Firebase Scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-  <script>
-    const SERVER_URL = "https://asl-messenger-server.vercel.app"; 
-    let socket;
-    let myUserId = "USER_" + Math.floor(1000 + Math.random() * 9000);
-    let targetUser = "";
+    // သင်၏ Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
+      authDomain: "asl-messenger-85a1b.firebaseapp.com",
+      projectId: "asl-messenger-85a1b",
+      storageBucket: "asl-messenger-85a1b.firebasestorage.app",
+      messagingSenderId: "593020086365",
+      appId: "1:593020086365:web:666da320bf6917e4ef05b4",
+      measurementId: "G-2KMFNYYZTK"
+    };
 
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    const messageStream = document.getElementById('messageStream');
-    const myUserIdText = document.getElementById('myUserIdText');
+    // Firebase Initialize
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    try {
-      socket = io(SERVER_URL, { transports: ['websocket', 'polling'] });
+    const authScreen = document.getElementById('auth-screen');
+    const chatScreen = document.getElementById('chat-screen');
+    const userInfo = document.getElementById('user-info');
+    const messagesDiv = document.getElementById('messages');
+    const msgInput = document.getElementById('msg-input');
 
-      socket.on('connect', () => {
-        statusDot.classList.add('connected');
-        statusText.innerText = `CONNECTED | YOUR ID: ${myUserId}`;
-        statusText.style.color = '#22c55e';
-        myUserIdText.innerText = `🔑 Your User ID: ${myUserId} (Share this with your friend)`;
-        socket.emit('register_user', myUserId);
-      });
+    // Google Login
+    document.getElementById('btn-google').onclick = () => {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider).catch(err => alert(err.message));
+    };
 
-      socket.on('disconnect', () => {
-        statusDot.classList.remove('connected');
-        statusText.innerText = 'DISCONNECTED - RECONNECTING...';
-        statusText.style.color = '#ef4444';
-      });
+    // Logout
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-      socket.on('receive_message', (data) => {
-        appendMessage(data.text, 'received');
-      });
-    } catch(e) {
-      statusText.innerText = 'SERVER CONNECTION ERROR';
-    }
-
-    function setRecipient() {
-      const val = document.getElementById('recipientId').value.trim();
-      if(val) {
-        targetUser = val;
-        alert(`Target set to ${targetUser}`);
+    // Auth State Check (Login ဝင်ထားခြင်း ရှိ/မရှိ စစ်ဆေးခြင်း)
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authScreen.style.display = 'none';
+        chatScreen.style.display = 'flex';
+        userInfo.innerText = `👤 ${user.displayName || user.email}`;
+        loadMessages();
+      } else {
+        authScreen.style.display = 'flex';
+        chatScreen.style.display = 'none';
       }
+    });
+
+    // မက်ဆေ့ချ် ပို့ရန်
+    document.getElementById('btn-send').onclick = sendMessage;
+    msgInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    async function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text || !auth.currentUser) return;
+
+      msgInput.value = '';
+      await addDoc(collection(db, "chats"), {
+        text: text,
+        uid: auth.currentUser.uid,
+        name: auth.currentUser.displayName || "User",
+        createdAt: serverTimestamp()
+      });
     }
 
-    function sendMessage() {
-      const input = document.getElementById('messageInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      appendMessage(text, 'sent');
-      
-      if(socket && socket.connected) {
-        socket.emit('send_message', {
-          to: targetUser,
-          from: myUserId,
-          text: text
+    // Realtime မက်ဆေ့ချ်များ ဖတ်ရန်
+    function loadMessages() {
+      const q = query(collection(db, "chats"), orderBy("createdAt", "asc"));
+      onSnapshot(q, (snapshot) => {
+        messagesDiv.innerHTML = '';
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          const isMe = data.uid === auth.currentUser.uid;
+          const msgEl = document.createElement('div');
+          msgEl.className = `msg ${isMe ? 'sent' : 'received'}`;
+          msgEl.innerText = `${isMe ? '' : data.name + ': '}${data.text}`;
+          messagesDiv.appendChild(msgEl);
         });
-      }
-
-      input.value = '';
-    }
-
-    function appendMessage(text, type) {
-      const msgDiv = document.createElement('div');
-      msgDiv.className = `msg-bubble ${type}`;
-      msgDiv.innerText = text;
-      messageStream.appendChild(msgDiv);
-      messageStream.scrollTop = messageStream.scrollHeight;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
     }
   </script>
 </body>
 </html>
+
