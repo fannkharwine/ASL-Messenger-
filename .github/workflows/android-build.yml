@@ -18,26 +18,12 @@ jobs:
       with:
         node-version: 18
 
-    - name: Setup Java JDK
-      uses: actions/setup-java@v4
-      with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Install Bubblewrap CLI
-      run: npm install -g @bubblewrap/cli
-
-    - name: Initialize Bubblewrap Project
+    - name: Build Android APK with PWABuilder
       run: |
-        npx @bubblewrap/cli init --manifest=https://fannkharwine.github.io/ASL-Messenger-/manifest.json --directory=android-project
-
-    - name: Build Android APK
-      run: |
-        cd android-project
-        npx @bubblewrap/cli build --skipSigning
+        npx @pwabuilder/cli https://fannkharwine.github.io/ASL-Messenger-/manifest.json -o ./android-build -p android
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ASL-Messenger-APK
-        path: ./android-project/*.apk
+        path: ./android-build/**/*.apk
