@@ -20,7 +20,7 @@ jobs:
 
     - name: Build Android APK with PWABuilder
       run: |
-        npx @pwabuilder/cli https://fannkharwine.github.io/ASL-Messenger-/manifest.json -o ./android-build -p android
+        npx @pwabuilder/cli --manifest https://fannkharwine.github.io/ASL-Messenger-/manifest.json --platforms android --output ./android-build
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
