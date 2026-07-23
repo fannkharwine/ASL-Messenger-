@@ -1,0 +1,16 @@
+{
+  "short_name": "ASL Messenger",
+  "name": "ASL Messenger Mobile App",
+  "icons": [
+    {
+      "src": "https://picsum.photos/id/64/192",
+      "type": "image/png",
+      "sizes": "192x192"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#121212",
+  "theme_color": "#1A73E8",
+  "display": "standalone"
+}
+
