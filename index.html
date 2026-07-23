@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASL Messenger</title>
+  <title>ASL Messenger - Viber Ultimate Edition</title>
   
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,7 +16,7 @@
 
   <style>
     :root {
-      --primary-color: #7360F2; /* Viber/Messenger Modern Purple-Blue Style */
+      --primary-color: #7360F2;
       --primary-hover: #5b48d9;
       --bg-color: #F0F2F5;
       --card-bg: #FFFFFF;
@@ -28,397 +28,172 @@
       --font-family: 'Inter', sans-serif;
     }
 
+    body.dark-theme {
+      --bg-color: #121212;
+      --card-bg: #1E1E1E;
+      --text-main: #E4E6EB;
+      --text-muted: #B0B3B8;
+      --border-color: #2F3031;
+      --sent-msg: #3B2E7E;
+      --received-msg: #242526;
+    }
+
     body.font-serif { --font-family: 'Merriweather', serif; }
     body.font-mono { --font-family: 'Roboto Mono', monospace; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-family);
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
 
-    body {
-      background-color: #121212;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
+    body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
     .app-container {
-      width: 100%;
-      max-width: 480px;
-      height: 100vh;
-      max-height: 900px;
-      background: var(--bg-color);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-      overflow: hidden;
+      width: 100%; max-width: 480px; height: 100vh; max-height: 900px;
+      background: var(--bg-color); display: flex; flex-direction: column;
+      position: relative; box-shadow: 0 12px 32px rgba(0,0,0,0.5); overflow: hidden;
     }
 
-    @media (min-width: 481px) {
-      .app-container {
-        height: 92vh;
-        border-radius: 20px;
-      }
-    }
+    @media (min-width: 481px) { .app-container { height: 92vh; border-radius: 20px; } }
 
-    .screen {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      background: var(--bg-color);
-      overflow-y: auto;
-    }
-
+    .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-color); overflow-y: auto; }
     .screen.active { display: flex; }
 
     header {
-      background: var(--card-bg);
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: var(--card-bg); padding: 14px 16px; display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 10; color: var(--text-main);
     }
-
-    header h2 {
-      font-size: 20px;
-      color: var(--primary-color);
-      font-weight: 700;
-    }
+    header h2 { font-size: 20px; color: var(--primary-color); font-weight: 700; }
 
     .icon-btn {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      font-size: 18px;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 50%;
-      transition: background 0.2s;
+      background: none; border: none; color: var(--primary-color); font-size: 18px;
+      cursor: pointer; padding: 6px; border-radius: 50%; transition: background 0.2s;
     }
-
     .icon-btn:hover { background: rgba(115, 96, 242, 0.1); }
 
     .btn {
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s;
+      background: var(--primary-color); color: #fff; border: none; padding: 12px 18px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s;
     }
-
     .btn:hover { background: var(--primary-hover); }
-
-    .btn-google {
-      background: #4285F4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .btn-secondary { background: #E4E6EB; color: var(--text-main); }
+    .btn-google { background: #4285F4; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-secondary { background: var(--border-color); color: var(--text-main); }
     .btn-danger { background: #d93025; }
 
     .input-field {
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: #fff;
-      font-size: 14px;
-      outline: none;
+      width: 100%; padding: 12px 14px; margin-bottom: 12px;
+      border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-main); font-size: 14px; outline: none;
     }
-
     .input-field:focus { border-color: var(--primary-color); }
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
+    label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
 
-    .tab-content {
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 60px;
-    }
+    .tab-content { flex: 1; overflow-y: auto; padding-bottom: 60px; }
 
     nav.tab-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      background: var(--card-bg);
-      display: flex;
-      border-top: 1px solid var(--border-color);
-      z-index: 20;
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 60px;
+      background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); z-index: 20;
     }
-
     .tab-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 11px;
-      cursor: pointer;
-      gap: 3px;
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 11px; cursor: pointer; gap: 3px;
     }
-
     .tab-item i { font-size: 18px; }
-
-    .tab-item.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
+    .tab-item.active { color: var(--primary-color); font-weight: 600; }
 
     .list-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-      position: relative;
+      display: flex; align-items: center; padding: 12px 16px; background: var(--card-bg);
+      border-bottom: 1px solid var(--border-color); cursor: pointer; position: relative; color: var(--text-main);
     }
-
-    .avatar-wrapper {
-      position: relative;
-      margin-right: 12px;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #ccc;
-    }
-
+    .avatar-wrapper { position: relative; margin-right: 12px; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #ccc; }
     .online-indicator {
-      width: 12px;
-      height: 12px;
-      background: #ccc;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
+      width: 12px; height: 12px; background: #ccc; border: 2px solid var(--card-bg);
+      border-radius: 50%; position: absolute; bottom: 2px; right: 2px;
     }
-    
     .online-indicator.online { background: #34a853; }
 
     .item-details { flex: 1; min-width: 0; }
+    .item-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .item-title { font-weight: 600; color: var(--text-main); font-size: 15px; }
+    .item-sub { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .item-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    .item-title {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 15px;
-    }
-
-    .item-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Active Chat Screen */
+    /* Active Chat View */
     .chat-view {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg-color);
-      z-index: 30;
-      display: none;
-      flex-direction: column;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-color); z-index: 30; display: none; flex-direction: column;
     }
-
     .chat-header {
-      background: var(--card-bg);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      gap: 10px;
+      background: var(--card-bg); padding: 10px 16px; display: flex;
+      align-items: center; border-bottom: 1px solid var(--border-color); gap: 10px; color: var(--text-main);
     }
-
-    .chat-messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
     .message-bubble {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.4;
-      position: relative;
-      word-wrap: break-word;
+      max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px;
+      line-height: 1.4; position: relative; word-wrap: break-word; color: var(--text-main);
     }
-
-    .message-bubble.sent {
-      align-self: flex-end;
-      background: var(--sent-msg);
-      border-bottom-right-radius: 2px;
-    }
-
-    .message-bubble.received {
-      align-self: flex-start;
-      background: var(--received-msg);
-      border-bottom-left-radius: 2px;
-    }
-
-    .msg-status {
-      font-size: 10px;
-      margin-left: 5px;
-      color: #7360F2;
-    }
+    .message-bubble.sent { align-self: flex-end; background: var(--sent-msg); border-bottom-right-radius: 2px; }
+    .message-bubble.received { align-self: flex-start; background: var(--received-msg); border-bottom-left-radius: 2px; }
+    .msg-status { font-size: 10px; margin-left: 5px; color: var(--primary-color); }
 
     .chat-input-bar {
-      background: var(--card-bg);
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-top: 1px solid var(--border-color);
+      background: var(--card-bg); padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border-color);
     }
+    .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); }
 
-    .chat-input-bar input {
-      flex: 1;
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 10px 14px;
-      outline: none;
+    /* Sticker & Emoji Picker Drawer */
+    .sticker-drawer {
+      background: var(--card-bg); border-top: 1px solid var(--border-color);
+      display: none; padding: 10px; gap: 10px; overflow-x: auto;
     }
+    .sticker-item { width: 50px; height: 50px; cursor: pointer; object-fit: contain; }
 
-    /* Calling Overlay Screen */
+    /* WebRTC Real-Time Call Overlay */
     .call-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #18191a;
-      color: white;
-      z-index: 100;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 60px 20px;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #111; color: white; z-index: 100; display: none;
+      flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px;
     }
-
-    .call-avatar {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      border: 4px solid var(--primary-color);
-      object-fit: cover;
-      margin-top: 20px;
-    }
-
-    .call-actions {
-      display: flex;
-      gap: 20px;
-    }
-
-    .call-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      border: none;
-      cursor: pointer;
-      color: white;
-    }
-
+    .video-container { position: relative; width: 100%; height: 60%; display: flex; justify-content: center; align-items: center; }
+    video#remoteVideo { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; background: #222; }
+    video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid #fff; }
+    .call-avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin-top: 20px; }
+    .call-actions { display: flex; gap: 20px; }
+    .call-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: none; cursor: pointer; color: white; }
     .call-accept-btn { background: #2ab738; }
     .call-end-btn { background: #ea4335; }
 
-    .modal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 50;
-      display: none;
-      justify-content: center;
-      align-items: center;
+    /* Camera ASL Screen */
+    .asl-screen {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #000; color: white; z-index: 40; display: none; flex-direction: column;
     }
 
-    .modal-content {
-      background: var(--card-bg);
-      width: 90%;
-      max-width: 380px;
-      border-radius: 12px;
-      padding: 20px;
-    }
-
-    .section-title {
-      padding: 10px 16px 4px;
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
+    .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 50; display: none; justify-content: center; align-items: center; }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; color: var(--text-main); }
+    .section-title { padding: 10px 16px 4px; font-size: 12px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
     .hidden { display: none !important; }
     .media-preview { max-width: 100%; border-radius: 8px; margin-top: 4px; }
+    
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary-color); }
+    input:checked + .slider:before { transform: translateX(20px); }
   </style>
 </head>
-<body>
+<body onclick="app.enableAudioContext()">
 
 <div class="app-container">
 
   <!-- AUTH SCREEN -->
   <div id="authScreen" class="screen active">
     <div style="padding: 24px; text-align: center; margin: auto 0;">
-      <i class="fa-solid fa-comments" style="font-size: 50px; color: var(--primary-color); margin-bottom: 12px;"></i>
-      <h1 style="margin-bottom: 6px;">ASL Messenger</h1>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Viber Style Real-time Chat</p>
-
+      <i class="fa-solid fa-hands-asl-interpreting" style="font-size: 60px; color: var(--primary-color); margin-bottom: 16px;"></i>
+      <h1 style="margin-bottom: 6px; color: var(--text-main);">ASL Messenger</h1>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Viber Style Ultimate P2P Platform</p>
       <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
-        <i class="fa-brands fa-google"></i> Login with Google
+        <i class="fa-brands fa-google"></i> Sign in with Google
       </button>
     </div>
   </div>
@@ -440,18 +215,29 @@
 
     <!-- CALLS TAB -->
     <div id="callsTab" class="tab-content hidden">
-      <div class="section-title">Recent Calls</div>
-      <div id="callsList">
-        <div style="padding:20px; text-align:center; color:gray; font-size:13px;">No recent call logs</div>
+      <div class="section-title">Call Logs</div>
+      <div id="callsList"></div>
+    </div>
+
+    <!-- ASL TRANSLATOR TAB (PREVIOUS HTML FEATURE RESTORED) -->
+    <div id="aslTab" class="tab-content hidden">
+      <div style="padding: 16px; text-align: center;">
+        <i class="fa-solid fa-hand" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"></i>
+        <h3>ASL Real-Time Translator</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Translate Sign Language via Live Camera Camera Stream</p>
+        <button class="btn" onclick="app.openAslCamera()"><i class="fa-solid fa-camera"></i> Launch ASL Camera</button>
       </div>
+
+      <div class="section-title">Saved Translation History</div>
+      <div id="aslHistoryList" style="padding: 0 16px;"></div>
     </div>
 
     <!-- PEOPLE TAB -->
     <div id="peopleTab" class="tab-content hidden">
-      <div class="section-title" data-i18n="friendRequests">Friend Requests</div>
+      <div class="section-title">Friend Requests</div>
       <div id="requestsList"></div>
       
-      <div class="section-title" data-i18n="myFriends">My Friends</div>
+      <div class="section-title">My Friends</div>
       <div id="friendsList"></div>
     </div>
 
@@ -463,15 +249,15 @@
           <div style="position:absolute; bottom:0; right:0; background:var(--primary-color); color:white; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px;">+</div>
         </div>
         <div class="item-details">
-          <div class="item-title" data-i18n="myStatus">My Status</div>
-          <div class="item-sub" data-i18n="addStatus">Tap to update status</div>
+          <div class="item-title">My Status</div>
+          <div class="item-sub">Tap to update status</div>
         </div>
       </div>
-      <div class="section-title" data-i18n="recentUpdates">Recent Updates</div>
+      <div class="section-title">Recent Updates</div>
       <div id="statusList"></div>
     </div>
 
-    <!-- SETTINGS TAB (PROFILE & PROFILE PHOTO CHANGE) -->
+    <!-- SETTINGS TAB (SETTINGS, PRIVACY, SECURITY, 2-STEP, DARK THEME) -->
     <div id="settingsTab" class="tab-content hidden">
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
@@ -482,30 +268,61 @@
             </div>
             <input type="file" accept="image/*" style="display:none;" onchange="app.uploadProfilePhoto(event)">
           </label>
-          <h3 id="settingsName" style="margin-top:6px;">User Name</h3>
+          <h3 id="settingsName" style="margin-top:6px; color:var(--text-main);">User Name</h3>
           <p id="settingsPersonalId" style="font-size:11px; color:var(--primary-color); word-break:break-all; user-select:all; margin-top:2px;">UID: -</p>
         </div>
 
-        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-          <h4 style="margin-bottom:8px;" data-i18n="profileData">Profile Settings</h4>
-          <label data-i18n="about">Bio / Status Message</label>
-          <input type="text" id="setAbout" class="input-field" placeholder="Write something about yourself...">
-          
-          <label data-i18n="email">Email Address</label>
-          <input type="text" id="setEmail" class="input-field" readonly>
-
-          <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()" data-i18n="saveProfile">Save Profile</button>
+        <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <h4 style="margin-bottom:8px; color:var(--text-main);">Profile & Bio</h4>
+          <label>Display Name</label>
+          <input type="text" id="setName" class="input-field">
+          <label>About / Bio</label>
+          <input type="text" id="setAbout" class="input-field">
+          <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()">Save Profile</button>
         </div>
 
-        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-          <h4 style="margin-bottom:8px;" data-i18n="preferences">Preferences</h4>
-          <label data-i18n="language">Language</label>
-          <select id="langSelect" class="input-field" onchange="app.changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="my">မြန်မာ (Myanmar)</option>
-          </select>
+        <!-- PRIVACY & SECURITY SECTION -->
+        <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <h4 style="margin-bottom:8px; color:var(--text-main);">Privacy & Security</h4>
+          
+          <div class="setting-row">
+            <span style="font-size:13px; color:var(--text-main);">Read Receipts (Seen)</span>
+            <label class="switch">
+              <input type="checkbox" id="readReceiptsToggle" checked onchange="app.togglePrivacy('readReceipts', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
 
-          <label data-i18n="fontStyle">Font Style</label>
+          <div class="setting-row">
+            <span style="font-size:13px; color:var(--text-main);">Share Last Seen / Online</span>
+            <label class="switch">
+              <input type="checkbox" id="lastSeenToggle" checked onchange="app.togglePrivacy('showLastSeen', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row" onclick="app.setup2StepVerification()" style="cursor:pointer;">
+            <div>
+              <div style="font-size:13px; font-weight:600; color:var(--text-main);">2-Step Verification</div>
+              <div style="font-size:11px; color:var(--text-muted);" id="twoStepStatus">PIN Security: Disabled</div>
+            </div>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+          </div>
+        </div>
+
+        <!-- PREFERENCES & APPEARANCE -->
+        <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <h4 style="margin-bottom:8px; color:var(--text-main);">Appearance & Preferences</h4>
+          
+          <div class="setting-row">
+            <span style="font-size:13px; color:var(--text-main);">Dark Mode</span>
+            <label class="switch">
+              <input type="checkbox" id="darkModeToggle" onchange="app.toggleDarkMode(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <label style="margin-top:8px;">Font Style</label>
           <select id="fontSelect" class="input-field" onchange="app.changeFont(this.value)">
             <option value="default">Default (Inter)</option>
             <option value="serif">Serif</option>
@@ -513,36 +330,22 @@
           </select>
         </div>
 
-        <button class="btn btn-danger" onclick="authApp.logout()" data-i18n="logout">Logout</button>
+        <button class="btn btn-danger" onclick="authApp.logout()">Logout</button>
       </div>
     </div>
 
     <!-- TAB BAR -->
     <nav class="tab-bar">
-      <div class="tab-item active" onclick="app.switchTab('chats')">
-        <i class="fa-solid fa-comment-dots"></i>
-        <span data-i18n="chats">Chats</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('calls')">
-        <i class="fa-solid fa-phone"></i>
-        <span data-i18n="calls">Calls</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('people')">
-        <i class="fa-solid fa-user-group"></i>
-        <span data-i18n="people">People</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('status')">
-        <i class="fa-solid fa-circle-notch"></i>
-        <span data-i18n="status">Status</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('settings')">
-        <i class="fa-solid fa-gear"></i>
-        <span data-i18n="settings">Settings</span>
-      </div>
+      <div class="tab-item active" onclick="app.switchTab('chats')"><i class="fa-solid fa-comment-dots"></i><span>Chats</span></div>
+      <div class="tab-item" onclick="app.switchTab('calls')"><i class="fa-solid fa-phone"></i><span>Calls</span></div>
+      <div class="tab-item" onclick="app.switchTab('asl')"><i class="fa-solid fa-hands"></i><span>ASL AI</span></div>
+      <div class="tab-item" onclick="app.switchTab('people')"><i class="fa-solid fa-user-group"></i><span>People</span></div>
+      <div class="tab-item" onclick="app.switchTab('status')"><i class="fa-solid fa-circle-notch"></i><span>Status</span></div>
+      <div class="tab-item" onclick="app.switchTab('settings')"><i class="fa-solid fa-gear"></i><span>Settings</span></div>
     </nav>
   </div>
 
-  <!-- ACTIVE CHAT VIEW -->
+  <!-- CHAT VIEW -->
   <div id="chatView" class="chat-view">
     <div class="chat-header">
       <button class="icon-btn" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
@@ -557,7 +360,16 @@
 
     <div id="chatMessages" class="chat-messages"></div>
 
+    <!-- VIBER STICKERS & EMOJIS DRAWER -->
+    <div id="stickerDrawer" class="sticker-drawer">
+      <img src="https://cdn-icons-png.flaticon.com/512/742/742751.png" class="sticker-item" onclick="app.sendSticker('😀')">
+      <img src="https://cdn-icons-png.flaticon.com/512/742/742752.png" class="sticker-item" onclick="app.sendSticker('❤️')">
+      <img src="https://cdn-icons-png.flaticon.com/512/742/742760.png" class="sticker-item" onclick="app.sendSticker('👍')">
+      <img src="https://cdn-icons-png.flaticon.com/512/742/742818.png" class="sticker-item" onclick="app.sendSticker('🔥')">
+    </div>
+
     <div class="chat-input-bar">
+      <button class="icon-btn" onclick="app.toggleStickers()"><i class="fa-regular fa-face-smile"></i></button>
       <label class="icon-btn" style="cursor:pointer;">
         <i class="fa-solid fa-paperclip"></i>
         <input type="file" accept="image/*" style="display:none;" onchange="app.handleFileUpload(event)">
@@ -567,16 +379,34 @@
     </div>
   </div>
 
-  <!-- REAL-TIME CALL OVERLAY (VOICE / VIDEO WITH RINGTONE) -->
+  <!-- CAMERA ASL OVERLAY (PREVIOUS HTML FEATURE RESTORED) -->
+  <div id="aslScreen" class="asl-screen">
+    <div style="padding:14px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.8);">
+      <h3>Sign Camera AI</h3>
+      <button class="icon-btn" style="color:white;" onclick="app.closeAslCamera()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
+      <video id="aslVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+      <div style="position:absolute; bottom:20px; background:rgba(0,0,0,0.7); padding:10px 20px; border-radius:20px; font-weight:bold;" id="aslDetectedText">
+        Detecting Signs...
+      </div>
+    </div>
+  </div>
+
+  <!-- WEBRTC REAL-TIME CALL OVERLAY -->
   <div id="callOverlay" class="call-overlay">
-    <div style="text-align:center;">
+    <div style="text-align:center; z-index:2;">
       <h3 id="callTargetName">User</h3>
       <p id="callStatusText" style="color:#aaa; font-size:14px; margin-top:4px;">Incoming Call...</p>
     </div>
 
-    <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
+    <div class="video-container" id="videoContainer">
+      <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
+      <video id="remoteVideo" autoplay playsinline class="hidden"></video>
+      <video id="localVideo" autoplay playsinline muted class="hidden"></video>
+    </div>
 
-    <div class="call-actions">
+    <div class="call-actions" style="z-index:2;">
       <button id="acceptCallBtn" class="call-btn call-accept-btn hidden" onclick="app.acceptCall()"><i class="fa-solid fa-phone"></i></button>
       <button class="call-btn call-end-btn" onclick="app.endCall()"><i class="fa-solid fa-phone-slash"></i></button>
     </div>
@@ -589,7 +419,7 @@
       <input type="text" id="friendSearchQuery" class="input-field" placeholder="Paste Target User UID">
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')">Cancel</button>
-        <button class="btn" onclick="app.sendFriendRequest()">Send</button>
+        <button class="btn" onclick="app.sendFriendRequest()">Send Request</button>
       </div>
     </div>
   </div>
@@ -605,9 +435,19 @@
     </div>
   </div>
 
+  <!-- 2-STEP PIN MODAL -->
+  <div id="twoStepModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom:6px;">Security PIN Required</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Enter your 2-Step PIN to unlock application:</p>
+      <input type="password" id="pinInput" class="input-field" maxlength="6" placeholder="******">
+      <button class="btn" onclick="app.verify2StepPin()">Unlock App</button>
+    </div>
+  </div>
+
 </div>
 
-<!-- Real Audio Sound Effects for Incoming Call & Message -->
+<!-- Audio Ringtones -->
 <audio id="ringtoneAudio" loop src="https://actions.google.com/sounds/v1/ringtones/incoming_call.ogg"></audio>
 <audio id="msgAudio" src="https://actions.google.com/sounds/v1/messages/notification_high_intensity.ogg"></audio>
 
@@ -627,14 +467,16 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  const translations = {
-    en: { chats: "Chats", calls: "Calls", people: "People", status: "Status", settings: "Settings", friendRequests: "Friend Requests", myFriends: "My Friends", myStatus: "My Status", addStatus: "Tap to update status", recentUpdates: "Recent Updates", profileData: "Profile Settings", about: "Bio / Status Message", email: "Email Address", saveProfile: "Save Profile", preferences: "Preferences", language: "Language", fontStyle: "Font Style", logout: "Logout" },
-    my: { chats: "စကားပြောများ", calls: "ဖုန်းခေါ်ဆိုမှုများ", people: "မိတ်ဆွေများ", status: "အခြေအနေ", settings: "ဆက်တင်များ", friendRequests: "မိတ်ဆွေတောင်းဆိုမှုများ", myFriends: "ကျနော့်မိတ်ဆွေများ", myStatus: "ကျွန်ုပ်၏အခြေအနေ", addStatus: "အခြေအနေအသစ်တင်ရန်နှိပ်ပါ", recentUpdates: "လတ်တလောတင်ဆက်မှုများ", profileData: "ကိုယ်ရေးအချက်အလက်", about: "အကြောင်းအရာ", email: "အီးမေးလ်", saveProfile: "သိမ်းဆည်းပါ", preferences: "ရွေးချယ်မှုများ", language: "ဘာသာစကား", fontStyle: "စာလုံးဒီဇိုင်း", logout: "ထွက်မည်" }
-  };
+  // WebRTC Global Variables
+  let peerConnection = null;
+  let localStream = null;
+  let aslCameraStream = null;
+  let callDocRef = null;
+  const rtcConfig = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
 
   let currentUser = null;
   let activeChatUid = null;
-  let activeCallData = null;
+  let userPrivacySettings = { readReceipts: true, showLastSeen: true, pin: "" };
 
   class AuthController {
     constructor() {
@@ -643,9 +485,17 @@
           currentUser = user;
           this.saveUserProfile(user);
           this.setUserOnlineStatus(true);
-          document.getElementById('authScreen').classList.remove('active');
-          document.getElementById('mainDashboard').classList.add('active');
-          app.initDashboard();
+          
+          db.collection('users').doc(user.uid).get().then(doc => {
+            const u = doc.data();
+            if (u && u.pin) {
+              document.getElementById('twoStepModal').style.display = 'flex';
+            } else {
+              document.getElementById('authScreen').classList.remove('active');
+              document.getElementById('mainDashboard').classList.add('active');
+              app.initDashboard();
+            }
+          });
         } else {
           document.getElementById('authScreen').classList.add('active');
           document.getElementById('mainDashboard').classList.remove('active');
@@ -683,17 +533,40 @@
   }
 
   class AppController {
+    enableAudioContext() {
+      document.getElementById('ringtoneAudio').play().then(() => {
+        document.getElementById('ringtoneAudio').pause();
+      }).catch(() => {});
+    }
+
+    verify2StepPin() {
+      const enteredPin = document.getElementById('pinInput').value;
+      db.collection('users').doc(currentUser.uid).get().then(doc => {
+        if (doc.data().pin === enteredPin) {
+          document.getElementById('twoStepModal').style.display = 'none';
+          document.getElementById('authScreen').classList.remove('active');
+          document.getElementById('mainDashboard').classList.add('active');
+          app.initDashboard();
+        } else {
+          alert('Incorrect PIN Code!');
+        }
+      });
+    }
+
     initDashboard() {
       db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
         const u = doc.data();
         if (u) {
-          document.getElementById('settingsName').textContent = u.name;
+          document.getElementById('setName').value = u.name || '';
+          document.getElementById('settingsName').textContent = u.name || '';
           document.getElementById('settingsPersonalId').textContent = "UID: " + u.uid;
-          document.getElementById('setEmail').value = u.email;
           document.getElementById('setAbout').value = u.about || '';
           if (u.photo) {
             document.getElementById('settingsAvatar').src = u.photo;
             document.getElementById('statusMyAvatar').src = u.photo;
+          }
+          if (u.pin) {
+            document.getElementById('twoStepStatus').textContent = "PIN Security: Enabled";
           }
         }
       });
@@ -701,6 +574,7 @@
       this.loadFriendsAndChats();
       this.loadFriendRequests();
       this.loadStatusUpdates();
+      this.loadCallLogs();
       this.listenForIncomingCalls();
     }
 
@@ -712,19 +586,28 @@
       event.currentTarget.classList.add('active');
     }
 
-    changeLanguage(lang) {
-      const dict = translations[lang];
-      if (!dict) return;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) el.textContent = dict[key];
-      });
+    togglePrivacy(field, val) {
+      userPrivacySettings[field] = val;
+      db.collection('users').doc(currentUser.uid).update({ [field]: val });
     }
 
-    changeFont(fontKey) {
-      document.body.className = '';
-      if (fontKey === 'serif') document.body.classList.add('font-serif');
-      if (fontKey === 'mono') document.body.classList.add('font-mono');
+    toggleDarkMode(isDark) {
+      if (isDark) document.body.classList.add('dark-theme');
+      else document.body.classList.remove('dark-theme');
+    }
+
+    changeFont(fontStyle) {
+      document.body.classList.remove('font-serif', 'font-mono');
+      if (fontStyle === 'serif') document.body.classList.add('font-serif');
+      if (fontStyle === 'mono') document.body.classList.add('font-mono');
+    }
+
+    setup2StepVerification() {
+      const pin = prompt("Set 6-Digit Security PIN Code (Leave blank to disable):");
+      if (pin !== null) {
+        db.collection('users').doc(currentUser.uid).update({ pin: pin.trim() });
+        alert(pin ? "2-Step Verification Enabled!" : "2-Step Verification Disabled!");
+      }
     }
 
     uploadProfilePhoto(e) {
@@ -732,8 +615,7 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (evt) => {
-          const base64Img = evt.target.result;
-          db.collection('users').doc(currentUser.uid).update({ photo: base64Img });
+          db.collection('users').doc(currentUser.uid).update({ photo: evt.target.result });
           alert("Profile photo updated!");
         };
         reader.readAsDataURL(file);
@@ -741,8 +623,9 @@
     }
 
     saveProfile() {
-      const aboutText = document.getElementById('setAbout').value;
-      db.collection('users').doc(currentUser.uid).update({ about: aboutText });
+      const name = document.getElementById('setName').value.trim();
+      const about = document.getElementById('setAbout').value.trim();
+      db.collection('users').doc(currentUser.uid).update({ name: name, about: about });
       alert("Profile Saved!");
     }
 
@@ -768,9 +651,7 @@
             const req = doc.data();
             list.innerHTML += `
               <div class="list-item">
-                <div class="item-details">
-                  <div class="item-title">${req.fromName}</div>
-                </div>
+                <div class="item-details"><div class="item-title">${req.fromName}</div></div>
                 <button class="btn" style="width:auto; padding:6px 12px;" onclick="app.acceptFriend('${req.fromUid}')">Accept</button>
               </div>`;
           });
@@ -805,9 +686,7 @@
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
                   </div>
                   <div class="item-details">
-                    <div class="item-top">
-                      <span class="item-title">${u.name}</span>
-                    </div>
+                    <div class="item-top"><span class="item-title">${u.name}</span></div>
                     <div class="item-sub">${u.isOnline ? 'Online' : 'Offline'}</div>
                   </div>
                 </div>`;
@@ -825,27 +704,21 @@
       if (photo) document.getElementById('activeChatAvatar').src = photo;
       document.getElementById('chatView').style.display = 'flex';
 
-      // Active status tracking inside chat view
       db.collection('users').doc(uid).onSnapshot(doc => {
         const u = doc.data();
         if (u) {
-          document.getElementById('activeChatSub').textContent = u.isOnline ? 'Online' : 'Offline';
+          document.getElementById('activeChatSub').textContent = (u.showLastSeen !== false && u.isOnline) ? 'Online' : 'Offline';
         }
       });
 
       this.listenForMessages();
     }
 
-    closeChat() {
-      document.getElementById('chatView').style.display = 'none';
-      activeChatUid = null;
-    }
+    closeChat() { document.getElementById('chatView').style.display = 'none'; activeChatUid = null; }
 
     getChatRoomId() {
       if (activeChatUid.startsWith("group_")) return activeChatUid;
-      return currentUser.uid < activeChatUid 
-        ? `${currentUser.uid}_${activeChatUid}` 
-        : `${activeChatUid}_${currentUser.uid}`;
+      return currentUser.uid < activeChatUid ? `${currentUser.uid}_${activeChatUid}` : `${activeChatUid}_${currentUser.uid}`;
     }
 
     sendMessage() {
@@ -864,6 +737,16 @@
       input.value = '';
     }
 
+    toggleStickers() {
+      const el = document.getElementById('stickerDrawer');
+      el.style.display = el.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    sendSticker(emoji) {
+      document.getElementById('msgInput').value += emoji;
+      this.toggleStickers();
+    }
+
     handleFileUpload(e) {
       const file = e.target.files[0];
       if (file && activeChatUid) {
@@ -872,7 +755,7 @@
           const roomId = this.getChatRoomId();
           db.collection('chats').doc(roomId).collection('messages').add({
             sender: currentUser.uid,
-            text: `[Attachment Image]`,
+            text: `[Image Attachment]`,
             media: event.target.result,
             seen: false,
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -884,8 +767,7 @@
 
     listenForMessages() {
       const roomId = this.getChatRoomId();
-      db.collection('chats').doc(roomId).collection('messages')
-        .orderBy('timestamp', 'asc')
+      db.collection('chats').doc(roomId).collection('messages').orderBy('timestamp', 'asc')
         .onSnapshot(snapshot => {
           const container = document.getElementById('chatMessages');
           container.innerHTML = '';
@@ -893,7 +775,6 @@
             const msg = doc.data();
             const isMe = msg.sender === currentUser.uid;
 
-            // Mark message as seen if received
             if (!isMe && !msg.seen) {
               db.collection('chats').doc(roomId).collection('messages').doc(doc.id).update({ seen: true });
               document.getElementById('msgAudio').play().catch(()=>{});
@@ -912,76 +793,209 @@
         });
     }
 
-    // REAL-TIME VOICE / VIDEO CALL SYSTEM
-    startCall(type) {
+    // CAMERA ASL FEATURE (RESTORED FROM PREVIOUS CODE)
+    async openAslCamera() {
+      document.getElementById('aslScreen').style.display = 'flex';
+      try {
+        aslCameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+        document.getElementById('aslVideo').srcObject = aslCameraStream;
+      } catch (err) {
+        alert("Camera Access Error: " + err.message);
+      }
+    }
+
+    closeAslCamera() {
+      document.getElementById('aslScreen').style.display = 'none';
+      if (aslCameraStream) {
+        aslCameraStream.getTracks().forEach(track => track.stop());
+        aslCameraStream = null;
+      }
+    }
+
+    // WEBRTC REAL-TIME CALLING LOGIC
+    async startCall(type) {
       if (!activeChatUid) return;
-      const callId = currentUser.uid + "_" + Date.now();
+      const isVideo = type === 'Video Call';
       
-      activeCallData = {
-        callId: callId,
-        callerUid: currentUser.uid,
+      callDocRef = db.collection('calls').doc(activeChatUid);
+      
+      peerConnection = new RTCPeerConnection(rtcConfig);
+      localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+      
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      if (isVideo) {
+        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('localVideo').classList.remove('hidden');
+        document.getElementById('remoteVideo').classList.remove('hidden');
+        document.getElementById('callTargetAvatar').classList.add('hidden');
+      }
+
+      peerConnection.ontrack = event => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+      };
+
+      const offerCandidates = callDocRef.collection('offerCandidates');
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) offerCandidates.add(event.candidate.toJSON());
+      };
+
+      const offerDescription = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offerDescription);
+
+      const callData = {
+        offer: { type: offerDescription.type, sdp: offerDescription.sdp },
         callerName: currentUser.displayName || "User",
         callerPhoto: currentUser.photoURL || "https://picsum.photos/200",
-        receiverUid: activeChatUid,
         type: type,
         status: "calling"
       };
 
-      db.collection('calls').doc(activeChatUid).set(activeCallData);
+      await callDocRef.set(callData);
 
       document.getElementById('callTargetName').textContent = document.getElementById('activeChatTitle').textContent;
       document.getElementById('callStatusText').textContent = type + " - Calling...";
-      document.getElementById('callTargetAvatar').src = document.getElementById('activeChatAvatar').src;
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
-
-      // Ringing audio playback
       document.getElementById('ringtoneAudio').play().catch(()=>{});
+
+      callDocRef.onSnapshot(snapshot => {
+        const data = snapshot.data();
+        if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
+          document.getElementById('ringtoneAudio').pause();
+          document.getElementById('callStatusText').textContent = "Connected";
+          const answerDescription = new RTCSessionDescription(data.answer);
+          peerConnection.setRemoteDescription(answerDescription);
+        }
+        if (!data) this.cleanupCall();
+      });
+
+      callDocRef.collection('answerCandidates').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            const candidate = new RTCIceCandidate(change.doc.data());
+            peerConnection.addIceCandidate(candidate);
+          }
+        });
+      });
+
+      this.logCall(type, "Outgoing");
     }
 
-    listenForIncomingCalls() {
-      db.collection('calls').doc(currentUser.uid).onSnapshot(doc => {
-        const call = doc.data();
-        if (call && call.status === "calling") {
-          activeCallData = call;
-          document.getElementById('callTargetName').textContent = call.callerName;
-          document.getElementById('callStatusText').textContent = "Incoming " + call.type + "...";
-          document.getElementById('callTargetAvatar').src = call.callerPhoto;
+    async listenForIncomingCalls() {
+      db.collection('calls').doc(currentUser.uid).onSnapshot(async snapshot => {
+        const data = snapshot.data();
+        if (data && data.status === "calling" && !peerConnection) {
+          callDocRef = db.collection('calls').doc(currentUser.uid);
+          
+          document.getElementById('callTargetName').textContent = data.callerName;
+          document.getElementById('callStatusText').textContent = "Incoming " + data.type + "...";
+          document.getElementById('callTargetAvatar').src = data.callerPhoto;
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
-
           document.getElementById('ringtoneAudio').play().catch(()=>{});
+
+          this.logCall(data.type, "Incoming");
+        } else if (!data && peerConnection) {
+          this.cleanupCall();
         }
       });
     }
 
-    acceptCall() {
+    async acceptCall() {
       document.getElementById('ringtoneAudio').pause();
-      document.getElementById('callStatusText').textContent = "Connected (Call in progress)";
       document.getElementById('acceptCallBtn').classList.add('hidden');
-      if (activeCallData) {
-        db.collection('calls').doc(currentUser.uid).update({ status: "accepted" });
+      document.getElementById('callStatusText').textContent = "Connected";
+
+      const callData = (await callDocRef.get()).data();
+      const isVideo = callData.type === 'Video Call';
+
+      peerConnection = new RTCPeerConnection(rtcConfig);
+      localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      if (isVideo) {
+        document.getElementById('localVideo').srcObject = localStream;
+        document.getElementById('localVideo').classList.remove('hidden');
+        document.getElementById('remoteVideo').classList.remove('hidden');
+        document.getElementById('callTargetAvatar').classList.add('hidden');
       }
+
+      peerConnection.ontrack = event => {
+        document.getElementById('remoteVideo').srcObject = event.streams[0];
+      };
+
+      const answerCandidates = callDocRef.collection('answerCandidates');
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) answerCandidates.add(event.candidate.toJSON());
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
+      const answerDescription = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answerDescription);
+
+      await callDocRef.update({
+        answer: { type: answerDescription.type, sdp: answerDescription.sdp },
+        status: "connected"
+      });
+
+      callDocRef.collection('offerCandidates').onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+          if (change.type === 'added') {
+            peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+          }
+        });
+      });
     }
 
-    endCall() {
+    async endCall() {
+      if (callDocRef) await callDocRef.delete();
+      this.cleanupCall();
+    }
+
+    cleanupCall() {
       document.getElementById('ringtoneAudio').pause();
       document.getElementById('callOverlay').style.display = 'none';
-      if (activeCallData) {
-        db.collection('calls').doc(activeCallData.receiverUid).delete();
-        db.collection('calls').doc(currentUser.uid).delete();
-      }
-      activeCallData = null;
+      document.getElementById('localVideo').classList.add('hidden');
+      document.getElementById('remoteVideo').classList.add('hidden');
+      document.getElementById('callTargetAvatar').classList.remove('hidden');
+
+      if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
+      if (peerConnection) { peerConnection.close(); peerConnection = null; }
+      callDocRef = null;
+    }
+
+    logCall(type, direction) {
+      db.collection('users').doc(currentUser.uid).collection('callLogs').add({
+        type: type, direction: direction, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    loadCallLogs() {
+      db.collection('users').doc(currentUser.uid).collection('callLogs').orderBy('timestamp', 'desc').onSnapshot(snap => {
+        const list = document.getElementById('callsList');
+        list.innerHTML = '';
+        snap.forEach(doc => {
+          const cl = doc.data();
+          list.innerHTML += `
+            <div class="list-item">
+              <i class="fa-solid ${cl.direction === 'Outgoing' ? 'fa-phone' : 'fa-phone-arrow-down-left'}" style="margin-right:12px; color:var(--primary-color);"></i>
+              <div class="item-details">
+                <div class="item-title">${cl.type}</div>
+                <div class="item-sub">${cl.direction}</div>
+              </div>
+            </div>`;
+        });
+      });
     }
 
     updateMyStatus() {
       const statusText = prompt("Enter status text:");
       if (statusText) {
         db.collection('statuses').add({
-          uid: currentUser.uid,
-          name: currentUser.displayName || "User",
-          photo: currentUser.photoURL || "https://picsum.photos/200",
-          text: statusText,
+          uid: currentUser.uid, name: currentUser.displayName || "User",
+          photo: currentUser.photoURL || "https://picsum.photos/200", text: statusText,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
         alert("Status Updated!");
@@ -997,10 +1011,7 @@
           container.innerHTML += `
             <div class="list-item">
               <img src="${st.photo}" class="avatar">
-              <div class="item-details">
-                <div class="item-title">${st.name}</div>
-                <div class="item-sub">${st.text}</div>
-              </div>
+              <div class="item-details"><div class="item-title">${st.name}</div><div class="item-sub">${st.text}</div></div>
             </div>`;
         });
       });
