@@ -1,858 +1,1454 @@
 <!DOCTYPE html>
-<html lang="my">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASL Messenger</title>
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { margin: 0; padding: 0; background: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
-    
-    /* Login & Signup Screens */
-    #auth-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; }
-    .auth-card { background: white; padding: 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 360px; display: flex; flex-direction: column; gap: 12px; text-align: center; }
-    .auth-card h2 { color: #0084ff; margin-bottom: 5px; }
-    .auth-card input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
-    .auth-card button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 14px; }
-    .btn-primary { background: #0084ff; color: white; }
-    .btn-google { background: #ea4335; color: white; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .auth-link { font-size: 13px; color: #0084ff; cursor: pointer; margin-top: 5px; }
-
-    #app-container { display: none; width: 100%; height: 100vh; flex-direction: row; }
-    
-    /* Sidebar Section */
-    #sidebar { width: 340px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 15px; background: #0084ff; color: white; font-weight: bold; font-size: 16px; }
-    .tabs { display: flex; background: #e4e6eb; }
-    .tab-btn { flex: 1; padding: 10px 2px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 11px; text-align: center; }
-    .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
-    .list-container { flex: 1; overflow-y: auto; }
-    
-    /* Contacts & Chat Items */
-    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; position: relative; }
-    .list-item:hover { background: #f5f5f5; }
-    .avatar-wrapper { position: relative; width: 44px; height: 44px; }
-    .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #ccc; }
-    .online-indicator {
-      position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px;
-      background: #34c759; border: 2px solid white; border-radius: 50%; display: none;
+    :root {
+      --primary-color: #1A73E8;
+      --primary-dark: #1557b0;
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-main: #1c1e21;
+      --text-muted: #65676b;
+      --border-color: #e4e6eb;
+      --chat-bg: #f8f9fa;
+      --message-out: #e3eee0;
+      --message-in: #ffffff;
+      --online-color: #31a24c;
+      --danger-color: #dc3545;
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
-    .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
-    .item-name { font-weight: bold; font-size: 14px; color: #333; }
-    .item-sub { font-size: 12px; color: #777; }
 
-    .create-group-area { padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 5px; }
+    /* Font Variations */
+    body.font-default { --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body.font-serif { --font-family: Georgia, "Times New Roman", Times, serif; }
+    body.font-mono { --font-family: "Courier New", Courier, monospace; }
 
-    /* Profile View Tab */
-    #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; width: 100%; }
-    
-    .avatar-upload-container { position: relative; width: 96px; height: 96px; margin: 0 auto; cursor: pointer; }
-    .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
-    .avatar-upload-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
-      background: rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: white; font-size: 11px; font-weight: bold; opacity: 0; transition: opacity 0.2s ease;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
     }
-    .avatar-upload-container:hover .avatar-upload-overlay { opacity: 1; }
 
-    .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
-    .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
-    .profile-card input, .profile-card textarea, .profile-card select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
-
-    .settings-section { width: 100%; text-align: left; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-top: 5px; }
-    .settings-title { font-weight: bold; font-size: 13px; color: #0084ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-    .setting-row:last-child { border-bottom: none; }
-
-    /* Main Chat Section */
-    #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; position: relative; }
-    .chat-header { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
-    .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-    .chat-user-status { font-size: 11px; font-weight: normal; color: #34c759; }
-    .call-actions { display: flex; gap: 10px; }
-    .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
-    .call-btn:hover { background: #0084ff; color: white; }
-
-    #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .msg-wrapper { display: flex; flex-direction: column; max-width: 70%; }
-    .msg-wrapper.sent-wrapper { align-self: flex-end; align-items: flex-end; }
-    .msg-wrapper.received-wrapper { align-self: flex-start; align-items: flex-start; }
-    
-    .msg { padding: 8px 12px; border-radius: 12px; word-wrap: break-word; font-size: 14px; }
-    .sent { background: #0084ff; color: white; }
-    .received { background: #e4e6eb; color: black; }
-    .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
-    .msg-status { font-size: 10px; color: #888; margin-top: 2px; text-align: right; display: flex; align-items: center; gap: 3px; }
-    .msg-status-seen { color: #0084ff; font-weight: bold; }
-
-    #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
-    input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-    button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
-
-    .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-
-    /* Custom Call Screen Overlay */
-    #call-screen {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(180deg, #1e3c72 0%, #2a5298 50%, #111e38 100%);
-      z-index: 99999; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 40px 20px 40px 20px; color: white;
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-main);
     }
-    .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 1; background: #000; }
-    #remote-video { width: 100%; height: 100%; object-fit: cover; }
-    #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 70px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 3; }
 
-    .call-top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 4; }
-    .minimize-call-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; backdrop-filter: blur(5px); }
-
-    .call-user-area { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; z-index: 2; }
-    .call-avatar-wrapper { position: relative; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; }
-    .call-avatar-wrapper::before { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); animation: pulse 2s infinite; }
-    .call-avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.8); z-index: 2; }
-    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 0.2; } 100% { transform: scale(0.95); opacity: 0.8; } }
-
-    .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
-    .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; z-index: 2; }
-
-    .call-controls-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 400px; z-index: 4; }
-    .action-btn-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-    .action-btn-item span { font-size: 12px; opacity: 0.9; }
-    .ctrl-circle-btn { width: 62px; height: 62px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); color: white; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
-    .ctrl-circle-btn:active { transform: scale(0.9); }
-    .ctrl-circle-btn.off { background: rgba(255, 255, 255, 0.8); color: #333; }
-    .btn-end { background: #ff3b30; color: white; }
-    .btn-accept { background: #34c759; color: white; animation: pulse 1.5s infinite; }
-
-    /* Floating Messenger-style Call Bubble */
-    #floating-call-head {
-      display: none; position: fixed; bottom: 25px; right: 25px; width: 68px; height: 68px;
-      border-radius: 50%; background: #0084ff; border: 3px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      z-index: 999999; cursor: pointer; align-items: center; justify-content: center; overflow: hidden;
-      animation: floatPulse 1.5s infinite;
+    /* Outer Wrapper for Mobile Container simulation on Desktop */
+    .app-viewport {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 900px;
+      background-color: var(--card-bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
     }
-    #floating-call-head img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes floatPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(0, 132, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0); } }
 
-    /* Toast Notification */
-    #toast-notification {
-      position: fixed; top: 15px; right: 15px; z-index: 9999;
-      background: rgba(255, 255, 255, 0.95); color: #333;
-      padding: 12px 18px; border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-      border-left: 4px solid #0084ff;
-      display: none; align-items: center; gap: 12px;
-      animation: slideIn 0.3s ease-out; cursor: pointer;
+    @media (min-width: 481px) {
+      .app-viewport {
+        border-radius: 16px;
+        height: 95vh;
+      }
     }
-    @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-    @media (max-width: 600px) {
-      #sidebar { width: 100%; display: flex; }
-      #chat-main { display: none; width: 100%; }
-      .show-chat #sidebar { display: none; }
-      .show-chat #chat-main { display: flex; }
+    /* Header */
+    .app-header {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 10;
+    }
+
+    .app-header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .header-actions i {
+      font-size: 1.1rem;
+      margin-left: 16px;
+      cursor: pointer;
+    }
+
+    /* View Area */
+    .view-container {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+      background-color: #fff;
+    }
+
+    .view-page {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+    }
+
+    .view-page.active {
+      display: flex;
+    }
+
+    /* Navigation Bottom Bar */
+    .tab-bar {
+      display: flex;
+      background-color: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      padding: 6px 0;
+      z-index: 10;
+    }
+
+    .tab-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 0;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: color 0.2s ease;
+    }
+
+    .tab-item i {
+      font-size: 1.2rem;
+      margin-bottom: 2px;
+    }
+
+    .tab-item.active {
+      color: var(--primary-color);
+      font-weight: 600;
+    }
+
+    /* List Item Styles */
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .list-item:hover {
+      background-color: var(--bg-color);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      background-color: var(--online-color);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+    }
+
+    .status-dot.offline {
+      background-color: #ccc;
+    }
+
+    .list-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .list-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .list-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .list-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .list-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Chat Detail Screen */
+    .chat-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: var(--chat-bg);
+      display: flex;
+      flex-direction: column;
+      z-index: 20;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .chat-screen.open {
+      transform: translateX(0);
+    }
+
+    .chat-header {
+      background-color: var(--primary-color);
+      color: #fff;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header .back-btn {
+      font-size: 1.2rem;
+      margin-right: 12px;
+      cursor: pointer;
+    }
+
+    .chat-header .chat-user-info {
+      flex: 1;
+      margin-left: 8px;
+    }
+
+    .chat-header .chat-user-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .chat-header .chat-user-status {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message-bubble {
+      max-width: 75%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+      position: relative;
+      word-wrap: break-word;
+    }
+
+    .message-bubble.incoming {
+      align-self: flex-start;
+      background-color: var(--message-in);
+      border-bottom-left-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .message-bubble.outgoing {
+      align-self: flex-end;
+      background-color: var(--message-out);
+      border-bottom-right-radius: 2px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .message-meta {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 4px;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .chat-input-area {
+      padding: 10px;
+      background-color: #fff;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chat-input-area input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      outline: none;
+      font-size: 0.9rem;
+    }
+
+    .chat-input-area button {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      font-style: italic;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 4px 16px;
+      display: none;
+    }
+
+    /* Settings View */
+    .settings-group {
+      margin-bottom: 20px;
+      background: #fff;
+    }
+
+    .settings-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      text-transform: uppercase;
+      padding: 12px 16px 4px 16px;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.95rem;
+    }
+
+    .settings-row select, .settings-row input[type="checkbox"] {
+      cursor: pointer;
+    }
+
+    .settings-row select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    /* Switch styling */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--primary-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Profile Section Header in Settings */
+    .profile-card {
+      display: flex;
+      align-items: center;
+      padding: 16px;
+      background-color: #fff;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .profile-card .avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+
+    .profile-info {
+      margin-left: 14px;
+      flex: 1;
+    }
+
+    .profile-name {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .profile-about {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .btn-edit {
+      background: none;
+      border: none;
+      color: var(--primary-color);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    /* Modals & Overlays */
+    .modal-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: white;
+      width: 85%;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      text-align: center;
+    }
+
+    .modal-box h3 {
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+
+    .modal-box input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 16px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e4e6eb;
+      color: var(--text-main);
+    }
+
+    .btn-danger {
+      background: var(--danger-color);
+      color: white;
+    }
+
+    /* Call Simulation Modal */
+    .call-overlay {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #1c1e21;
+      color: white;
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 20px;
+    }
+
+    .call-overlay.active {
+      display: flex;
+    }
+
+    .call-avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background: var(--primary-color);
+    }
+
+    .call-end-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Login / Welcome Screen */
+    .login-screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: white;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .login-screen i.logo-icon {
+      font-size: 4rem;
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    .login-screen h2 {
+      margin-bottom: 8px;
+    }
+
+    .login-screen p {
+      color: var(--text-muted);
+      margin-bottom: 24px;
+    }
+
+    .login-screen button {
+      width: 80%;
+      padding: 12px;
+      font-size: 1rem;
     }
   </style>
 </head>
-<body>
+<body class="font-default">
 
-  <!-- Toast Notification Bar -->
-  <div id="toast-notification">
-    <span id="toast-icon" style="font-size:20px;">💬</span>
+<div class="app-viewport">
+
+  <!-- Login Overlay -->
+  <div id="login-screen" class="login-screen">
+    <i class="fa-solid fa-paper-plane logo-icon"></i>
+    <h2 data-i18n="loginTitle">Welcome to ASL Messenger</h2>
+    <p data-i18n="loginSub">Fast, Simple & Secure Communication</p>
+    <button class="btn btn-primary" onclick="login()" data-i18n="loginButton">Login</button>
+  </div>
+
+  <!-- Main Header -->
+  <header class="app-header">
+    <h1 id="header-title" data-i18n="appName">ASL Messenger</h1>
+    <div class="header-actions">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <i class="fa-solid fa-ellipsis-vertical"></i>
+    </div>
+  </header>
+
+  <!-- Views Container -->
+  <main class="view-container">
+
+    <!-- CHATS VIEW -->
+    <section id="view-chats" class="view-page active">
+      <div id="chats-list"></div>
+    </section>
+
+    <!-- CALLS VIEW -->
+    <section id="view-calls" class="view-page">
+      <div id="calls-list"></div>
+    </section>
+
+    <!-- PEOPLE / CONTACTS VIEW -->
+    <section id="view-people" class="view-page">
+      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 600;" data-i18n="contacts">Contacts</span>
+        <button class="btn btn-primary" onclick="openAddFriendModal()" style="font-size: 0.8rem;" data-i18n="addFriend">+ Add Friend</button>
+      </div>
+      <div id="contacts-list"></div>
+    </section>
+
+    <!-- STATUS VIEW -->
+    <section id="view-status" class="view-page">
+      <div class="list-item">
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: var(--primary-color);">My</div>
+        </div>
+        <div class="list-info">
+          <div class="list-title" data-i18n="myStatus">My Status</div>
+          <div class="list-subtext" data-i18n="addStatus">Tap to add status update</div>
+        </div>
+      </div>
+      <div style="padding: 8px 16px; background: var(--bg-color); font-size: 0.8rem; font-weight: bold; color: var(--text-muted);" data-i18n="recentUpdates">RECENT UPDATES</div>
+      <div id="status-list"></div>
+    </section>
+
+    <!-- SETTINGS VIEW -->
+    <section id="view-settings" class="view-page">
+      <div class="profile-card">
+        <div class="avatar" style="background-color: #673ab7;" id="my-avatar">U</div>
+        <div class="profile-info">
+          <div class="profile-name" id="my-name">User Name</div>
+          <div class="profile-about" id="my-about">Hey there! I am using ASL Messenger.</div>
+        </div>
+        <button class="btn-edit" onclick="openEditProfileModal()"><i class="fa-solid fa-pen"></i></button>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title" data-i18n="preferences">Preferences</div>
+        <div class="settings-row">
+          <span data-i18n="language">Language</span>
+          <select id="lang-select" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="my">မြန်မာ</option>
+            <option value="zh">中文</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="fontStyle">Font Style</span>
+          <select id="font-select" onchange="changeFont(this.value)">
+            <option value="font-default" data-i18n="fontDefault">Default</option>
+            <option value="font-serif" data-i18n="fontSerif">Serif</option>
+            <option value="font-mono" data-i18n="fontMono">Monospace</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="ringtone">Ringtone</span>
+          <select id="ringtone-select">
+            <option value="default">Default</option>
+            <option value="classic">Classic</option>
+            <option value="vibrant">Vibrant</option>
+            <option value="calm">Calm</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title" data-i18n="notifications">Notifications</div>
+        <div class="settings-row">
+          <span data-i18n="msgNotif">Message Notifications</span>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="grpNotif">Group Notifications</span>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="callNotif">Call Notifications</span>
+          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <div class="settings-title" data-i18n="privacy">Privacy & Security</div>
+        <div class="settings-row">
+          <span data-i18n="lastSeen">Last Seen</span>
+          <select>
+            <option value="everyone" data-i18n="everyone">Everyone</option>
+            <option value="contacts" data-i18n="myContacts">My Contacts</option>
+            <option value="nobody" data-i18n="nobody">Nobody</option>
+          </select>
+        </div>
+        <div class="settings-row">
+          <span data-i18n="twoFactor">Two-Factor Authentication</span>
+          <label class="switch"><input type="checkbox"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div class="settings-group" style="padding: 10px 16px; display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="resetSettings()" data-i18n="resetDefault">Reset to Default</button>
+        <button class="btn btn-danger" style="flex:1;" onclick="openLogoutModal()" data-i18n="logout">Log Out</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Navigation Tab Bar -->
+  <nav class="tab-bar">
+    <div class="tab-item active" onclick="switchTab('chats')">
+      <i class="fa-solid fa-comment"></i>
+      <span data-i18n="chats">Chats</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('calls')">
+      <i class="fa-solid fa-phone"></i>
+      <span data-i18n="calls">Calls</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('people')">
+      <i class="fa-solid fa-user-group"></i>
+      <span data-i18n="people">People</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('status')">
+      <i class="fa-solid fa-circle-notch"></i>
+      <span data-i18n="status">Status</span>
+    </div>
+    <div class="tab-item" onclick="switchTab('settings')">
+      <i class="fa-solid fa-gear"></i>
+      <span data-i18n="settings">Settings</span>
+    </div>
+  </nav>
+
+  <!-- CHAT DETAIL OVERLAY -->
+  <div id="chat-screen" class="chat-screen">
+    <div class="chat-header">
+      <i class="fa-solid fa-arrow-left back-btn" onclick="closeChat()"></i>
+      <div class="avatar" id="chat-header-avatar" style="width:38px; height:38px; font-size:0.9rem;"></div>
+      <div class="chat-user-info">
+        <div class="chat-user-name" id="chat-header-name">User</div>
+        <div class="chat-user-status" id="chat-header-status">Online</div>
+      </div>
+      <div class="header-actions">
+        <i class="fa-solid fa-phone" onclick="startCall('audio')"></i>
+        <i class="fa-solid fa-video" onclick="startCall('video')"></i>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="typing-indicator" id="typing-indicator">typing...</div>
+    <div class="chat-input-area">
+      <input type="text" id="message-input" placeholder="Type a message..." data-i18n-ph="typeMessage" onkeypress="handleKeyPress(event)">
+      <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+  </div>
+
+  <!-- CALL SIMULATION OVERLAY -->
+  <div id="call-overlay" class="call-overlay">
     <div>
-      <div id="toast-title" style="font-weight:bold; font-size:13px;">-</div>
-      <div id="toast-body" style="font-size:12px; color:#666;">-</div>
+      <div class="call-avatar" id="call-avatar">A</div>
+      <h2 id="call-name">Contact Name</h2>
+      <p id="call-type" style="margin-top: 8px; color: #aaa;" data-i18n="calling">Calling...</p>
     </div>
+    <button class="call-end-btn" onclick="endCall()"><i class="fa-solid fa-phone-slash"></i></button>
   </div>
 
-  <!-- Minimized Floating Call Head -->
-  <div id="floating-call-head" onclick="restoreCallScreen()" title="Call သို့ ပြန်သွားရန်">
-    <img id="floating-avatar" src="https://via.placeholder.com/150" alt="Call">
-  </div>
-
-  <!-- Hidden File Inputs -->
-  <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
-  <input type="file" id="ringtone-file-input" accept="audio/*" style="display: none;">
-
-  <!-- 1. Login / Signup Screen -->
-  <div id="auth-screen">
-    <div id="login-box" class="auth-card">
-      <h2>ASL Messenger</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:10px;">သင့်အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
-      <input type="email" id="login-email" placeholder="Email သို့မဟုတ် ဖုန်းနံပါတ်">
-      <input type="password" id="login-password" placeholder="Password (စကားဝှက်)">
-      <button class="btn-primary" id="btn-email-login">Log In</button>
-      <div class="auth-link" onclick="showForgetPasswordModal()">စကားဝှက် မေ့နေပါသလား?</div>
-      <hr style="width:100%; border:0.5px solid #eee; margin:5px 0;">
-      <button class="btn-google" id="btn-google">🌐 Google ဖြင့် ဝင်ရန်</button>
-      <div style="margin-top:10px; font-size:13px;">
-        အကောင့်မရှိသေးဘူးလား? <span class="auth-link" onclick="switchAuthMode('signup')">အကောင့်အသစ်ဖွင့်ရန် (Sign Up)</span>
-      </div>
-    </div>
-
-    <div id="signup-box" class="auth-card" style="display:none;">
-      <h2>ASL Messenger</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:10px;">အကောင့်အသစ် ဖန်တီးရန်</p>
-      <input type="text" id="signup-name" placeholder="အမည် (Display Name)">
-      <input type="email" id="signup-email" placeholder="Email လိပ်စာ">
-      <input type="password" id="signup-password" placeholder="Password (စကားဝှက်အသစ်)">
-      <button class="btn-primary" id="btn-email-signup">Sign Up</button>
-      <div style="margin-top:10px; font-size:13px;">
-        အကောင့်ရှိပြီးသားလား? <span class="auth-link" onclick="switchAuthMode('login')">အကောင့်ထဲ ဝင်ရန် (Log In)</span>
+  <!-- ADD FRIEND MODAL -->
+  <div id="add-friend-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="addFriend">Add Friend</h3>
+      <input type="text" id="friend-name-input" placeholder="Enter friend's name">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('add-friend-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="addFriend()" data-i18n="sendRequest">Send Request</button>
       </div>
     </div>
   </div>
 
-  <!-- 2. Main App Layout -->
-  <div id="app-container">
-    <div id="sidebar">
-      <div class="sidebar-header">ASL Messenger</div>
-      
-      <!-- Tab Navigation Bar -->
-      <div class="tabs">
-        <button class="tab-btn active" id="tab-chats" onclick="switchTab('chats')">Chats</button>
-        <button class="tab-btn" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
-        <button class="tab-btn" id="tab-noti" onclick="switchTab('noti')">Notifications 🔔</button>
-        <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
-      </div>
-
-      <!-- Create Group Section -->
-      <div class="create-group-area" id="group-create-box">
-        <input type="text" id="group-name-input" placeholder="Group အမည်အသစ်..." style="font-size: 12px;">
-        <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
-      </div>
-
-      <!-- Dynamic List Container -->
-      <div class="list-container" id="list-content"></div>
-
-      <!-- Profile Tab View -->
-      <div id="profile-tab-view">
-        <div class="avatar-upload-container" onclick="triggerAvatarUpload()">
-          <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150" alt="Profile">
-          <div class="avatar-upload-overlay">
-            <span style="font-size: 18px;">📷</span>
-            <span>ပုံချိန်းရန်</span>
-          </div>
-        </div>
-
-        <h3 id="my-profile-name" style="margin: 2px 0 0 0;">-</h3>
-        <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
-
-        <!-- Profile Data Section -->
-        <div class="profile-card">
-          <div style="font-weight:bold; color:#0084ff; font-size:13px; margin-bottom:5px;">👤 Profile Data (အချက်အလက်များ)</div>
-          <div>
-            <label>အမည် (Display Name)</label>
-            <input type="text" id="edit-name">
-          </div>
-          <div>
-            <label>ဖုန်းနံပါတ် (Phone)</label>
-            <input type="text" id="edit-phone" placeholder="09xxxxxxxxx">
-          </div>
-          <div>
-            <label>နေရပ်လိပ်စာ (City)</label>
-            <input type="text" id="edit-city" placeholder="ရန်ကုန် / မန္တလေး ...">
-          </div>
-          <div>
-            <label>About / Bio Status</label>
-            <textarea id="edit-about" rows="2" placeholder="Bio စာသား..."></textarea>
-          </div>
-          <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
-        </div>
-
-        <!-- Language Settings -->
-        <div class="settings-section">
-          <div class="settings-title">🌐 Language Settings (ဘာသာစကား)</div>
-          <div class="setting-row">
-            <span>App Language</span>
-            <select id="setting-language" onchange="changeLanguageSetting(this.value)" style="width: auto; padding: 4px 8px;">
-              <option value="my">မြန်မာစာ 🇲🇲</option>
-              <option value="en">English 🇬🇧</option>
-              <option value="zh">Chinese (中文) 🇨🇳</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Audio & Ringtone Settings Section -->
-        <div class="settings-section">
-          <div class="settings-title">🔔 Ringtone & Sound Settings</div>
-          <div class="setting-row">
-            <span>Push Notifications ဖွင့်မည်</span>
-            <input type="checkbox" id="set-msg-noti" checked>
-          </div>
-          
-          <div class="setting-row">
-            <span>Online Call Ringtone</span>
-            <select id="online-ringtone-select" onchange="handleRingtoneChange(this.value)" style="width: auto; padding: 4px 6px;">
-              <option value="default">Classic Phone Bell</option>
-              <option value="chime">Digital Chime</option>
-              <option value="marimba">Marimba Tone</option>
-              <option value="synth">Modern Synth Tone</option>
-              <option value="custom">Uploaded Custom Audio</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <span>Upload Local MP3 / Sound</span>
-            <button onclick="triggerRingtoneUpload()" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">📁 File ရွေးမည်</button>
-          </div>
-          <div id="custom-ringtone-name" style="font-size: 11px; color: #28a745; text-align: right; display: none;"></div>
-          
-          <div style="text-align: right; margin-top: 5px;">
-            <button onclick="testRingtoneSound()" style="padding: 4px 10px; font-size: 11px; background: #34c759; border-radius: 4px;">▶️ Ringtone စမ်းနားထောင်မည်</button>
-          </div>
-        </div>
-
-        <button id="btn-logout" style="width: 100%; background: #ff4d4f; border-radius: 8px; margin-top: 10px; padding: 12px; font-weight: bold;">Log Out (အကောင့်ထွက်မည်)</button>
-
-      </div>
-    </div>
-
-    <!-- Right Chat View -->
-    <div id="chat-main">
-      <div class="chat-header">
-        <div class="chat-user-info" id="chat-header-user" onclick="viewCurrentContactProfile()">
-          <button id="btn-back" onclick="event.stopPropagation(); closeChat();" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
-          <div class="avatar-wrapper" style="width: 36px; height: 36px;">
-            <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="" alt="">
-            <div id="chat-header-online-dot" class="online-indicator"></div>
-          </div>
-          <div>
-            <div id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</div>
-            <div id="chat-status-text" class="chat-user-status"></div>
-          </div>
-        </div>
-        
-        <div class="call-actions" id="call-box" style="display:none;">
-          <button class="call-btn" onclick="startWebRTCCall(false)">📞</button>
-          <button class="call-btn" onclick="startWebRTCCall(true)">📹</button>
-        </div>
-      </div>
-
-      <div id="messages"></div>
-
-      <div id="input-area">
-        <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
-        <button id="btn-send">ပို့မည်</button>
-      </div>
-
-      <!-- Real-Time Call Interface Screen -->
-      <div id="call-screen">
-        <div class="video-container" id="video-wrapper">
-          <video id="remote-video" autoplay playsinline></video>
-          <video id="local-video" autoplay playsinline muted></video>
-        </div>
-
-        <div class="call-top-bar">
-          <button class="minimize-call-btn" onclick="minimizeCallScreen()">↙️ Minimize</button>
-          <div style="font-size: 13px; font-weight: bold; opacity: 0.9;" id="call-mode-text">Voice / Video Call</div>
-          <div style="width: 60px;"></div>
-        </div>
-
-        <div class="call-user-area" id="call-user-ui">
-          <div class="call-avatar-wrapper">
-            <img id="call-screen-avatar" class="call-avatar-img" src="https://via.placeholder.com/150" alt="Caller">
-          </div>
-          <div id="call-screen-name" class="call-name">-</div>
-          <div id="call-screen-status" class="call-status">Waiting . .</div>
-        </div>
-
-        <div class="call-controls-bar" id="call-controls-active">
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-speaker" onclick="toggleSpeaker()">🔊</button>
-            <span>Speaker</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-cam" onclick="toggleCamera()">📹</button>
-            <span id="label-cam">Start Video</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-mic" onclick="toggleMic()">🎙️</button>
-            <span id="label-mic">Mute</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-end" onclick="endCall()">📞</button>
-            <span>End Call</span>
-          </div>
-        </div>
-
-        <!-- Incoming Call Bar -->
-        <div class="call-controls-bar" id="call-controls-incoming" style="display:none;">
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-end" onclick="declineIncomingCall()">📞</button>
-            <span>ငြင်းမည်</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-accept" id="btn-accept-call">📞</button>
-            <span>ကိုင်မည်</span>
-          </div>
-        </div>
-
+  <!-- EDIT PROFILE MODAL -->
+  <div id="edit-profile-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="editProfile">Edit Profile</h3>
+      <input type="text" id="edit-name-input" placeholder="Name">
+      <input type="text" id="edit-about-input" placeholder="About">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('edit-profile-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="saveProfile()" data-i18n="save">Save</button>
       </div>
     </div>
   </div>
 
-  <!-- Contact Profile Detail Modal -->
-  <div id="contact-modal" class="modal">
-    <div class="modal-content">
-      <img id="modal-avatar" class="profile-avatar-large" src="" alt="Avatar">
-      <h3 id="modal-name" style="margin:0;">-</h3>
-      <p id="modal-about" style="font-size:13px; color:#666; margin:0;">-</p>
-      <hr style="width:100%; border:0.5px solid #eee;">
-      <div style="text-align:left; width:100%; font-size:13px; display:flex; flex-direction:column; gap:8px;">
-        <div><b>📞 Phone:</b> <span id="modal-phone">-</span></div>
-        <div><b>📍 City:</b> <span id="modal-city">-</span></div>
-        <div><b>✉️ Email:</b> <span id="modal-email">-</span></div>
+  <!-- LOGOUT MODAL -->
+  <div id="logout-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="confirmLogout">Are you sure you want to log out?</h3>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('logout-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-danger" onclick="confirmLogout()" data-i18n="logout">Log Out</button>
       </div>
-      <button onclick="closeModal()" style="border-radius:6px; margin-top:10px; background:#ff4d4f;">ပိတ်မည်</button>
     </div>
   </div>
 
-  <!-- Firebase Script Integration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+</div>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
-      authDomain: "asl-messenger-85a1b.firebaseapp.com",
-      projectId: "asl-messenger-85a1b",
-      storageBucket: "asl-messenger-85a1b.firebasestorage.app",
-      messagingSenderId: "593020086365",
-      appId: "1:593020086365:web:666da320bf6917e4ef05b4",
-      measurementId: "G-2KMFNYYZTK"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let activeTab = 'chats';
-    let activeChatId = null;
-    let activeChatType = null;
-    let activeTargetUserData = null;
-    let unsubscribeMessages = null;
-    let unsubscribeCallListener = null;
-
-    let localStream = null;
-    let remoteStream = null;
-    let peerConnection = null;
-    let isMicMuted = false;
-    let isCamOff = false;
-    let currentRingtoneAudio = null;
-
-    const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
-
-    // Set User Online Status
-    function setUserOnlineStatus(isOnline) {
-      if (auth.currentUser) {
-        setDoc(doc(db, "users", auth.currentUser.uid), {
-          isOnline: isOnline,
-          lastSeen: serverTimestamp()
-        }, { merge: true });
-      }
+<script>
+  // --- TRANSLATION DATA ---
+  const translations = {
+    en: {
+      appName: "ASL Messenger",
+      chats: "Chats",
+      calls: "Calls",
+      people: "People",
+      status: "Status",
+      settings: "Settings",
+      loginTitle: "Welcome to ASL Messenger",
+      loginSub: "Fast, Simple & Secure Communication",
+      loginButton: "Login",
+      logout: "Log Out",
+      contacts: "Contacts",
+      addFriend: "Add Friend",
+      myStatus: "My Status",
+      addStatus: "Tap to add status update",
+      recentUpdates: "RECENT UPDATES",
+      preferences: "Preferences",
+      language: "Language",
+      fontStyle: "Font Style",
+      fontDefault: "Default",
+      fontSerif: "Serif",
+      fontMono: "Monospace",
+      ringtone: "Ringtone",
+      notifications: "Notifications",
+      msgNotif: "Message Notifications",
+      grpNotif: "Group Notifications",
+      callNotif: "Call Notifications",
+      privacy: "Privacy & Security",
+      lastSeen: "Last Seen",
+      everyone: "Everyone",
+      myContacts: "My Contacts",
+      nobody: "Nobody",
+      twoFactor: "Two-Factor Authentication",
+      resetDefault: "Reset to Default",
+      typeMessage: "Type a message...",
+      calling: "Calling...",
+      cancel: "Cancel",
+      sendRequest: "Send Request",
+      editProfile: "Edit Profile",
+      save: "Save",
+      confirmLogout: "Are you sure you want to log out?",
+      pending: "Pending",
+      confirm: "Confirm",
+      online: "Online",
+      offline: "Offline",
+      typing: "typing...",
+      sending: "Sending...",
+      sent: "Sent",
+      seen: "Seen"
+    },
+    my: {
+      appName: "ASL မက်ဆင်ဂျာ",
+      chats: "စကားဝိုင်းများ",
+      calls: "ခေါ်ဆိုမှုများ",
+      people: "လူများ",
+      status: "အခြေအနေ",
+      settings: "ပြင်ဆင်မှုများ",
+      loginTitle: "ASL မက်ဆင်ဂျာမှ ကြိုဆိုပါသည်",
+      loginSub: "မြန်ဆန် စိတ်ချရသော မက်ဆေ့ဂျာ",
+      loginButton: "ဝင်ရန်",
+      logout: "ထွက်ရန်",
+      contacts: "မိတ်ဆွေများ",
+      addFriend: "မိတ်ဆွေသစ်ထည့်ရန်",
+      myStatus: "ကျွနုပ်၏ အခြေအနေ",
+      addStatus: "အခြေအနေအသစ်တင်ရန် နှိပ်ပါ",
+      recentUpdates: "လတ်တလော တင်ထားမှုများ",
+      preferences: "စိတ်ကြိုက်ပြင်ဆင်မှုများ",
+      language: "ဘာသာစကား",
+      fontStyle: "ဖောင့်စတိုင်လ်",
+      fontDefault: "ပုံမှန်",
+      fontSerif: "Serif",
+      fontMono: "Monospace",
+      ringtone: "ဖုန်းမြည်သံ",
+      notifications: "အကြောင်းကြားချက်များ",
+      msgNotif: "မက်ဆေ့ဂျ် အကြောင်းကြားချက်",
+      grpNotif: "ဂရုပျ အကြောင်းကြားချက်",
+      callNotif: "ဖုန်းခေါ်ဆိုမှု အကြောင်းကြားချက်",
+      privacy: "လုံခြုံရေးနှင့် သီးသန့်စနစ်",
+      lastSeen: "နောက်ဆုံးတွေ့ရှိချိန်",
+      everyone: "လူတိုင်း",
+      myContacts: "ကျွနုပ်၏မိတ်ဆွေများ",
+      nobody: "မည်သူမျှ",
+      twoFactor: "နှစ်ဆင့်လုံခြုံရေးစနစ်",
+      resetDefault: "မူလအတိုင်းပြန်ထားရန်",
+      typeMessage: "စာရိုက်ပါ...",
+      calling: "ခေါ်ဆိုနေပါသည်...",
+      cancel: "မလုပ်တော့ပါ",
+      sendRequest: "တောင်းဆိုမှုပို့ရန်",
+      editProfile: "ပရိုဖိုင်ပြင်ရန်",
+      save: "သိမ်းဆည်းပါ",
+      confirmLogout: "အကောင့်မှ ထွက်မှာ သေချာပါသလား?",
+      pending: "စောင့်ဆိုင်းဆဲ",
+      confirm: "လက်ခံမည်",
+      online: "လိုင်းပေါ်တွင်",
+      offline: "လိုင်းမရှိပါ",
+      typing: "စာရိုက်နေသည်...",
+      sending: "ပေးပို့နေသည်...",
+      sent: "ပေးပို့ပြီး",
+      seen: "ကြည့်ပြီး"
+    },
+    zh: {
+      appName: "ASL 信使",
+      chats: "聊天",
+      calls: "通话",
+      people: "联系人",
+      status: "动态",
+      settings: "设置",
+      loginTitle: "欢迎使用 ASL 信使",
+      loginSub: "快速、简单且安全的通信",
+      loginButton: "登录",
+      logout: "退出登录",
+      contacts: "联系人列表",
+      addFriend: "添加好友",
+      myStatus: "我的动态",
+      addStatus: "点击发布状态",
+      recentUpdates: "最近更新",
+      preferences: "偏好设置",
+      language: "语言",
+      fontStyle: "字体样式",
+      fontDefault: "默认",
+      fontSerif: "衬线",
+      fontMono: "等宽",
+      ringtone: "铃声",
+      notifications: "通知设置",
+      msgNotif: "消息通知",
+      grpNotif: "群组通知",
+      callNotif: "通话通知",
+      privacy: "隐私与安全",
+      lastSeen: "最后上线",
+      everyone: "所有人",
+      myContacts: "我的联系人",
+      nobody: "没有人",
+      twoFactor: "双重身份验证",
+      resetDefault: "恢复默认设置",
+      typeMessage: "输入消息...",
+      calling: "正在呼叫...",
+      cancel: "取消",
+      sendRequest: "发送请求",
+      editProfile: "编辑个人资料",
+      save: "保存",
+      confirmLogout: "您确定要退出登录吗？",
+      pending: "等待中",
+      confirm: "确认",
+      online: "在线",
+      offline: "离线",
+      typing: "正在输入...",
+      sending: "发送中...",
+      sent: "已发送",
+      seen: "已读"
     }
+  };
 
-    window.addEventListener('beforeunload', () => setUserOnlineStatus(false));
+  let currentLang = 'en';
 
-    function playCallRingtone() {
-      stopCallRingtone();
-      try {
-        currentRingtoneAudio = new Audio('https://actions.google.com/sounds/v1/emergency/beeping_call.ogg');
-        currentRingtoneAudio.loop = true;
-        currentRingtoneAudio.play().catch(e => console.log(e));
-      } catch (e) { console.log(e); }
+  // --- INITIAL DATA ---
+  let userProfile = {
+    name: "Alex Johnson",
+    about: "Coding the future with ASL Messenger!"
+  };
+
+  let contacts = [
+    { id: 1, name: "Aung Ko", online: true, status: "Pending", bg: "#e91e63" },
+    { id: 2, name: "Sophia Chen", online: true, status: "Accepted", bg: "#9c27b0" },
+    { id: 3, name: "Michael Scott", online: false, status: "Accepted", bg: "#009688" },
+    { id: 4, name: "David Miller", online: true, status: "Accepted", bg: "#ff9800" },
+    { id: 5, name: "Emma Watson", online: false, status: "Accepted", bg: "#3f51b5" }
+  ];
+
+  let chats = [
+    {
+      id: 'c1',
+      isGroup: false,
+      contactId: 2,
+      name: "Sophia Chen",
+      online: true,
+      bg: "#9c27b0",
+      messages: [
+        { sender: 'them', text: "Hey! Did you check out the new design?", time: "10:30 AM", status: "seen" },
+        { sender: 'me', text: "Yes! It looks fantastic and super slick.", time: "10:32 AM", status: "seen" }
+      ]
+    },
+    {
+      id: 'c2',
+      isGroup: false,
+      contactId: 4,
+      name: "David Miller",
+      online: true,
+      bg: "#ff9800",
+      messages: [
+        { sender: 'them', text: "Are we still meeting today?", time: "09:15 AM", status: "seen" }
+      ]
+    },
+    {
+      id: 'g1',
+      isGroup: true,
+      name: "Tech Innovators Group",
+      online: true,
+      bg: "#2196f3",
+      messages: [
+        { sender: 'them', text: "Aung Ko: Welcome everyone to ASL Messenger!", time: "Yesterday", status: "seen" },
+        { sender: 'me', text: "Glad to be here!", time: "Yesterday", status: "seen" }
+      ]
+    },
+    {
+      id: 'g2',
+      isGroup: true,
+      name: "Weekend Developers",
+      online: false,
+      bg: "#4caf50",
+      messages: [
+        { sender: 'them', text: "Michael: Anyone up for a quick sprint?", time: "2 days ago", status: "seen" }
+      ]
     }
+  ];
 
-    function stopCallRingtone() {
-      if (currentRingtoneAudio) {
-        currentRingtoneAudio.pause();
-        currentRingtoneAudio.currentTime = 0;
-        currentRingtoneAudio = null;
-      }
-    }
+  let calls = [
+    { name: "Sophia Chen", type: "incoming", icon: "fa-arrow-down-left", color: "#31a24c", time: "Today, 10:45 AM", bg: "#9c27b0" },
+    { name: "David Miller", type: "outgoing", icon: "fa-arrow-up-right", color: "#1A73E8", time: "Yesterday, 4:20 PM", bg: "#ff9800" },
+    { name: "Michael Scott", type: "missed", icon: "fa-arrow-down-left", color: "#dc3545", time: "July 20, 2:15 PM", bg: "#009688" },
+    { name: "Tech Innovators Group", type: "incoming", icon: "fa-arrow-down-left", color: "#31a24c", time: "July 18, 8:00 PM", bg: "#2196f3" },
+    { name: "Emma Watson", type: "outgoing", icon: "fa-arrow-up-right", color: "#1A73E8", time: "July 15, 11:10 AM", bg: "#3f51b5" }
+  ];
 
-    window.switchAuthMode = (mode) => {
-      document.getElementById('login-box').style.display = mode === 'login' ? 'flex' : 'none';
-      document.getElementById('signup-box').style.display = mode === 'signup' ? 'flex' : 'none';
+  let statuses = [
+    { name: "Sophia Chen", time: "10 mins ago", text: "Enjoying coffee! ☕", bg: "#9c27b0" },
+    { name: "David Miller", time: "1 hour ago", text: "Working on new project...", bg: "#ff9800" },
+    { name: "Tech Innovators", time: "3 hours ago", text: "Release v1.0 is Live!", bg: "#2196f3" }
+  ];
+
+  let activeChatId = null;
+
+  // --- CORE INITIALIZATION ---
+  window.onload = function() {
+    renderProfile();
+    renderChats();
+    renderCalls();
+    renderContacts();
+    renderStatuses();
+    updateLanguageTexts();
+  };
+
+  // --- NAVIGATION ---
+  function switchTab(tabName) {
+    document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
+
+    const tabMap = {
+      'chats': 0, 'calls': 1, 'people': 2, 'status': 3, 'settings': 4
     };
+    
+    document.querySelectorAll('.tab-item')[tabMap[tabName]].classList.add('active');
+    document.getElementById(`view-${tabName}`).classList.add('active');
+  }
 
-    document.getElementById('btn-email-login').onclick = async () => {
-      const email = document.getElementById('login-email').value.trim();
-      const pass = document.getElementById('login-password').value.trim();
-      if (!email || !pass) { alert("Email နှင့် Password ထည့်ပါ။"); return; }
-      try { await signInWithEmailAndPassword(auth, email, pass); } 
-      catch (err) { alert("Login Error: " + err.message); }
-    };
+  // --- LANGUAGE SWITCHING ---
+  function changeLanguage(lang) {
+    currentLang = lang;
+    updateLanguageTexts();
+  }
 
-    document.getElementById('btn-email-signup').onclick = async () => {
-      const name = document.getElementById('signup-name').value.trim();
-      const email = document.getElementById('signup-email').value.trim();
-      const pass = document.getElementById('signup-password').value.trim();
-      if (!name || !email || !pass) { alert("အချက်အလက်များ ဖြည့်ပေးပါ။"); return; }
-      try {
-        const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(res.user, { displayName: name, photoURL: "https://via.placeholder.com/150" });
-        await setDoc(doc(db, "users", res.user.uid), {
-          uid: res.user.uid, name: name, email: email, photoURL: "https://via.placeholder.com/150",
-          phone: "", city: "", about: "Hey there! I am using ASL Messenger.", isOnline: true
-        });
-      } catch (err) { alert("Signup Error: " + err.message); }
-    };
-
-    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-    document.getElementById('btn-logout').onclick = () => { setUserOnlineStatus(false); signOut(auth); };
-
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('app-container').style.display = 'flex';
-
-        setUserOnlineStatus(true);
-        listenForIncomingCalls();
-        switchTab('chats');
-      } else {
-        document.getElementById('auth-screen').style.display = 'flex';
-        document.getElementById('app-container').style.display = 'none';
-      }
+  function updateLanguageTexts() {
+    const t = translations[currentLang];
+    
+    // Static text elements
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (t[key]) el.textContent = t[key];
     });
 
-    window.switchTab = (type) => {
-      activeTab = type;
-      document.getElementById('tab-chats').classList.toggle('active', type === 'chats');
-      document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
-      document.getElementById('tab-noti').classList.toggle('active', type === 'noti');
-      document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
+    // Inputs placeholders
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const key = el.getAttribute('data-i18n-ph');
+      if (t[key]) el.placeholder = t[key];
+    });
 
-      document.getElementById('group-create-box').style.display = type === 'chats' ? 'flex' : 'none';
-      document.getElementById('list-content').style.display = type === 'profile' ? 'none' : 'block';
-      document.getElementById('profile-tab-view').style.display = type === 'profile' ? 'flex' : 'none';
+    // Re-render lists to update status text dynamically
+    renderContacts();
+    renderChats();
+  }
 
-      if (type === 'chats') loadChatsList();
-      else if (type === 'contacts') loadContactsList();
-      else if (type === 'profile') loadMyProfile();
-    };
+  // --- FONT SWITCHING ---
+  function changeFont(fontClass) {
+    document.body.className = fontClass;
+  }
 
-    function loadChatsList() {
-      const listContent = document.getElementById('list-content');
-      listContent.innerHTML = '';
+  // --- CHAT RENDERING & LOGIC ---
+  function renderChats() {
+    const container = document.getElementById('chats-list');
+    container.innerHTML = '';
 
-      onSnapshot(collection(db, "users"), (snapshot) => {
-        listContent.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
-            const chatId = getDirectChatId(auth.currentUser.uid, u.uid);
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
-            const isOnline = u.isOnline ? 'block' : 'none';
+    chats.forEach(chat => {
+      const lastMsg = chat.messages[chat.messages.length - 1];
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.onclick = () => openChat(chat.id);
 
-            item.innerHTML = `
-              <div class="avatar-wrapper">
-                <img class="avatar" src="${imgUrl}" alt="Avatar">
-                <div class="online-indicator" style="display:${isOnline}"></div>
-              </div>
-              <div class="item-info">
-                <div class="item-name">${u.name}</div>
-                <div class="item-sub">${u.isOnline ? 'Active Now' : 'Offline'}</div>
-              </div>
-            `;
-            item.onclick = () => openChat(chatId, u, 'direct');
-            listContent.appendChild(item);
-          }
-        });
-      });
-    }
+      item.innerHTML = `
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: ${chat.bg}">${chat.name.charAt(0)}</div>
+          ${!chat.isGroup ? `<div class="status-dot ${chat.online ? '' : 'offline'}"></div>` : ''}
+        </div>
+        <div class="list-info">
+          <div class="list-title-row">
+            <div class="list-title">${chat.name}</div>
+            <div class="list-time">${lastMsg ? lastMsg.time : ''}</div>
+          </div>
+          <div class="list-subtext">${lastMsg ? lastMsg.text : ''}</div>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  }
 
-    function loadContactsList() {
-      onSnapshot(collection(db, "users"), (snapshot) => {
-        const listContent = document.getElementById('list-content');
-        listContent.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            item.innerHTML = `
-              <div class="avatar-wrapper">
-                <img class="avatar" src="${u.photoURL || 'https://via.placeholder.com/150'}">
-                <div class="online-indicator" style="display:${u.isOnline ? 'block' : 'none'}"></div>
-              </div>
-              <div class="item-info">
-                <div class="item-name">${u.name}</div>
-                <div class="item-sub">📞 ${u.phone || 'ဖုန်းမရှိပါ'}</div>
-              </div>
-            `;
-            item.onclick = () => { activeTargetUserData = u; viewCurrentContactProfile(); };
-            listContent.appendChild(item);
-          }
-        });
-      });
-    }
+  function openChat(chatId) {
+    activeChatId = chatId;
+    const chat = chats.find(c => c.id === chatId);
+    const t = translations[currentLang];
 
-    async function loadMyProfile() {
-      const user = auth.currentUser;
-      if (!user) return;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        document.getElementById('my-profile-img').src = data.photoURL || "https://via.placeholder.com/150";
-        document.getElementById('my-profile-name').innerText = data.name;
-        document.getElementById('my-profile-email').innerText = data.email;
-        document.getElementById('edit-name').value = data.name || '';
-        document.getElementById('edit-phone').value = data.phone || '';
-        document.getElementById('edit-city').value = data.city || '';
-        document.getElementById('edit-about').value = data.about || '';
-      }
-    }
+    document.getElementById('chat-header-name').textContent = chat.name;
+    document.getElementById('chat-header-avatar').textContent = chat.name.charAt(0);
+    document.getElementById('chat-header-avatar').style.backgroundColor = chat.bg;
+    document.getElementById('chat-header-status').textContent = chat.online ? t.online : t.offline;
 
-    function openChat(chatId, targetData, type) {
-      activeChatId = chatId;
-      activeChatType = type;
-      activeTargetUserData = targetData;
+    renderMessages();
+    document.getElementById('chat-screen').classList.add('open');
+  }
 
-      document.getElementById('chat-title').innerText = targetData.name;
-      const headerAvatar = document.getElementById('chat-header-avatar');
+  function closeChat() {
+    document.getElementById('chat-screen').classList.remove('open');
+    activeChatId = null;
+    renderChats();
+  }
+
+  function renderMessages() {
+    const chat = chats.find(c => c.id === activeChatId);
+    const container = document.getElementById('chat-messages');
+    const t = translations[currentLang];
+    container.innerHTML = '';
+
+    chat.messages.forEach(msg => {
+      const bubble = document.createElement('div');
+      bubble.className = `message-bubble ${msg.sender === 'me' ? 'outgoing' : 'incoming'}`;
       
-      headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
-      headerAvatar.style.display = 'inline-block';
-      document.getElementById('call-box').style.display = 'flex';
+      let statusIcon = '';
+      if (msg.sender === 'me') {
+        if (msg.status === 'sending') statusIcon = `<span style="font-size:0.65rem">${t.sending}</span>`;
+        else if (msg.status === 'sent') statusIcon = `<i class="fa-solid fa-check"></i>`;
+        else if (msg.status === 'seen') statusIcon = `<i class="fa-solid fa-check-double" style="color:#1A73E8;"></i>`;
+      }
 
-      // Listen for Target User Online Status in Chat Header
-      onSnapshot(doc(db, "users", targetData.uid), (docSnap) => {
-        if (docSnap.exists()) {
-          const u = docSnap.data();
-          document.getElementById('chat-status-text').innerText = u.isOnline ? 'Active Now' : 'Offline';
-          document.getElementById('chat-header-online-dot').style.display = u.isOnline ? 'block' : 'none';
-        }
-      });
+      bubble.innerHTML = `
+        <div>${msg.text}</div>
+        <div class="message-meta">
+          <span>${msg.time}</span>
+          ${statusIcon}
+        </div>
+      `;
+      container.appendChild(bubble);
+    });
 
-      document.body.classList.add('show-chat');
-      document.getElementById('btn-back').style.display = 'inline-block';
+    container.scrollTop = container.scrollHeight;
+  }
 
-      if (unsubscribeMessages) unsubscribeMessages();
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') sendMessage();
+  }
 
-      const msgsRef = collection(db, 'direct_chats', chatId, 'messages');
-      const q = query(msgsRef, orderBy("createdAt", "asc"));
+  function sendMessage() {
+    const input = document.getElementById('message-input');
+    const text = input.value.trim();
+    if (!text || !activeChatId) return;
 
-      unsubscribeMessages = onSnapshot(q, (snapshot) => {
-        const messagesDiv = document.getElementById('messages');
-        messagesDiv.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          const isMe = data.uid === auth.currentUser.uid;
-          
-          // Mark Received Message as Seen automatically
-          if (!isMe && data.status !== 'seen') {
-            updateDoc(doc(db, 'direct_chats', chatId, 'messages', docSnap.id), { status: 'seen' });
-          }
+    const chat = chats.find(c => c.id === activeChatId);
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-          const msgWrapper = document.createElement('div');
-          msgWrapper.className = `msg-wrapper ${isMe ? 'sent-wrapper' : 'received-wrapper'}`;
+    const newMsg = {
+      sender: 'me',
+      text: text,
+      time: timeStr,
+      status: 'sending'
+    };
 
-          let statusText = '';
-          if (isMe) {
-            if (data.status === 'seen') statusText = `<span class="msg-status msg-status-seen">✓✓ Seen</span>`;
-            else if (data.status === 'delivered') statusText = `<span class="msg-status">✓✓ Delivered</span>`;
-            else statusText = `<span class="msg-status">✓ Sent</span>`;
-          }
+    chat.messages.push(newMsg);
+    input.value = '';
+    renderMessages();
 
-          msgWrapper.innerHTML = `
-            <div class="msg ${isMe ? 'sent' : 'received'}">${data.text}</div>
-            ${statusText}
-          `;
-          messagesDiv.appendChild(msgWrapper);
-        });
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-      });
-    }
+    // Status transition simulation: sending -> sent -> seen
+    setTimeout(() => {
+      newMsg.status = 'sent';
+      renderMessages();
+    }, 1000);
 
-    // --- Synchronized Messenger Call System ---
-    window.startWebRTCCall = async (isVideo) => {
-      if (!activeTargetUserData) return;
+    setTimeout(() => {
+      newMsg.status = 'seen';
+      renderMessages();
+      triggerAutoReply(chat);
+    }, 2500);
+  }
 
-      document.getElementById('call-screen').style.display = 'flex';
-      document.getElementById('floating-call-head').style.display = 'none';
-      document.getElementById('call-controls-active').style.display = 'flex';
-      document.getElementById('call-controls-incoming').style.display = 'none';
-      document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
-      document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
-      document.getElementById('call-screen-status').innerText = 'Calling... (ခေါ်ဆိုနေပါသည်)';
+  function triggerAutoReply(chat) {
+    const indicator = document.getElementById('typing-indicator');
+    const t = translations[currentLang];
+    indicator.textContent = `${chat.name} ${t.typing}`;
+    indicator.style.display = 'block';
+
+    setTimeout(() => {
+      indicator.style.display = 'none';
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
-      toggleVideoDisplay(isVideo);
+      const replies = [
+        "Sounds good to me!",
+        "Thanks for the update.",
+        "Got it! Let's touch base later.",
+        "Awesome! ASL Messenger is working great."
+      ];
+      const randomReply = replies[Math.floor(Math.random() * replies.length)];
 
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStream.getVideoTracks()[0].enabled = isVideo;
-        document.getElementById('local-video').srcObject = localStream;
-        
-        peerConnection = new RTCPeerConnection(servers);
-        remoteStream = new MediaStream();
-        document.getElementById('remote-video').srcObject = remoteStream;
-
-        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        peerConnection.ontrack = (event) => {
-          event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
-          document.getElementById('call-screen-status').innerText = 'Connected';
-        };
-
-        const callDocRef = doc(db, "calls", activeChatId);
-        const offerCandidates = collection(callDocRef, "offerCandidates");
-        const answerCandidates = collection(callDocRef, "answerCandidates");
-
-        peerConnection.onicecandidate = (e) => {
-          if (e.candidate) addDoc(offerCandidates, e.candidate.toJSON());
-        };
-
-        const offerDescription = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offerDescription);
-
-        await setDoc(callDocRef, {
-          offer: { type: offerDescription.type, sdp: offerDescription.sdp },
-          targetUid: activeTargetUserData.uid,
-          callerUid: auth.currentUser.uid,
-          callerName: auth.currentUser.displayName || "User",
-          callerPhoto: auth.currentUser.photoURL || "https://via.placeholder.com/150",
-          status: 'calling',
-          isVideo: isVideo
-        });
-
-        // Listen for Call Rejection / Termination by the other user
-        unsubscribeCallListener = onSnapshot(callDocRef, (snapshot) => {
-          if (!snapshot.exists() || snapshot.data()?.status === 'ended') {
-            closeCallUI();
-          } else if (snapshot.data()?.answer && peerConnection && !peerConnection.currentRemoteDescription) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(snapshot.data().answer));
-            document.getElementById('call-screen-status').innerText = 'Connected';
-          }
-        });
-
-      } catch (err) {
-        alert("Camera / Mic ခွင့်ပြုချက် လိုအပ်ပါသည်: " + err.message);
-        endCall();
-      }
-    };
-
-    function listenForIncomingCalls() {
-      onSnapshot(collection(db, "calls"), (snapshot) => {
-        snapshot.forEach(async (callDoc) => {
-          const data = callDoc.data();
-          if (auth.currentUser && data && data.targetUid === auth.currentUser.uid && data.status === 'calling') {
-            
-            document.getElementById('call-screen').style.display = 'flex';
-            document.getElementById('floating-call-head').style.display = 'none';
-            document.getElementById('call-controls-active').style.display = 'none';
-            document.getElementById('call-controls-incoming').style.display = 'flex';
-            document.getElementById('call-screen-name').innerText = data.callerName;
-            document.getElementById('call-screen-avatar').src = data.callerPhoto || 'https://via.placeholder.com/150';
-            document.getElementById('call-screen-status').innerText = `Ringing... (ဖုန်းဝင်နေပါသည်)`;
-
-            playCallRingtone();
-
-            // Listen if caller hangs up before answering
-            unsubscribeCallListener = onSnapshot(doc(db, "calls", callDoc.id), (docSnap) => {
-              if (!docSnap.exists() || docSnap.data()?.status === 'ended') {
-                stopCallRingtone();
-                closeCallUI();
-              }
-            });
-
-            document.getElementById('btn-accept-call').onclick = () => {
-              stopCallRingtone();
-              answerCall(callDoc.id, data);
-            };
-          }
-        });
+      chat.messages.push({
+        sender: 'them',
+        text: randomReply,
+        time: timeStr,
+        status: 'seen'
       });
+      renderMessages();
+    }, 2000);
+  }
+
+  // --- CALLS RENDERING ---
+  function renderCalls() {
+    const container = document.getElementById('calls-list');
+    container.innerHTML = '';
+
+    calls.forEach(call => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: ${call.bg}">${call.name.charAt(0)}</div>
+        </div>
+        <div class="list-info">
+          <div class="list-title">${call.name}</div>
+          <div class="list-subtext" style="display:flex; align-items:center; gap:4px;">
+            <i class="fa-solid ${call.icon}" style="color: ${call.color}; font-size: 0.75rem;"></i>
+            <span>${call.time}</span>
+          </div>
+        </div>
+        <i class="fa-solid fa-phone" style="color: var(--primary-color); cursor: pointer;" onclick="startCall('audio', '${call.name}')"></i>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  function startCall(type, customName) {
+    let name = customName;
+    let avatarChar = customName ? customName.charAt(0) : 'U';
+
+    if (!customName && activeChatId) {
+      const chat = chats.find(c => c.id === activeChatId);
+      name = chat.name;
+      avatarChar = chat.name.charAt(0);
     }
 
-    window.declineIncomingCall = async () => {
-      stopCallRingtone();
-      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true });
-      closeCallUI();
-    };
+    const t = translations[currentLang];
+    document.getElementById('call-name').textContent = name || "Contact";
+    document.getElementById('call-avatar').textContent = avatarChar;
+    document.getElementById('call-type').textContent = `${type === 'video' ? 'Video' : 'Audio'} ${t.calling}`;
+    document.getElementById('call-overlay').classList.add('active');
+  }
 
-    async function answerCall(callId, callData) {
-      document.getElementById('call-controls-incoming').style.display = 'none';
-      document.getElementById('call-controls-active').style.display = 'flex';
-      document.getElementById('call-screen-status').innerText = 'Connecting...';
+  function endCall() {
+    document.getElementById('call-overlay').classList.remove('active');
+  }
 
-      toggleVideoDisplay(callData.isVideo);
+  // --- CONTACTS RENDERING & FRIEND ADDING ---
+  function renderContacts() {
+    const container = document.getElementById('contacts-list');
+    const t = translations[currentLang];
+    container.innerHTML = '';
 
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localStream.getVideoTracks()[0].enabled = callData.isVideo;
-      document.getElementById('local-video').srcObject = localStream;
-
-      peerConnection = new RTCPeerConnection(servers);
-      remoteStream = new MediaStream();
-      document.getElementById('remote-video').srcObject = remoteStream;
-
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-      peerConnection.ontrack = (event) => {
-        event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
-        document.getElementById('call-screen-status').innerText = 'Connected';
-      };
-
-      const callDocRef = doc(db, "calls", callId);
-      await setDoc(callDocRef, { status: 'connected' }, { merge: true });
-
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
-      const answerDescription = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answerDescription);
-
-      await setDoc(callDocRef, { answer: { type: answerDescription.type, sdp: answerDescription.sdp } }, { merge: true });
-    }
-
-    window.endCall = async () => {
-      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true }).catch(() => {});
-      closeCallUI();
-    };
-
-    function closeCallUI() {
-      stopCallRingtone();
-      document.getElementById('call-screen').style.display = 'none';
-      document.getElementById('floating-call-head').style.display = 'none';
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
-      if (peerConnection) peerConnection.close();
-      if (unsubscribeCallListener) unsubscribeCallListener();
-    }
-
-    window.minimizeCallScreen = () => {
-      document.getElementById('call-screen').style.display = 'none';
-      const floatingHead = document.getElementById('floating-call-head');
-      floatingHead.style.display = 'flex';
-      if (activeTargetUserData && activeTargetUserData.photoURL) {
-        document.getElementById('floating-avatar').src = activeTargetUserData.photoURL;
+    contacts.forEach(contact => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      
+      let actionBtn = '';
+      if (contact.status === 'Pending') {
+        actionBtn = `<button class="btn btn-secondary" style="font-size:0.75rem; padding: 4px 8px;" onclick="confirmFriend(${contact.id})">${t.confirm}</button>`;
+      } else {
+        actionBtn = `<span style="font-size:0.75rem; color:var(--text-muted);">${contact.online ? t.online : t.offline}</span>`;
       }
-    };
 
-    window.restoreCallScreen = () => {
-      document.getElementById('floating-call-head').style.display = 'none';
-      document.getElementById('call-screen').style.display = 'flex';
-    };
+      item.innerHTML = `
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: ${contact.bg}">${contact.name.charAt(0)}</div>
+          <div class="status-dot ${contact.online ? '' : 'offline'}"></div>
+        </div>
+        <div class="list-info">
+          <div class="list-title">${contact.name}</div>
+          <div class="list-subtext">${contact.status === 'Pending' ? t.pending : ''}</div>
+        </div>
+        ${actionBtn}
+      `;
+      container.appendChild(item);
+    });
+  }
 
-    function toggleVideoDisplay(showVideo) {
-      document.getElementById('video-wrapper').style.display = showVideo ? 'block' : 'none';
-    }
+  function openAddFriendModal() {
+    document.getElementById('add-friend-modal').classList.add('active');
+  }
 
-    function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
-
-    document.getElementById('btn-send').onclick = sendMessage;
-    document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
-
-    async function sendMessage() {
-      const input = document.getElementById('msg-input');
-      const text = input.value.trim();
-      if (!text || !activeChatId || !auth.currentUser) return;
+  function addFriend() {
+    const input = document.getElementById('friend-name-input');
+    const name = input.value.trim();
+    if (name) {
+      contacts.push({
+        id: Date.now(),
+        name: name,
+        online: true,
+        status: 'Pending',
+        bg: '#8bc34a'
+      });
       input.value = '';
-      
-      await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
-        text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User",
-        status: 'sent', createdAt: serverTimestamp()
-      });
+      closeModal('add-friend-modal');
+      renderContacts();
     }
-  </script>
+  }
+
+  function confirmFriend(id) {
+    const contact = contacts.find(c => c.id === id);
+    if (contact) {
+      contact.status = 'Accepted';
+      renderContacts();
+    }
+  }
+
+  // --- STATUS RENDERING ---
+  function renderStatuses() {
+    const container = document.getElementById('status-list');
+    container.innerHTML = '';
+
+    statuses.forEach(st => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.innerHTML = `
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: ${st.bg}; border: 2px solid var(--primary-color);">${st.name.charAt(0)}</div>
+        </div>
+        <div class="list-info">
+          <div class="list-title">${st.name}</div>
+          <div class="list-subtext">${st.text} • ${st.time}</div>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  }
+
+  // --- PROFILE EDITING ---
+  function renderProfile() {
+    document.getElementById('my-name').textContent = userProfile.name;
+    document.getElementById('my-about').textContent = userProfile.about;
+    document.getElementById('my-avatar').textContent = userProfile.name.charAt(0);
+  }
+
+  function openEditProfileModal() {
+    document.getElementById('edit-name-input').value = userProfile.name;
+    document.getElementById('edit-about-input').value = userProfile.about;
+    document.getElementById('edit-profile-modal').classList.add('active');
+  }
+
+  function saveProfile() {
+    const name = document.getElementById('edit-name-input').value.trim();
+    const about = document.getElementById('edit-about-input').value.trim();
+    if (name) userProfile.name = name;
+    if (about) userProfile.about = about;
+    renderProfile();
+    closeModal('edit-profile-modal');
+  }
+
+  // --- SETTINGS RESET & LOGOUT ---
+  function resetSettings() {
+    document.getElementById('lang-select').value = 'en';
+    document.getElementById('font-select').value = 'font-default';
+    document.getElementById('ringtone-select').value = 'default';
+    changeLanguage('en');
+    changeFont('font-default');
+    alert("Settings reset to default.");
+  }
+
+  function openLogoutModal() {
+    document.getElementById('logout-modal').classList.add('active');
+  }
+
+  function confirmLogout() {
+    closeModal('logout-modal');
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+
+  function login() {
+    document.getElementById('login-screen').style.display = 'none';
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+</script>
+
 </body>
 </html>
