@@ -409,4 +409,135 @@
         const answerCandidates = collection(callDocRef, "answerCandidates");
 
         peerConnection.onicecandidate = (e) => {
-        
+          if (e.candidate) addDoc(offerCandidates, e.candidate.toJSON());
+        };
+
+        const offerDescription = await peerConnection.createOffer();
+        await peerConnection.setLocalDescription(offerDescription);
+
+        await setDoc(callDocRef, {
+          offer: { type: offerDescription.type, sdp: offerDescription.sdp },
+          targetUid: activeTargetUserData.uid,
+          callerName: auth.currentUser.displayName || "User",
+          isVideo: isVideo
+        });
+
+        onSnapshot(callDocRef, (snapshot) => {
+          const data = snapshot.data();
+          if (peerConnection && !peerConnection.currentRemoteDescription && data?.answer) {
+            const answerDescription = new RTCSessionDescription(data.answer);
+            peerConnection.setRemoteDescription(answerDescription);
+          }
+        });
+
+        onSnapshot(answerCandidates, (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              const candidate = new RTCIceCandidate(change.doc.data());
+              peerConnection.addIceCandidate(candidate);
+            }
+          });
+        });
+
+      } catch (err) {
+        alert("Camera သို့မဟုတ် Microphone ခွင့်ပြုချက်မရပါ: " + err.message);
+        endCall();
+      }
+    };
+
+    // Listen For Incoming Calls
+    function listenForIncomingCalls() {
+      onSnapshot(collection(db, "calls"), (snapshot) => {
+        snapshot.forEach(async (callDoc) => {
+          const data = callDoc.data();
+          if (data && data.targetUid === auth.currentUser.uid && data.offer) {
+            if (confirm(`📞 ${data.callerName} ထံမှ ${data.isVideo ? 'Video' : 'Voice'} Call လာနေပါသည်။ လက်ခံမလား?`)) {
+              answerCall(callDoc.id, data);
+            }
+          }
+        });
+      });
+    }
+
+    async function answerCall(callId, callData) {
+      document.getElementById('call-screen').style.display = 'flex';
+      localStream = await navigator.mediaDevices.getUserMedia({ video: callData.isVideo, audio: true });
+      document.getElementById('local-video').srcObject = localStream;
+
+      peerConnection = new RTCPeerConnection(servers);
+      remoteStream = new MediaStream();
+      document.getElementById('remote-video').srcObject = remoteStream;
+
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+      peerConnection.ontrack = (event) => event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+
+      const callDocRef = doc(db, "calls", callId);
+      const answerCandidates = collection(callDocRef, "answerCandidates");
+      const offerCandidates = collection(callDocRef, "offerCandidates");
+
+      peerConnection.onicecandidate = (e) => {
+        if (e.candidate) addDoc(answerCandidates, e.candidate.toJSON());
+      };
+
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
+      const answerDescription = await peerConnection.createAnswer();
+      await peerConnection.setLocalDescription(answerDescription);
+
+      await setDoc(callDocRef, { answer: { type: answerDescription.type, sdp: answerDescription.sdp } }, { merge: true });
+
+      onSnapshot(offerCandidates, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
+          }
+        });
+      });
+    }
+
+    window.endCall = async () => {
+      document.getElementById('call-screen').style.display = 'none';
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      if (peerConnection) peerConnection.close();
+      if (activeChatId) await deleteDoc(doc(db, "calls", activeChatId)).catch(() => {});
+    };
+
+    window.viewCurrentContactProfile = () => {
+      if (!activeTargetUserData) return;
+      document.getElementById('modal-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
+      document.getElementById('modal-name').innerText = activeTargetUserData.name;
+      document.getElementById('modal-about').innerText = `"${activeTargetUserData.about || 'Bio မရှိပါ'}"`;
+      document.getElementById('modal-phone').innerText = activeTargetUserData.phone || '-';
+      document.getElementById('modal-city').innerText = activeTargetUserData.city || '-';
+      document.getElementById('modal-email').innerText = activeTargetUserData.email || '-';
+      document.getElementById('contact-modal').style.display = 'flex';
+    };
+
+    window.closeModal = () => document.getElementById('contact-modal').style.display = 'none';
+    window.closeChat = () => document.body.classList.remove('show-chat');
+
+    window.createGroup = async () => {
+      const gInput = document.getElementById('group-name-input');
+      const gName = gInput.value.trim();
+      if (!gName) return;
+      await addDoc(collection(db, "groups"), { name: gName, createdBy: auth.currentUser.uid, createdAt: serverTimestamp() });
+      gInput.value = '';
+    };
+
+    function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
+
+    document.getElementById('btn-send').onclick = sendMessage;
+    document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+
+    async function sendMessage() {
+      const input = document.getElementById('msg-input');
+      const text = input.value.trim();
+      if (!text || !activeChatId) return;
+      input.value = '';
+      const colName = activeChatType === 'direct' ? 'direct_chats' : 'group_chats';
+      await addDoc(collection(db, colName, activeChatId, 'messages'), {
+        text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User", createdAt: serverTimestamp()
+      });
+    }
+  </script>
+</body>
+</html>
