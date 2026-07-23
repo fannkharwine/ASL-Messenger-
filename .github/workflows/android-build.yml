@@ -24,11 +24,13 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Initialize App Configs
+    - name: Prepare Web Assets & Capacitor
       run: |
+        mkdir www
+        cp index.html manifest.json logo.png www/ 2>/dev/null || cp index.html www/
         npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
-        echo '{"appId": "com.fannkharwine.aslmessenger", "appName": "ASL Messenger", "webDir": "."}' > capacitor.config.json
+        echo '{"appId": "com.fannkharwine.aslmessenger", "appName": "ASL Messenger", "webDir": "www"}' > capacitor.config.json
 
     - name: Add Android Platform
       run: |
@@ -46,3 +48,4 @@ jobs:
       with:
         name: ASL-Messenger-APK
         path: ./android/app/build/outputs/apk/debug/app-debug.apk
+        
