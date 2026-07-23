@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASL Messenger</title>
+  <title>ASL Messenger - Complete</title>
   <style>
     * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { margin: 0; padding: 0; background: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
     
-    /* Login & Signup Screens */
+    /* Auth Screens */
     #auth-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #f0f2f5; }
     .auth-card { background: white; padding: 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 360px; display: flex; flex-direction: column; gap: 12px; text-align: center; }
     .auth-card h2 { color: #0084ff; margin-bottom: 5px; }
@@ -21,18 +21,19 @@
     #app-container { display: none; width: 100%; height: 100vh; flex-direction: row; }
     
     /* Sidebar Section */
-    #sidebar { width: 340px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    #sidebar { width: 360px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
     .sidebar-header { padding: 15px; background: #0084ff; color: white; font-weight: bold; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
-    .tabs { display: flex; background: #e4e6eb; }
-    .tab-btn { flex: 1; padding: 10px 2px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 11px; text-align: center; }
+    
+    /* 5 Tabs */
+    .tabs { display: flex; background: #e4e6eb; overflow-x: auto; }
+    .tab-btn { flex: 1; padding: 10px 4px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 11px; text-align: center; white-space: nowrap; }
     .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
     .list-container { flex: 1; overflow-y: auto; }
     
-    /* Add Friend Header Bar */
     .add-friend-bar { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
     .btn-add-friend { background: #34c759; color: white; border: none; padding: 6px 12px; border-radius: 15px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-    /* Contacts & Chat Items */
+    /* List Items */
     .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; position: relative; }
     .list-item:hover { background: #f5f5f5; }
     .avatar-wrapper { position: relative; width: 44px; height: 44px; }
@@ -42,55 +43,56 @@
     .item-name { font-weight: bold; font-size: 14px; color: #333; }
     .item-sub { font-size: 12px; color: #777; }
 
-    /* Profile View Tab */
+    /* Request Action Buttons inside Noti Tab */
+    .req-actions { display: flex; gap: 6px; }
+    .btn-confirm { background: #0084ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .btn-delete-req { background: #e4e6eb; color: #333; border: none; padding: 6px 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; }
+
+    /* Settings Tab View */
+    #settings-tab-view { padding: 20px; display: none; flex-direction: column; gap: 15px; overflow-y: auto; width: 100%; }
+    .settings-group { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+    .settings-group h4 { margin: 0 0 5px 0; color: #0084ff; font-size: 14px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #333; }
+
+    /* Profile Tab View */
     #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; width: 100%; }
     .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
     .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
     .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
-    .profile-card input, .profile-card textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
+    .profile-card input { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
 
     /* Main Chat Section */
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; position: relative; }
     .chat-header { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
-    .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .chat-user-info { display: flex; align-items: center; gap: 10px; }
     .chat-user-status { font-size: 11px; font-weight: normal; color: #34c759; }
     .call-actions { display: flex; gap: 8px; align-items: center; }
     .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 15px; }
-    .call-btn:hover { background: #0084ff; color: white; }
     .btn-delete-chat { background: #ff3b30; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
 
     #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
     .msg-wrapper { display: flex; flex-direction: column; max-width: 70%; }
     .msg-wrapper.sent-wrapper { align-self: flex-end; align-items: flex-end; }
     .msg-wrapper.received-wrapper { align-self: flex-start; align-items: flex-start; }
-    
     .msg { padding: 10px 14px; border-radius: 16px; word-wrap: break-word; font-size: 14px; }
     .sent { background: #0084ff; color: white; }
     .received { background: #e4e6eb; color: black; }
-    .msg-status { font-size: 10px; color: #888; margin-top: 2px; text-align: right; }
-    .msg-status-seen { color: #0084ff; font-weight: bold; }
-
-    /* Media Styling in Messages */
     .msg-media-img, .msg-media-video { max-width: 240px; border-radius: 12px; margin-top: 5px; }
     .msg-file-link { color: #0084ff; text-decoration: underline; font-weight: bold; background: #fff; padding: 6px 10px; border-radius: 8px; display: inline-block; }
 
-    /* Chat Input Area Fix */
+    /* Input Area */
     #input-area { padding: 10px 15px; background: white; border-top: 1px solid #ddd; display: none; align-items: center; gap: 8px; }
     .media-btn-group { display: flex; gap: 6px; }
     .media-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; border-radius: 50%; }
     .media-btn:hover { background: #f0f0f0; }
-    
     input[type="text"] { flex: 1; padding: 10px 14px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px; }
     .btn-send { padding: 10px 18px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
     .recording-active { background: #ff3b30 !important; color: white !important; animation: pulse 1s infinite; }
 
-    /* Modal Overlay */
+    /* Modal */
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 360px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
 
-    /* Call Screen */
-    #call-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #111e38; z-index: 99999; flex-direction: column; align-items: center; justify-content: space-between; padding: 40px; color: white; }
-    
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
       #chat-main { display: none; width: 100%; }
@@ -101,14 +103,13 @@
 </head>
 <body>
 
-  <!-- Hidden File Inputs for Media Attachments -->
   <input type="file" id="media-file-input" style="display: none;">
 
   <!-- Auth Screen -->
   <div id="auth-screen">
     <div id="login-box" class="auth-card">
       <h2>ASL Messenger</h2>
-      <p style="font-size:13px; color:#666;">သင့်အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
+      <p style="font-size:13px; color:#666;">အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
       <input type="email" id="login-email" placeholder="Email သို့မဟုတ် ဖုန်းနံပါတ်">
       <input type="password" id="login-password" placeholder="Password">
       <button class="btn-primary" id="btn-email-login">Log In</button>
@@ -132,20 +133,22 @@
     </div>
   </div>
 
-  <!-- Main App Layout -->
+  <!-- Main App Container -->
   <div id="app-container">
     <div id="sidebar">
       <div class="sidebar-header">
         <span>ASL Messenger</span>
       </div>
       
+      <!-- 5 Tabs Navigation -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-chats" onclick="switchTab('chats')">Chats</button>
         <button class="tab-btn" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
+        <button class="tab-btn" id="tab-noti" onclick="switchTab('noti')">Noti</button>
+        <button class="tab-btn" id="tab-settings" onclick="switchTab('settings')">Settings</button>
         <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
-      <!-- Add Friend Header in Contacts Tab -->
       <div class="add-friend-bar" id="add-friend-section" style="display:none;">
         <span style="font-size: 13px; font-weight: bold; color: #555;">Private Contacts</span>
         <button class="btn-add-friend" onclick="openAddFriendModal()">➕ Add Friend</button>
@@ -153,7 +156,36 @@
 
       <div class="list-container" id="list-content"></div>
 
-      <!-- Profile View -->
+      <!-- Settings Tab View -->
+      <div id="settings-tab-view">
+        <div class="settings-group">
+          <h4>🎨 အသွင်အပြင် (Appearance)</h4>
+          <div class="setting-row">
+            <span>Dark Mode</span>
+            <input type="checkbox" id="setting-dark-mode" onchange="toggleDarkMode(this)">
+          </div>
+        </div>
+        <div class="settings-group">
+          <h4>🔔 အကြောင်းကြားချက်များ (Notifications)</h4>
+          <div class="setting-row">
+            <span>Sound & Vibration</span>
+            <input type="checkbox" checked>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h4>🔒 ကိုယ်ရေးလုံခြုံမှု (Privacy)</h4>
+          <div class="setting-row">
+            <span>Active Status ပြရန်</span>
+            <input type="checkbox" checked>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h4>ℹ️ အချက်အလက် (About)</h4>
+          <div style="font-size:12px; color:#666;">ASL Messenger Version 2.5.0</div>
+        </div>
+      </div>
+
+      <!-- Profile Tab View -->
       <div id="profile-tab-view">
         <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150">
         <h3 id="my-profile-name" style="margin:2px 0 0 0;">-</h3>
@@ -170,14 +202,13 @@
       </div>
     </div>
 
-    <!-- Right Main Chat Box Section -->
+    <!-- Main Chat Section -->
     <div id="chat-main">
       <div class="chat-header">
-        <div class="chat-user-info" id="chat-header-user">
+        <div class="chat-user-info">
           <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:5px; border:none; background:#e4e6eb; border-radius:50%; padding:4px 8px;">←</button>
           <div class="avatar-wrapper" style="width: 36px; height: 36px;">
             <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="">
-            <div id="chat-header-online-dot" class="online-indicator"></div>
           </div>
           <div>
             <div id="chat-title">Chat ကို ရွေးချယ်ပါ</div>
@@ -186,16 +217,14 @@
         </div>
         
         <div class="call-actions" id="call-box" style="display:none;">
-          <button class="call-btn" onclick="startCall(false)">📞</button>
-          <button class="call-btn" onclick="startCall(true)">📹</button>
+          <button class="call-btn" onclick="alert('Voice Call စတင်နေပါပြီ...')">📞</button>
+          <button class="call-btn" onclick="alert('Video Call စတင်နေပါပြီ...')">📹</button>
           <button class="btn-delete-chat" onclick="deleteCurrentChat()">🗑️ Delete Chat</button>
         </div>
       </div>
 
-      <!-- Messages Stream -->
       <div id="messages"></div>
 
-      <!-- Chat Input Area (Fixed and Fully Working) -->
       <div id="input-area">
         <div class="media-btn-group">
           <button class="media-btn" title="Photo" onclick="triggerMediaUpload('image/*')">🖼️</button>
@@ -214,17 +243,17 @@
     <div class="modal-content">
       <h3 style="margin:0; color:#0084ff;">Add Friend</h3>
       <p style="font-size:12px; color:#666; margin:0;">တစ်ဖက်လူ၏ ဖုန်းနံပါတ် သို့မဟုတ် Email ရိုက်ထည့်ပါ</p>
-      <input type="text" id="add-friend-input" placeholder="Email သို့မဟုတ် Phone (e.g. 09xxxxxxxxx)" style="padding:10px; border:1px solid #ccc; border-radius:6px; outline:none;">
-      <button onclick="executeAddFriend()" style="background:#0084ff; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Add လုပ်မည်</button>
+      <input type="text" id="add-friend-input" placeholder="Email သို့မဟုတ် Phone" style="padding:10px; border:1px solid #ccc; border-radius:6px; outline:none;">
+      <button onclick="sendFriendRequest()" style="background:#0084ff; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Request ပို့မည်</button>
       <button onclick="closeModal('add-friend-modal')" style="background:#e4e6eb; border:none; padding:8px; border-radius:6px; cursor:pointer;">မလုပ်တော့ပါ</button>
     </div>
   </div>
 
-  <!-- Firebase Integration -->
+  <!-- Firebase Script Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
@@ -240,7 +269,6 @@
     const db = getFirestore(app);
 
     let activeChatId = null;
-    let activeTargetUserData = null;
     let unsubscribeMessages = null;
     let mediaRecorder = null;
     let audioChunks = [];
@@ -287,20 +315,23 @@
       }
     });
 
+    // Switch Tabs Logic (5 Tabs)
     window.switchTab = (type) => {
-      document.getElementById('tab-chats').classList.toggle('active', type === 'chats');
-      document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
-      document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
+      ['chats', 'contacts', 'noti', 'settings', 'profile'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === type);
+      });
 
       document.getElementById('add-friend-section').style.display = type === 'contacts' ? 'flex' : 'none';
-      document.getElementById('list-content').style.display = type === 'profile' ? 'none' : 'block';
+      document.getElementById('list-content').style.display = (type === 'profile' || type === 'settings') ? 'none' : 'block';
+      document.getElementById('settings-tab-view').style.display = type === 'settings' ? 'flex' : 'none';
       document.getElementById('profile-tab-view').style.display = type === 'profile' ? 'flex' : 'none';
 
       if (type === 'chats' || type === 'contacts') loadPrivateContacts();
+      else if (type === 'noti') loadFriendRequests();
       else if (type === 'profile') loadMyProfile();
     };
 
-    // Private Contacts & Friend List Loader
+    // Load Confirmed Friends
     function loadPrivateContacts() {
       const listContent = document.getElementById('list-content');
       listContent.innerHTML = '';
@@ -308,7 +339,7 @@
       onSnapshot(collection(db, "users", auth.currentUser.uid, "friends"), async (snapshot) => {
         listContent.innerHTML = '';
         if (snapshot.empty) {
-          listContent.innerHTML = `<div style="padding:20px; text-align:center; font-size:13px; color:#888;">Friends မရှိသေးပါ။ Contacts တွင် Add Friend (+) လုပ်ပါ။</div>`;
+          listContent.innerHTML = `<div style="padding:20px; text-align:center; font-size:13px; color:#888;">သူငယ်ချင်း မရှိသေးပါ။ Contacts တွင် Add Friend လုပ်ပါ။</div>`;
           return;
         }
         for (let docSnap of snapshot.docs) {
@@ -336,11 +367,11 @@
       });
     }
 
-    // Add Friend Modal Trigger
+    // Send Friend Request (Appears in Target User's Noti Tab)
     window.openAddFriendModal = () => document.getElementById('add-friend-modal').style.display = 'flex';
     window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    window.executeAddFriend = async () => {
+    window.sendFriendRequest = async () => {
       const input = document.getElementById('add-friend-input').value.trim();
       if (!input) return alert("Email သို့မဟုတ် ဖုန်းနံပါတ် ထည့်ပါ။");
 
@@ -351,49 +382,101 @@
       if (querySnap.empty) querySnap = await getDocs(qPhone);
 
       if (querySnap.empty) {
-        alert("အကောင့် ရှာမတွေ့ပါ။ Email (သို့) Phone မှန်ကန်စွာ ထည့်ပါ။");
+        alert("အကောင့် ရှာမတွေ့ပါ။");
       } else {
         const targetUser = querySnap.docs[0].data();
         if (targetUser.uid === auth.currentUser.uid) return alert("မိမိကိုယ်ကို Add လုပ်၍ မရပါ။");
 
-        // Add to each other's friend list
-        await setDoc(doc(db, "users", auth.currentUser.uid, "friends", targetUser.uid), { friendUid: targetUser.uid });
-        await setDoc(doc(db, "users", targetUser.uid, "friends", auth.currentUser.uid), { friendUid: auth.currentUser.uid });
+        // Send request to target user's requests subcollection
+        await setDoc(doc(db, "users", targetUser.uid, "requests", auth.currentUser.uid), {
+          senderUid: auth.currentUser.uid,
+          senderName: auth.currentUser.displayName || "User",
+          senderEmail: auth.currentUser.email,
+          createdAt: serverTimestamp()
+        });
 
-        alert(`${targetUser.name} အား Contact တွင် ပေါင်းထည့်လိုက်ပါပြီ!`);
+        alert("Friend Request ပို့ပြီးပါပြီ။ တစ်ဖက်လူ Confirm လုပ်မှ Friend ဖြစ်ပါမည်။");
         closeModal('add-friend-modal');
-        loadPrivateContacts();
       }
     };
 
-    // Open Chat View and Reveal Chat Input Box
+    // Load Friend Requests in Noti Tab
+    function loadFriendRequests() {
+      const listContent = document.getElementById('list-content');
+      listContent.innerHTML = '';
+
+      onSnapshot(collection(db, "users", auth.currentUser.uid, "requests"), async (snapshot) => {
+        listContent.innerHTML = '';
+        if (snapshot.empty) {
+          listContent.innerHTML = `<div style="padding:20px; text-align:center; font-size:13px; color:#888;">အကြောင်းကြားချက် မရှိပါ။</div>`;
+          return;
+        }
+
+        snapshot.forEach(async (docSnap) => {
+          const req = docSnap.data();
+          const uSnap = await getDoc(doc(db, "users", req.senderUid));
+          if (uSnap.exists()) {
+            const u = uSnap.data();
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+              <div class="avatar-wrapper">
+                <img class="avatar" src="${u.photoURL || 'https://via.placeholder.com/150'}">
+              </div>
+              <div class="item-info">
+                <div class="item-name">${u.name}</div>
+                <div class="item-sub">Friend Request ပို့ထားသည်။</div>
+              </div>
+              <div class="req-actions">
+                <button class="btn-confirm" onclick="confirmRequest('${u.uid}')">Confirm</button>
+                <button class="btn-delete-req" onclick="deleteRequest('${u.uid}')">Delete</button>
+              </div>
+            `;
+            listContent.appendChild(item);
+          }
+        });
+      });
+    }
+
+    // Confirm Request (Both become friends)
+    window.confirmRequest = async (senderUid) => {
+      // Add each other to friends
+      await setDoc(doc(db, "users", auth.currentUser.uid, "friends", senderUid), { friendUid: senderUid });
+      await setDoc(doc(db, "users", senderUid, "friends", auth.currentUser.uid), { friendUid: auth.currentUser.uid });
+
+      // Remove from requests
+      await deleteDoc(doc(db, "users", auth.currentUser.uid, "requests", senderUid));
+      alert("သူငယ်ချင်း ဖြစ်သွားပါပြီ!");
+      loadFriendRequests();
+    };
+
+    window.deleteRequest = async (senderUid) => {
+      await deleteDoc(doc(db, "users", auth.currentUser.uid, "requests", senderUid));
+    };
+
+    // Chat Open Logic
     function openChat(chatId, targetData) {
       activeChatId = chatId;
-      activeTargetUserData = targetData;
-
       document.getElementById('chat-title').innerText = targetData.name;
       const headerAvatar = document.getElementById('chat-header-avatar');
       headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
       headerAvatar.style.display = 'inline-block';
       
       document.getElementById('call-box').style.display = 'flex';
-      document.getElementById('input-area').style.display = 'flex'; // ✅ Fix Chat Box Input Display
+      document.getElementById('input-area').style.display = 'flex';
 
       document.body.classList.add('show-chat');
       document.getElementById('btn-back').style.display = 'inline-block';
 
       if (unsubscribeMessages) unsubscribeMessages();
 
-      const msgsRef = collection(db, 'direct_chats', chatId, 'messages');
-      const q = query(msgsRef, orderBy("createdAt", "asc"));
-
+      const q = query(collection(db, 'direct_chats', chatId, 'messages'), orderBy("createdAt", "asc"));
       unsubscribeMessages = onSnapshot(q, (snapshot) => {
         const messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML = '';
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const isMe = data.uid === auth.currentUser.uid;
-
           const msgWrapper = document.createElement('div');
           msgWrapper.className = `msg-wrapper ${isMe ? 'sent-wrapper' : 'received-wrapper'}`;
 
@@ -401,7 +484,7 @@
           if (data.type === 'image') content = `<img class="msg-media-img" src="${data.fileUrl}">`;
           else if (data.type === 'video') content = `<video class="msg-media-video" controls src="${data.fileUrl}"></video>`;
           else if (data.type === 'audio') content = `<audio controls src="${data.fileUrl}"></audio>`;
-          else if (data.type === 'file') content = `<a class="msg-file-link" href="${data.fileUrl}" target="_blank">📄 ${data.fileName || 'Download File'}</a>`;
+          else if (data.type === 'file') content = `<a class="msg-file-link" href="${data.fileUrl}" target="_blank">📄 ${data.fileName}</a>`;
           else content = data.text || '';
 
           msgWrapper.innerHTML = `<div class="msg ${isMe ? 'sent' : 'received'}">${content}</div>`;
@@ -418,18 +501,15 @@
       activeChatId = null;
     };
 
-    // Delete Entire Chat History
     window.deleteCurrentChat = async () => {
       if (!activeChatId) return;
       if (confirm("ဒီ Chat ထဲက Message များကို အပြီးတိုင် ဖျက်ပစ်ရန် သေချာပါသလား?")) {
-        const msgsRef = collection(db, 'direct_chats', activeChatId, 'messages');
-        const snap = await getDocs(msgsRef);
+        const snap = await getDocs(collection(db, 'direct_chats', activeChatId, 'messages'));
         snap.forEach(async (d) => await deleteDoc(d.ref));
         alert("Chat များကို အပြီးဖျက်လိုက်ပါပြီ။");
       }
     };
 
-    // Send Text Message
     document.getElementById('btn-send').onclick = sendMessage;
     document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
@@ -438,20 +518,18 @@
       const text = input.value.trim();
       if (!text || !activeChatId) return;
       input.value = '';
-      
       await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
         text: text, type: 'text', uid: auth.currentUser.uid, createdAt: serverTimestamp()
       });
     }
 
-    // Media & File Upload Handler (Base64 for direct Firestore compatibility)
     window.triggerMediaUpload = (acceptType) => {
       const fileInput = document.getElementById('media-file-input');
       fileInput.accept = acceptType;
       fileInput.onchange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        if (file.size > 5 * 1024 * 1024) return alert("File Size မှာ 5MB ထက် မကျော်ရပါ။");
+        if (file.size > 5 * 1024 * 1024) return alert("File Size 5MB ထက် မကျော်ရပါ။");
 
         const reader = new FileReader();
         reader.onload = async () => {
@@ -468,7 +546,6 @@
       fileInput.click();
     };
 
-    // Voice Record System
     window.toggleVoiceRecording = async () => {
       const btn = document.getElementById('btn-voice-rec');
       if (!isRecording) {
@@ -509,6 +586,10 @@
         document.getElementById('edit-phone').value = data.phone || '';
       }
     }
+
+    window.toggleDarkMode = (el) => {
+      document.body.style.background = el.checked ? "#18191a" : "#f0f2f5";
+    };
 
     function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
   </script>
