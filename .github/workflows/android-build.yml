@@ -24,14 +24,11 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Generate package.json & Install Capacitor
+    - name: Initialize App Configs
       run: |
         npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
-
-    - name: Initialize Capacitor
-      run: |
-        npx cap init "ASL Messenger" "com.fannkharwine.aslmessenger" --web-dir .
+        echo '{"appId": "com.fannkharwine.aslmessenger", "appName": "ASL Messenger", "webDir": "."}' > capacitor.config.json
 
     - name: Add Android Platform
       run: |
