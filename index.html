@@ -149,14 +149,12 @@
     }
     .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); }
 
-    /* Sticker Drawer */
     .sticker-drawer {
       background: var(--card-bg); border-top: 1px solid var(--border-color);
       display: none; padding: 10px; gap: 10px; overflow-x: auto;
     }
     .sticker-item { width: 45px; height: 45px; cursor: pointer; object-fit: contain; }
 
-    /* WebRTC Call Overlay */
     .call-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: #0A0204; color: white; z-index: 100; display: none;
@@ -171,7 +169,6 @@
     .call-accept-btn { background: #2ab738; }
     .call-end-btn { background: #ea4335; }
 
-    /* ASL Screen */
     .asl-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: #000; color: white; z-index: 40; display: none; flex-direction: column;
@@ -202,7 +199,7 @@
 
 <div class="app-container">
 
-  <!-- AUTH SCREEN (VIBER ULTIMATE REDESIGN WITH MULTIPLE LOGIN OPTIONS) -->
+  <!-- SECURE AUTH SCREEN -->
   <div id="authScreen" class="screen active" style="background: linear-gradient(135deg, #4A0012 0%, #800020 50%, #2A000A 100%); color: white;">
     <div style="padding: 24px 20px; text-align: center; margin: auto 0; overflow-y: auto;">
       
@@ -213,7 +210,7 @@
       <h1 style="font-size: 22px; color: var(--gold-bright); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">
         Aung San's Land (Natmauk)
       </h1>
-      <p style="font-size: 12px; color: #E0E0E0; margin-bottom: 20px;">Viber-Style Private Encrypted Messenger</p>
+      <p style="font-size: 12px; color: #E0E0E0; margin-bottom: 20px;">Secure Private Encrypted Messenger</p>
 
       <!-- GOOGLE LOGIN -->
       <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
@@ -222,7 +219,7 @@
 
       <div style="display: flex; align-items: center; margin: 15px 0;">
         <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
-        <span style="padding:0 10px; font-size:11px; color: var(--gold-color);">OR EMAIL LOGIN</span>
+        <span style="padding:0 10px; font-size:11px; color: var(--gold-color);">OR SIGN IN WITH EMAIL</span>
         <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
       </div>
 
@@ -239,11 +236,6 @@
           <button class="btn btn-gold" onclick="authApp.signUpWithEmail()" style="flex:1;">Sign Up</button>
         </div>
       </div>
-
-      <!-- DEMO GUEST LOGIN BUTTON -->
-      <button class="btn btn-secondary" onclick="authApp.loginAsGuest()" style="margin-top: 15px; font-size: 11px; padding: 10px; background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);">
-        <i class="fa-solid fa-user-secret"></i> Continue as Guest (Instant Demo)
-      </button>
 
     </div>
   </div>
@@ -269,7 +261,7 @@
       <div id="callsList"></div>
     </div>
 
-    <!-- ASL TRANSLATOR TAB (ASL AI INTEGRATED) -->
+    <!-- ASL TRANSLATOR TAB -->
     <div id="aslTab" class="tab-content hidden">
       <div style="padding: 16px; text-align: center;">
         <i class="fa-solid fa-hand-holding-hand" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"></i>
@@ -410,7 +402,6 @@
 
     <div id="chatMessages" class="chat-messages"></div>
 
-    <!-- VIBER STICKERS DRAWER -->
     <div id="stickerDrawer" class="sticker-drawer">
       <img src="https://cdn-icons-png.flaticon.com/512/742/742751.png" class="sticker-item" onclick="app.sendSticker('😀')">
       <img src="https://cdn-icons-png.flaticon.com/512/742/742752.png" class="sticker-item" onclick="app.sendSticker('❤️')">
@@ -443,7 +434,7 @@
     </div>
   </div>
 
-  <!-- WEBRTC REAL-TIME CALL OVERLAY -->
+  <!-- WEBRTC CALL OVERLAY -->
   <div id="callOverlay" class="call-overlay">
     <div style="text-align:center; z-index:2;">
       <h3 id="callTargetName" style="color:var(--gold-bright);">User</h3>
@@ -517,7 +508,6 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // WebRTC Global Variables
   let peerConnection = null;
   let localStream = null;
   let aslCameraStream = null;
@@ -578,15 +568,11 @@
         .catch(err => alert(err.message));
     }
 
-    loginAsGuest() {
-      auth.signInAnonymously().catch(err => alert(err.message));
-    }
-
     saveUserProfile(user) {
       db.collection('users').doc(user.uid).set({
         uid: user.uid,
         name: user.displayName || user.email || "Natmauk User",
-        email: user.email || "Guest",
+        email: user.email || "",
         photo: user.photoURL || "https://picsum.photos/200"
       }, { merge: true });
     }
