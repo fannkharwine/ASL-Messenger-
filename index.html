@@ -12,10 +12,10 @@
     #app-container { display: none; width: 100%; height: 100vh; flex-direction: row; }
     
     /* Sidebar Section */
-    #sidebar { width: 320px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+    #sidebar { width: 340px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
     .sidebar-header { padding: 15px; background: #0084ff; color: white; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
     .tabs { display: flex; background: #e4e6eb; }
-    .tab-btn { flex: 1; padding: 12px 5px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 13px; }
+    .tab-btn { flex: 1; padding: 10px 2px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 11px; text-align: center; }
     .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
     .list-container { flex: 1; overflow-y: auto; }
     
@@ -34,7 +34,13 @@
     .profile-avatar-large { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
     .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
     .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
-    .profile-card input, .profile-card textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
+    .profile-card input, .profile-card textarea, .profile-card select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
+
+    /* Settings Sections Inside Profile */
+    .settings-section { width: 100%; text-align: left; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-top: 5px; }
+    .settings-title { font-weight: bold; font-size: 13px; color: #0084ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+    .setting-row:last-child { border-bottom: none; }
 
     /* Main Chat Section */
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; position: relative; }
@@ -58,113 +64,45 @@
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
-    /* Custom Beautiful Call Screen Overlay */
+    /* Custom Call Screen Overlay */
     #call-screen {
-      display: none;
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(180deg, #308ce8 0%, #764ba2 60%, #61348f 100%);
-      z-index: 999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 60px 20px 40px 20px;
-      color: white;
+      z-index: 999; flex-direction: column; align-items: center; justify-content: space-between;
+      padding: 60px 20px 40px 20px; color: white;
     }
-
-    /* Video Overlay Area */
-    .video-container {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      display: none;
-      z-index: 1;
-    }
+    .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 1; }
     #remote-video { width: 100%; height: 100%; object-fit: cover; }
     #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 20px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-    /* Call User Info UI */
-    .call-user-area {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 15px;
-      margin-top: 40px;
-      z-index: 2;
-    }
-    .call-avatar-wrapper {
-      position: relative;
-      width: 130px;
-      height: 130px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .call-avatar-wrapper::before {
-      content: '';
-      position: absolute;
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      animation: pulse 2s infinite;
-    }
-    .call-avatar-img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid rgba(255,255,255,0.8);
-      z-index: 2;
-    }
-    @keyframes pulse {
-      0% { transform: scale(0.95); opacity: 0.8; }
-      50% { transform: scale(1.15); opacity: 0.2; }
-      100% { transform: scale(0.95); opacity: 0.8; }
-    }
+    .call-user-area { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 40px; z-index: 2; }
+    .call-avatar-wrapper { position: relative; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; }
+    .call-avatar-wrapper::before { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); animation: pulse 2s infinite; }
+    .call-avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.8); z-index: 2; }
+    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 0.2; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
     .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; }
 
-    /* Bottom Control Bar */
-    .call-controls-bar {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      width: 100%;
-      max-width: 400px;
-      z-index: 2;
-    }
-    .action-btn-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-    .action-btn-item span {
-      font-size: 12px;
-      opacity: 0.9;
-    }
-    .ctrl-circle-btn {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, 0.25);
-      backdrop-filter: blur(10px);
-      color: white;
-      font-size: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
+    .call-controls-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 400px; z-index: 2; }
+    .action-btn-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+    .action-btn-item span { font-size: 12px; opacity: 0.9; }
+    .ctrl-circle-btn { width: 58px; height: 58px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); color: white; font-size: 20px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
     .ctrl-circle-btn:active { transform: scale(0.9); }
     .ctrl-circle-btn.off { background: rgba(255, 255, 255, 0.8); color: #333; }
     .btn-end { background: #ff3b30; color: white; }
+
+    /* Toast Notification Banner */
+    #toast-notification {
+      position: fixed; top: 15px; right: 15px; z-index: 9999;
+      background: rgba(255, 255, 255, 0.95); color: #333;
+      padding: 12px 18px; border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      border-left: 4px solid #0084ff;
+      display: none; align-items: center; gap: 12px;
+      animation: slideIn 0.3s ease-out; cursor: pointer;
+    }
+    @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
@@ -175,6 +113,15 @@
   </style>
 </head>
 <body>
+
+  <!-- Toast Notification Bar -->
+  <div id="toast-notification">
+    <span id="toast-icon" style="font-size:20px;">💬</span>
+    <div>
+      <div id="toast-title" style="font-weight:bold; font-size:13px;">-</div>
+      <div id="toast-body" style="font-size:12px; color:#666;">-</div>
+    </div>
+  </div>
 
   <!-- 1. Login Screen -->
   <div id="auth-screen">
@@ -191,10 +138,11 @@
         <button id="btn-logout" style="background: #ff4d4f; padding: 5px 10px; font-size: 11px;">Logout</button>
       </div>
       
-      <!-- Tabs -->
+      <!-- Tabs (With Notification Tab) -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
         <button class="tab-btn" id="tab-groups" onclick="switchTab('groups')">Groups</button>
+        <button class="tab-btn" id="tab-noti" onclick="switchTab('noti')">Notifications 🔔</button>
         <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
@@ -204,7 +152,7 @@
         <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
       </div>
 
-      <!-- Contacts & Groups List -->
+      <!-- Contacts, Groups & Notifications List -->
       <div class="list-container" id="list-content"></div>
 
       <!-- Profile Tab View -->
@@ -213,7 +161,9 @@
         <h3 id="my-profile-name" style="margin: 5px 0 0 0;">-</h3>
         <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
 
+        <!-- Edit Profile Card -->
         <div class="profile-card">
+          <div style="font-weight:bold; color:#0084ff; font-size:13px; margin-bottom:5px;">✏️ Profile ပြင်ဆင်ရန်</div>
           <div>
             <label>Profile ဓာတ်ပုံ URL</label>
             <input type="text" id="edit-photo" placeholder="https://example.com/photo.jpg">
@@ -236,6 +186,64 @@
           </div>
           <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
         </div>
+
+        <!-- ⚙️ General Settings -->
+        <div class="settings-section">
+          <div class="settings-title">⚙️ Settings (အထွေထွေ စတင်မှုများ)</div>
+          <div class="setting-row">
+            <span>App Language</span>
+            <select style="width: auto; padding: 2px 6px;">
+              <option>မြန်မာစာ</option>
+              <option>English</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <span>Dark Mode</span>
+            <input type="checkbox" id="toggle-darkmode">
+          </div>
+        </div>
+
+        <!-- 🔒 Privacy & Security -->
+        <div class="settings-section">
+          <div class="settings-title">🔒 Privacy & Security (လုံခြုံရေး)</div>
+          <div class="setting-row">
+            <span>Last Seen Status ဖွင့်ထားမည်</span>
+            <input type="checkbox" checked>
+          </div>
+          <div class="setting-row">
+            <span>Read Receipts (အပြာရောင်အမှတ်)</span>
+            <input type="checkbox" checked>
+          </div>
+          <div class="setting-row">
+            <span>Blocked Users (ပိတ်ဆို့ထားသူများ)</span>
+            <span style="color:#888; font-size:12px;">0 ယောက် ></span>
+          </div>
+        </div>
+
+        <!-- 🔔 Notifications & Ringtones -->
+        <div class="settings-section">
+          <div class="settings-title">🔔 Notification & Ringtones (အသံများ)</div>
+          <div class="setting-row">
+            <span>In-App Message Toast Noti</span>
+            <input type="checkbox" id="set-msg-noti" checked>
+          </div>
+          <div class="setting-row">
+            <span>Message Ringtone (စာဝင်အသံ)</span>
+            <select style="width: auto; padding: 2px 6px;">
+              <option>Default Tone</option>
+              <option>Chime</option>
+              <option>Pop</option>
+            </select>
+          </div>
+          <div class="setting-row">
+            <span>Call Ringtone (ဖုန်းဝင်အသံ)</span>
+            <select style="width: auto; padding: 2px 6px;">
+              <option>Classic Ring</option>
+              <option>Digital Bell</option>
+            </select>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -261,15 +269,13 @@
         <button id="btn-send">ပို့မည်</button>
       </div>
 
-      <!-- Real-Time Call Interface Screen (Custom Redesigned Screen) -->
+      <!-- Real-Time Call Interface Screen -->
       <div id="call-screen">
-        <!-- Live Video Container -->
         <div class="video-container" id="video-wrapper">
           <video id="remote-video" autoplay playsinline></video>
           <video id="local-video" autoplay playsinline muted></video>
         </div>
 
-        <!-- Call User Profile UI -->
         <div class="call-user-area" id="call-user-ui">
           <div class="call-avatar-wrapper">
             <img id="call-screen-avatar" class="call-avatar-img" src="https://via.placeholder.com/150" alt="Caller">
@@ -278,7 +284,6 @@
           <div id="call-screen-status" class="call-status">Waiting . .</div>
         </div>
 
-        <!-- Call Actions Bar -->
         <div class="call-controls-bar">
           <div class="action-btn-item">
             <button class="ctrl-circle-btn" id="btn-speaker" onclick="toggleSpeaker()">🔊</button>
@@ -378,6 +383,7 @@
           });
         }
         listenForIncomingCalls();
+        listenForGlobalNotifications();
         switchTab('contacts');
       } else {
         document.getElementById('auth-screen').style.display = 'flex';
@@ -390,6 +396,7 @@
       activeTab = type;
       document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
       document.getElementById('tab-groups').classList.toggle('active', type === 'groups');
+      document.getElementById('tab-noti').classList.toggle('active', type === 'noti');
       document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
 
       document.getElementById('group-create-box').style.display = type === 'groups' ? 'flex' : 'none';
@@ -398,6 +405,7 @@
 
       if (type === 'contacts') loadContacts();
       else if (type === 'groups') loadGroups();
+      else if (type === 'noti') loadNotifications();
       else if (type === 'profile') loadMyProfile();
     };
 
@@ -446,6 +454,35 @@
       });
     }
 
+    // Load Notifications History Tab
+    function loadNotifications() {
+      onSnapshot(query(collection(db, "notifications"), orderBy("createdAt", "desc")), (snapshot) => {
+        const listContent = document.getElementById('list-content');
+        listContent.innerHTML = '';
+        let myNotis = 0;
+        snapshot.forEach((docSnap) => {
+          const n = docSnap.data();
+          if (n.targetUid === auth.currentUser.uid) {
+            myNotis++;
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.innerHTML = `
+              <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center;">🔔</div>
+              <div class="item-info">
+                <div class="item-name">${n.title}</div>
+                <div class="item-sub">${n.body}</div>
+              </div>
+            `;
+            listContent.appendChild(item);
+          }
+        });
+
+        if (myNotis === 0) {
+          listContent.innerHTML = `<div style="padding:20px; text-align:center; color:#888; font-size:13px;">Notification များ မရှိသေးပါ</div>`;
+        }
+      });
+    }
+
     async function loadMyProfile() {
       const user = auth.currentUser;
       const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -473,7 +510,7 @@
         about: document.getElementById('edit-about').value.trim()
       }, { merge: true });
 
-      alert("Profile သိမ်းဆည်းပြီးပါပြီ ✨");
+      alert("Profile ပြင်ဆင်မှုများ သိမ်းဆည်းပြီးပါပြီ ✨");
       loadMyProfile();
     };
 
@@ -517,11 +554,10 @@
       });
     }
 
-    // --- Modern Custom Call System ---
+    // --- WebRTC Video & Voice Call ---
     window.startWebRTCCall = async (isVideo) => {
       if (!activeTargetUserData) return;
 
-      // Call Screen UI setup
       document.getElementById('call-screen').style.display = 'flex';
       document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
       document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
@@ -531,8 +567,6 @@
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        
-        // Default Cam Status based on call type
         localStream.getVideoTracks()[0].enabled = isVideo;
         isCamOff = !isVideo;
         updateCamBtnUI();
@@ -568,6 +602,9 @@
           isVideo: isVideo
         });
 
+        // Add Notification for Call
+        addNotification(activeTargetUserData.uid, "📞 Incoming Call", `${auth.currentUser.displayName || 'User'} ထံမှ Call ခေါ်ဆိုနေပါသည်`);
+
         onSnapshot(callDocRef, (snapshot) => {
           const data = snapshot.data();
           if (peerConnection && !peerConnection.currentRemoteDescription && data?.answer) {
@@ -586,7 +623,7 @@
         });
 
       } catch (err) {
-        alert("Camera / Microphone သုံးစွဲခွင့် လိုအပ်ပါသည်: " + err.message);
+        alert("Camera / Microphone ခွင့်ပြုချက် လိုအပ်ပါသည်: " + err.message);
         endCall();
       }
     };
@@ -596,6 +633,7 @@
         snapshot.forEach(async (callDoc) => {
           const data = callDoc.data();
           if (data && data.targetUid === auth.currentUser.uid && data.offer) {
+            showToastNotification("📞 Incoming Call", `${data.callerName} ထံမှ Call လာနေပါသည်`);
             if (confirm(`📞 ${data.callerName} ထံမှ ${data.isVideo ? 'Video' : 'Voice'} Call လာနေပါသည်။ လက်ခံမလား?`)) {
               answerCall(callDoc.id, data);
             }
@@ -652,15 +690,13 @@
       });
     }
 
-    // Call Control Buttons Logic
+    // Call Actions
     window.toggleMic = () => {
       if (!localStream) return;
       isMicMuted = !isMicMuted;
       localStream.getAudioTracks()[0].enabled = !isMicMuted;
-      const btn = document.getElementById('btn-mic');
-      const label = document.getElementById('label-mic');
-      btn.classList.toggle('off', isMicMuted);
-      label.innerText = isMicMuted ? 'Unmute' : 'Mute';
+      document.getElementById('btn-mic').classList.toggle('off', isMicMuted);
+      document.getElementById('label-mic').innerText = isMicMuted ? 'Unmute' : 'Mute';
     };
 
     window.toggleCamera = () => {
@@ -672,28 +708,59 @@
     };
 
     function updateCamBtnUI() {
-      const btn = document.getElementById('btn-cam');
-      const label = document.getElementById('label-cam');
-      btn.classList.toggle('off', !isCamOff);
-      label.innerText = isCamOff ? 'Start Video' : 'Stop Video';
+      document.getElementById('btn-cam').classList.toggle('off', !isCamOff);
+      document.getElementById('label-cam').innerText = isCamOff ? 'Start Video' : 'Stop Video';
     }
 
     function toggleVideoDisplay(showVideo) {
-      const videoWrapper = document.getElementById('video-wrapper');
-      videoWrapper.style.display = showVideo ? 'block' : 'none';
+      document.getElementById('video-wrapper').style.display = showVideo ? 'block' : 'none';
     }
 
     window.toggleSpeaker = () => {
-      const btn = document.getElementById('btn-speaker');
-      btn.classList.toggle('off');
+      document.getElementById('btn-speaker').classList.toggle('off');
     };
 
     window.endCall = async () => {
       document.getElementById('call-screen').style.display = 'none';
       if (localStream) localStream.getTracks().forEach(track => track.stop());
       if (peerConnection) peerConnection.close();
-      if (activeChatId) await deleteDoc(doc(doc(db, "calls", activeChatId))).catch(() => {});
+      if (activeChatId) await deleteDoc(doc(db, "calls", activeChatId)).catch(() => {});
     };
+
+    // --- Notification System ---
+    async function addNotification(targetUid, title, body) {
+      await addDoc(collection(db, "notifications"), {
+        targetUid: targetUid,
+        title: title,
+        body: body,
+        createdAt: serverTimestamp()
+      });
+    }
+
+    function listenForGlobalNotifications() {
+      onSnapshot(collection(db, "notifications"), (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            const noti = change.doc.data();
+            if (noti.targetUid === auth.currentUser.uid) {
+              showToastNotification(noti.title, noti.body);
+            }
+          }
+        });
+      });
+    }
+
+    function showToastNotification(title, body) {
+      const isEnabled = document.getElementById('set-msg-noti').checked;
+      if (!isEnabled) return;
+
+      const toast = document.getElementById('toast-notification');
+      document.getElementById('toast-title').innerText = title;
+      document.getElementById('toast-body').innerText = body;
+
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    }
 
     window.viewCurrentContactProfile = () => {
       if (!activeTargetUserData) return;
@@ -727,10 +794,16 @@
       const text = input.value.trim();
       if (!text || !activeChatId) return;
       input.value = '';
+      
       const colName = activeChatType === 'direct' ? 'direct_chats' : 'group_chats';
       await addDoc(collection(db, colName, activeChatId, 'messages'), {
         text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User", createdAt: serverTimestamp()
       });
+
+      // Send Noti to Direct Contact
+      if (activeChatType === 'direct' && activeTargetUserData) {
+        addNotification(activeTargetUserData.uid, `💬 ${auth.currentUser.displayName || 'User'}`, text);
+      }
     }
   </script>
 </body>
