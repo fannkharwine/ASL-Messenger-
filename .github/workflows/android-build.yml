@@ -24,18 +24,21 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    - name: Install Capacitor CLI
+    - name: Generate package.json & Install Capacitor
       run: |
         npm init -y
         npm install @capacitor/core @capacitor/cli @capacitor/android
 
-    - name: Initialize Capacitor & Add Android
+    - name: Initialize Capacitor
       run: |
         npx cap init "ASL Messenger" "com.fannkharwine.aslmessenger" --web-dir .
+
+    - name: Add Android Platform
+      run: |
         npx cap add android
         npx cap sync android
 
-    - name: Build Android APK (Gradle)
+    - name: Build Android APK
       run: |
         cd android
         chmod +x gradlew
