@@ -11,29 +11,20 @@ jobs:
 
     steps:
     - name: Checkout Repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
-        node-version: 18
+        node-version: 20
 
-    - name: Install Bubblewrap CLI
-      run: npm install -g @bubblewrap/cli
-
-    - name: Setup Java JDK
-      uses: actions/setup-java@v3
+    - name: PWABuilder Android Action
+      uses: pwa-builder/pwa-action@v2.0.0
       with:
-        distribution: 'zulu'
-        java-version: '17'
-
-    - name: Initialize & Build Android APK
-      run: |
-        npx @bubblewrap/cli init --manifest=manifest.json
-        npx @bubblewrap/cli build
+        manifest_url: 'https://fannkharwine.github.io/ASL-Messenger-/manifest.json'
 
     - name: Upload APK Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ASL-Messenger-APK
         path: ./*.apk
