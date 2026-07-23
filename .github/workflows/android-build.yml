@@ -1,4 +1,4 @@
-run-name: name: Build Android APK
+name: Build Android APK
 
 on:
   push:
@@ -21,31 +21,25 @@ jobs:
     - name: Setup Java JDK 17
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
+        distribution: 'temurin'
         java-version: '17'
 
-    - name: Prepare Web Assets & Capacitor 5
-      run: |
-        mkdir -p www
-        cp index.html manifest.json logo.png www/ 2>/dev/null || cp index.html www/
-        npm init -y
-        npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
-        echo '{"appId": "com.fannkharwine.aslmessenger", "appName": "ASL Messenger", "webDir": "www"}' > capacitor.config.json
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
 
-    - name: Add Android Platform
+    - name: Install Cordova & Build APK
       run: |
-        npx cap add android
-        npx cap sync android
-
-    - name: Build Android APK
-      run: |
-        cd android
-        chmod +x gradlew
-        ./gradlew assembleDebug --stacktrace
+        npm install -g cordova
+        cordova create myApp com.fannkharwine.aslmessenger "ASL Messenger"
+        cd myApp
+        rm -rf www/*
+        cp -r ../* www/ 2>/dev/null || true
+        rm -rf www/myApp www/node_modules www/.git www/.github
+        cordova platform add android
+        cordova build android --debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: ASL-Messenger-APK
-        path: ./android/app/build/outputs/apk/debug/app-debug.apk
-        
+        path: ./myApp/platforms/android/app/build/outputs/apk/debug/app-debug.apk
