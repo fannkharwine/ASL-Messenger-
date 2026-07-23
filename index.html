@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ASL Messenger - Viber Ultimate Edition</title>
+  <title>Aung San's Land (Natmauk) - Private Messenger</title>
   
   <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,15 +16,19 @@
 
   <style>
     :root {
-      --primary-color: #7360F2;
-      --primary-hover: #5b48d9;
-      --bg-color: #F0F2F5;
+      --primary-color: #800020; /* Dark Burgundy Red */
+      --primary-hover: #5A0016;
+      --gold-color: #D4AF37; /* Gold Accent */
+      --gold-bright: #FFD700;
+      --bg-color: #F8F9FA;
       --card-bg: #FFFFFF;
       --text-main: #1C1E21;
       --text-muted: #65676B;
       --border-color: #E4E6EB;
-      --sent-msg: #E7E4FF;
+      --sent-msg: #800020;
+      --sent-text: #FFFFFF;
       --received-msg: #FFFFFF;
+      --received-text: #1C1E21;
       --font-family: 'Inter', sans-serif;
     }
 
@@ -34,8 +38,10 @@
       --text-main: #E4E6EB;
       --text-muted: #B0B3B8;
       --border-color: #2F3031;
-      --sent-msg: #3B2E7E;
+      --sent-msg: #600018;
+      --sent-text: #FFD700;
       --received-msg: #242526;
+      --received-text: #FFFFFF;
     }
 
     body.font-serif { --font-family: 'Merriweather', serif; }
@@ -43,46 +49,49 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
 
-    body { background-color: #000; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+    body { background-color: #0A0204; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
     .app-container {
       width: 100%; max-width: 480px; height: 100vh; max-height: 900px;
       background: var(--bg-color); display: flex; flex-direction: column;
-      position: relative; box-shadow: 0 12px 32px rgba(0,0,0,0.5); overflow: hidden;
+      position: relative; box-shadow: 0 12px 32px rgba(128,0,32,0.3); overflow: hidden;
     }
 
-    @media (min-width: 481px) { .app-container { height: 92vh; border-radius: 20px; } }
+    @media (min-width: 481px) { .app-container { height: 92vh; border-radius: 20px; border: 2px solid var(--gold-color); } }
 
     .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-color); overflow-y: auto; }
     .screen.active { display: flex; }
 
     header {
-      background: var(--card-bg); padding: 14px 16px; display: flex;
-      justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
-      position: sticky; top: 0; z-index: 10; color: var(--text-main);
+      background: var(--primary-color); padding: 14px 16px; display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color);
+      position: sticky; top: 0; z-index: 10; color: #FFFFFF;
     }
-    header h2 { font-size: 20px; color: var(--primary-color); font-weight: 700; }
+    header h2 { font-size: 18px; color: var(--gold-bright); font-weight: 700; letter-spacing: 0.5px; }
 
     .icon-btn {
-      background: none; border: none; color: var(--primary-color); font-size: 18px;
-      cursor: pointer; padding: 6px; border-radius: 50%; transition: background 0.2s;
+      background: none; border: none; color: var(--gold-color); font-size: 18px;
+      cursor: pointer; padding: 6px; border-radius: 50%; transition: background 0.2s, color 0.2s;
     }
-    .icon-btn:hover { background: rgba(115, 96, 242, 0.1); }
+    .icon-btn:hover { background: rgba(212, 175, 55, 0.15); color: var(--gold-bright); }
 
     .btn {
-      background: var(--primary-color); color: #fff; border: none; padding: 12px 18px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: background 0.2s;
+      background: var(--primary-color); color: var(--gold-bright); border: 1px solid var(--gold-color); padding: 12px 18px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;
     }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-google { background: #4285F4; display: flex; align-items: center; justify-content: center; gap: 10px; }
-    .btn-secondary { background: var(--border-color); color: var(--text-main); }
-    .btn-danger { background: #d93025; }
+    .btn:hover { background: var(--primary-hover); box-shadow: 0 0 10px rgba(212,175,55,0.4); }
+    .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+    .btn-google:hover { background: #f1f1f1; color: #000; }
+    .btn-gold { background: var(--gold-color); color: #000; border: none; font-weight: bold; }
+    .btn-gold:hover { background: var(--gold-bright); }
+    .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; }
+    .btn-danger { background: #d93025; color: #fff; border: none; }
 
     .input-field {
       width: 100%; padding: 12px 14px; margin-bottom: 12px;
       border: 1px solid var(--border-color); border-radius: 8px; background: var(--card-bg); color: var(--text-main); font-size: 14px; outline: none;
     }
-    .input-field:focus { border-color: var(--primary-color); }
+    .input-field:focus { border-color: var(--gold-color); box-shadow: 0 0 5px rgba(212,175,55,0.5); }
 
     label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
 
@@ -90,26 +99,27 @@
 
     nav.tab-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 60px;
-      background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); z-index: 20;
+      background: var(--card-bg); display: flex; border-top: 2px solid var(--gold-color); z-index: 20;
     }
     .tab-item {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
       color: var(--text-muted); font-size: 11px; cursor: pointer; gap: 3px;
     }
     .tab-item i { font-size: 18px; }
-    .tab-item.active { color: var(--primary-color); font-weight: 600; }
+    .tab-item.active { color: var(--primary-color); font-weight: bold; }
+    body.dark-theme .tab-item.active { color: var(--gold-bright); }
 
     .list-item {
       display: flex; align-items: center; padding: 12px 16px; background: var(--card-bg);
       border-bottom: 1px solid var(--border-color); cursor: pointer; position: relative; color: var(--text-main);
     }
     .avatar-wrapper { position: relative; margin-right: 12px; }
-    .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #ccc; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #ccc; border: 2px solid var(--gold-color); }
     .online-indicator {
       width: 12px; height: 12px; background: #ccc; border: 2px solid var(--card-bg);
       border-radius: 50%; position: absolute; bottom: 2px; right: 2px;
     }
-    .online-indicator.online { background: #34a853; }
+    .online-indicator.online { background: #2ab738; }
 
     .item-details { flex: 1; min-width: 0; }
     .item-top { display: flex; justify-content: space-between; margin-bottom: 4px; }
@@ -122,54 +132,56 @@
       background: var(--bg-color); z-index: 30; display: none; flex-direction: column;
     }
     .chat-header {
-      background: var(--card-bg); padding: 10px 16px; display: flex;
-      align-items: center; border-bottom: 1px solid var(--border-color); gap: 10px; color: var(--text-main);
+      background: var(--primary-color); padding: 10px 16px; display: flex;
+      align-items: center; border-bottom: 2px solid var(--gold-color); gap: 10px; color: #FFFFFF;
     }
     .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
     .message-bubble {
       max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px;
-      line-height: 1.4; position: relative; word-wrap: break-word; color: var(--text-main);
+      line-height: 1.4; position: relative; word-wrap: break-word;
     }
-    .message-bubble.sent { align-self: flex-end; background: var(--sent-msg); border-bottom-right-radius: 2px; }
-    .message-bubble.received { align-self: flex-start; background: var(--received-msg); border-bottom-left-radius: 2px; }
-    .msg-status { font-size: 10px; margin-left: 5px; color: var(--primary-color); }
+    .message-bubble.sent { align-self: flex-end; background: var(--sent-msg); color: var(--sent-text); border-bottom-right-radius: 2px; border: 1px solid var(--gold-color); }
+    .message-bubble.received { align-self: flex-start; background: var(--received-msg); color: var(--received-text); border-bottom-left-radius: 2px; border: 1px solid var(--border-color); }
+    .msg-status { font-size: 10px; margin-left: 5px; color: var(--gold-bright); }
 
     .chat-input-bar {
       background: var(--card-bg); padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border-color);
     }
     .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); }
 
-    /* Sticker & Emoji Picker Drawer */
+    /* Sticker Drawer */
     .sticker-drawer {
       background: var(--card-bg); border-top: 1px solid var(--border-color);
       display: none; padding: 10px; gap: 10px; overflow-x: auto;
     }
-    .sticker-item { width: 50px; height: 50px; cursor: pointer; object-fit: contain; }
+    .sticker-item { width: 45px; height: 45px; cursor: pointer; object-fit: contain; }
 
-    /* WebRTC Real-Time Call Overlay */
+    /* WebRTC Call Overlay */
     .call-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: #111; color: white; z-index: 100; display: none;
+      background: #0A0204; color: white; z-index: 100; display: none;
       flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px;
     }
     .video-container { position: relative; width: 100%; height: 60%; display: flex; justify-content: center; align-items: center; }
-    video#remoteVideo { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; background: #222; }
-    video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid #fff; }
-    .call-avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--primary-color); object-fit: cover; margin-top: 20px; }
+    video#remoteVideo { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; background: #1A050A; border: 2px solid var(--gold-color); }
+    video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid var(--gold-bright); }
+    .call-avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--gold-color); object-fit: cover; margin-top: 20px; }
     .call-actions { display: flex; gap: 20px; }
     .call-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: none; cursor: pointer; color: white; }
     .call-accept-btn { background: #2ab738; }
     .call-end-btn { background: #ea4335; }
 
-    /* Camera ASL Screen */
+    /* ASL Screen */
     .asl-screen {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: #000; color: white; z-index: 40; display: none; flex-direction: column;
     }
 
-    .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 50; display: none; justify-content: center; align-items: center; }
-    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; color: var(--text-main); }
-    .section-title { padding: 10px 16px 4px; font-size: 12px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
+    .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50; display: none; justify-content: center; align-items: center; }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; color: var(--text-main); border: 1px solid var(--gold-color); }
+    .section-title { padding: 10px 16px 4px; font-size: 12px; font-weight: bold; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; }
+    body.dark-theme .section-title { color: var(--gold-color); }
+    
     .hidden { display: none !important; }
     .media-preview { max-width: 100%; border-radius: 8px; margin-top: 4px; }
     
@@ -180,28 +192,66 @@
     .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
     input:checked + .slider { background-color: var(--primary-color); }
     input:checked + .slider:before { transform: translateX(20px); }
+
+    .auth-box {
+      background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--gold-color); margin-top: 15px; text-align: left;
+    }
   </style>
 </head>
 <body onclick="app.enableAudioContext()">
 
 <div class="app-container">
 
-  <!-- AUTH SCREEN -->
-  <div id="authScreen" class="screen active">
-    <div style="padding: 24px; text-align: center; margin: auto 0;">
-      <i class="fa-solid fa-hands-asl-interpreting" style="font-size: 60px; color: var(--primary-color); margin-bottom: 16px;"></i>
-      <h1 style="margin-bottom: 6px; color: var(--text-main);">ASL Messenger</h1>
-      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Viber Style Ultimate P2P Platform</p>
+  <!-- AUTH SCREEN (VIBER ULTIMATE REDESIGN WITH MULTIPLE LOGIN OPTIONS) -->
+  <div id="authScreen" class="screen active" style="background: linear-gradient(135deg, #4A0012 0%, #800020 50%, #2A000A 100%); color: white;">
+    <div style="padding: 24px 20px; text-align: center; margin: auto 0; overflow-y: auto;">
+      
+      <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border: 2px solid var(--gold-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 38px; color: var(--gold-bright);"></i>
+      </div>
+
+      <h1 style="font-size: 22px; color: var(--gold-bright); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">
+        Aung San's Land (Natmauk)
+      </h1>
+      <p style="font-size: 12px; color: #E0E0E0; margin-bottom: 20px;">Viber-Style Private Encrypted Messenger</p>
+
+      <!-- GOOGLE LOGIN -->
       <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
-        <i class="fa-brands fa-google"></i> Sign in with Google
+        <i class="fa-brands fa-google" style="color: #EA4335;"></i> Sign in with Google
       </button>
+
+      <div style="display: flex; align-items: center; margin: 15px 0;">
+        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
+        <span style="padding:0 10px; font-size:11px; color: var(--gold-color);">OR EMAIL LOGIN</span>
+        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
+      </div>
+
+      <!-- EMAIL / PASSWORD AUTH FORM -->
+      <div class="auth-box">
+        <label style="color: var(--text-main);">Email Address</label>
+        <input type="email" id="authEmail" class="input-field" placeholder="name@example.com">
+        
+        <label style="color: var(--text-main);">Password</label>
+        <input type="password" id="authPassword" class="input-field" placeholder="••••••••">
+
+        <div style="display: flex; gap: 8px; margin-top: 5px;">
+          <button class="btn" onclick="authApp.loginWithEmail()" style="flex:1;">Sign In</button>
+          <button class="btn btn-gold" onclick="authApp.signUpWithEmail()" style="flex:1;">Sign Up</button>
+        </div>
+      </div>
+
+      <!-- DEMO GUEST LOGIN BUTTON -->
+      <button class="btn btn-secondary" onclick="authApp.loginAsGuest()" style="margin-top: 15px; font-size: 11px; padding: 10px; background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);">
+        <i class="fa-solid fa-user-secret"></i> Continue as Guest (Instant Demo)
+      </button>
+
     </div>
   </div>
 
   <!-- MAIN DASHBOARD -->
   <div id="mainDashboard" class="screen">
     <header>
-      <h2 id="appHeaderTitle">ASL Messenger</h2>
+      <h2 id="appHeaderTitle">Aung San's Land</h2>
       <div>
         <button class="icon-btn" onclick="app.openModal('addFriendModal')"><i class="fa-solid fa-user-plus"></i></button>
         <button class="icon-btn" onclick="app.openModal('createGroupModal')"><i class="fa-solid fa-users"></i></button>
@@ -219,12 +269,12 @@
       <div id="callsList"></div>
     </div>
 
-    <!-- ASL TRANSLATOR TAB (PREVIOUS HTML FEATURE RESTORED) -->
+    <!-- ASL TRANSLATOR TAB (ASL AI INTEGRATED) -->
     <div id="aslTab" class="tab-content hidden">
       <div style="padding: 16px; text-align: center;">
-        <i class="fa-solid fa-hand" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"></i>
-        <h3>ASL Real-Time Translator</h3>
-        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Translate Sign Language via Live Camera Camera Stream</p>
+        <i class="fa-solid fa-hand-holding-hand" style="font-size: 40px; color: var(--primary-color); margin-bottom: 10px;"></i>
+        <h3 style="color: var(--text-main);">ASL Real-Time Translator</h3>
+        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 16px;">Translate Sign Language via Live Camera Stream</p>
         <button class="btn" onclick="app.openAslCamera()"><i class="fa-solid fa-camera"></i> Launch ASL Camera</button>
       </div>
 
@@ -246,7 +296,7 @@
       <div class="list-item" onclick="app.updateMyStatus()">
         <div class="avatar-wrapper">
           <img id="statusMyAvatar" src="https://picsum.photos/id/64/200" class="avatar">
-          <div style="position:absolute; bottom:0; right:0; background:var(--primary-color); color:white; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px;">+</div>
+          <div style="position:absolute; bottom:0; right:0; background:var(--gold-color); color:black; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold;">+</div>
         </div>
         <div class="item-details">
           <div class="item-title">My Status</div>
@@ -257,13 +307,13 @@
       <div id="statusList"></div>
     </div>
 
-    <!-- SETTINGS TAB (SETTINGS, PRIVACY, SECURITY, 2-STEP, DARK THEME) -->
+    <!-- SETTINGS TAB -->
     <div id="settingsTab" class="tab-content hidden">
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
           <label style="cursor:pointer; display:inline-block; position:relative;">
             <img id="settingsAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:84px; height:84px;">
-            <div style="position:absolute; bottom:0; right:0; background:var(--primary-color); color:#fff; padding:6px; border-radius:50%; font-size:12px;">
+            <div style="position:absolute; bottom:0; right:0; background:var(--gold-color); color:#000; padding:6px; border-radius:50%; font-size:12px;">
               <i class="fa-solid fa-camera"></i>
             </div>
             <input type="file" accept="image/*" style="display:none;" onchange="app.uploadProfilePhoto(event)">
@@ -281,7 +331,7 @@
           <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()">Save Profile</button>
         </div>
 
-        <!-- PRIVACY & SECURITY SECTION -->
+        <!-- PRIVACY & SECURITY -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main);">Privacy & Security</h4>
           
@@ -310,7 +360,7 @@
           </div>
         </div>
 
-        <!-- PREFERENCES & APPEARANCE -->
+        <!-- PREFERENCES -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main);">Appearance & Preferences</h4>
           
@@ -348,11 +398,11 @@
   <!-- CHAT VIEW -->
   <div id="chatView" class="chat-view">
     <div class="chat-header">
-      <button class="icon-btn" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
+      <button class="icon-btn" style="color:#fff;" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
       <img id="activeChatAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:36px; height:36px;">
       <div style="flex:1;">
-        <div id="activeChatTitle" style="font-weight:600; font-size:14px;">User</div>
-        <div id="activeChatSub" style="font-size:10px; color:var(--text-muted);">Offline</div>
+        <div id="activeChatTitle" style="font-weight:600; font-size:14px; color:var(--gold-bright);">User</div>
+        <div id="activeChatSub" style="font-size:10px; color:#E0E0E0;">Offline</div>
       </div>
       <button class="icon-btn" onclick="app.startCall('Voice Call')"><i class="fa-solid fa-phone"></i></button>
       <button class="icon-btn" onclick="app.startCall('Video Call')"><i class="fa-solid fa-video"></i></button>
@@ -360,7 +410,7 @@
 
     <div id="chatMessages" class="chat-messages"></div>
 
-    <!-- VIBER STICKERS & EMOJIS DRAWER -->
+    <!-- VIBER STICKERS DRAWER -->
     <div id="stickerDrawer" class="sticker-drawer">
       <img src="https://cdn-icons-png.flaticon.com/512/742/742751.png" class="sticker-item" onclick="app.sendSticker('😀')">
       <img src="https://cdn-icons-png.flaticon.com/512/742/742752.png" class="sticker-item" onclick="app.sendSticker('❤️')">
@@ -379,15 +429,15 @@
     </div>
   </div>
 
-  <!-- CAMERA ASL OVERLAY (PREVIOUS HTML FEATURE RESTORED) -->
+  <!-- CAMERA ASL OVERLAY -->
   <div id="aslScreen" class="asl-screen">
-    <div style="padding:14px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.8);">
-      <h3>Sign Camera AI</h3>
+    <div style="padding:14px; display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.8); border-bottom:1px solid var(--gold-color);">
+      <h3 style="color:var(--gold-bright);">Sign Camera AI</h3>
       <button class="icon-btn" style="color:white;" onclick="app.closeAslCamera()"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <div style="flex:1; position:relative; display:flex; justify-content:center; align-items:center;">
       <video id="aslVideo" autoplay playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-      <div style="position:absolute; bottom:20px; background:rgba(0,0,0,0.7); padding:10px 20px; border-radius:20px; font-weight:bold;" id="aslDetectedText">
+      <div style="position:absolute; bottom:20px; background:rgba(0,0,0,0.8); border: 1px solid var(--gold-color); color:var(--gold-bright); padding:10px 20px; border-radius:20px; font-weight:bold;" id="aslDetectedText">
         Detecting Signs...
       </div>
     </div>
@@ -396,7 +446,7 @@
   <!-- WEBRTC REAL-TIME CALL OVERLAY -->
   <div id="callOverlay" class="call-overlay">
     <div style="text-align:center; z-index:2;">
-      <h3 id="callTargetName">User</h3>
+      <h3 id="callTargetName" style="color:var(--gold-bright);">User</h3>
       <p id="callStatusText" style="color:#aaa; font-size:14px; margin-top:4px;">Incoming Call...</p>
     </div>
 
@@ -415,7 +465,7 @@
   <!-- MODALS -->
   <div id="addFriendModal" class="modal">
     <div class="modal-content">
-      <h3 style="margin-bottom:10px;">Add Friend</h3>
+      <h3 style="margin-bottom:10px; color:var(--primary-color);">Add Friend</h3>
       <input type="text" id="friendSearchQuery" class="input-field" placeholder="Paste Target User UID">
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')">Cancel</button>
@@ -426,7 +476,7 @@
 
   <div id="createGroupModal" class="modal">
     <div class="modal-content">
-      <h3 style="margin-bottom:10px;">Create Group</h3>
+      <h3 style="margin-bottom:10px; color:var(--primary-color);">Create Group</h3>
       <input type="text" id="groupNameInput" class="input-field" placeholder="Group Name">
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button class="btn btn-secondary" onclick="app.closeModal('createGroupModal')">Cancel</button>
@@ -438,7 +488,7 @@
   <!-- 2-STEP PIN MODAL -->
   <div id="twoStepModal" class="modal">
     <div class="modal-content">
-      <h3 style="margin-bottom:6px;">Security PIN Required</h3>
+      <h3 style="margin-bottom:6px; color:var(--primary-color);">Security PIN Required</h3>
       <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Enter your 2-Step PIN to unlock application:</p>
       <input type="password" id="pinInput" class="input-field" maxlength="6" placeholder="******">
       <button class="btn" onclick="app.verify2StepPin()">Unlock App</button>
@@ -480,6 +530,8 @@
 
   class AuthController {
     constructor() {
+      auth.getRedirectResult().catch(e => console.log("Redirect error: ", e.message));
+
       auth.onAuthStateChanged(user => {
         if (user) {
           currentUser = user;
@@ -505,14 +557,36 @@
 
     loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider).catch(e => alert(e.message));
+      auth.signInWithRedirect(provider);
+    }
+
+    loginWithEmail() {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      if (!email || !password) return alert('Please enter Email and Password');
+
+      auth.signInWithEmailAndPassword(email, password).catch(err => alert(err.message));
+    }
+
+    signUpWithEmail() {
+      const email = document.getElementById('authEmail').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
+      if (!email || !password) return alert('Please enter Email and Password');
+
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(res => alert('Account created successfully!'))
+        .catch(err => alert(err.message));
+    }
+
+    loginAsGuest() {
+      auth.signInAnonymously().catch(err => alert(err.message));
     }
 
     saveUserProfile(user) {
       db.collection('users').doc(user.uid).set({
         uid: user.uid,
-        name: user.displayName || "User",
-        email: user.email || "",
+        name: user.displayName || user.email || "Natmauk User",
+        email: user.email || "Guest",
         photo: user.photoURL || "https://picsum.photos/200"
       }, { merge: true });
     }
@@ -635,7 +709,7 @@
 
       db.collection('requests').doc(targetUid).collection('incoming').doc(currentUser.uid).set({
         fromUid: currentUser.uid,
-        fromName: currentUser.displayName || "User"
+        fromName: currentUser.displayName || currentUser.email || "User"
       }).then(() => {
         alert('Friend Request Sent!');
         this.closeModal('addFriendModal');
@@ -793,7 +867,6 @@
         });
     }
 
-    // CAMERA ASL FEATURE (RESTORED FROM PREVIOUS CODE)
     async openAslCamera() {
       document.getElementById('aslScreen').style.display = 'flex';
       try {
@@ -812,7 +885,6 @@
       }
     }
 
-    // WEBRTC REAL-TIME CALLING LOGIC
     async startCall(type) {
       if (!activeChatUid) return;
       const isVideo = type === 'Video Call';
@@ -845,7 +917,7 @@
 
       const callData = {
         offer: { type: offerDescription.type, sdp: offerDescription.sdp },
-        callerName: currentUser.displayName || "User",
+        callerName: currentUser.displayName || currentUser.email || "User",
         callerPhoto: currentUser.photoURL || "https://picsum.photos/200",
         type: type,
         status: "calling"
@@ -994,7 +1066,7 @@
       const statusText = prompt("Enter status text:");
       if (statusText) {
         db.collection('statuses').add({
-          uid: currentUser.uid, name: currentUser.displayName || "User",
+          uid: currentUser.uid, name: currentUser.displayName || currentUser.email || "User",
           photo: currentUser.photoURL || "https://picsum.photos/200", text: statusText,
           timestamp: firebase.firestore.FieldValue.serverTimestamp()
         });
