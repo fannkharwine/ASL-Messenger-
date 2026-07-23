@@ -28,7 +28,7 @@
     .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
     .list-container { flex: 1; overflow-y: auto; }
     
-    /* Contacts & Groups Item */
+    /* Contacts & Chat Items */
     .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; }
     .list-item:hover { background: #f5f5f5; }
     .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #ccc; }
@@ -41,7 +41,7 @@
     /* Profile View Tab */
     #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; width: 100%; }
     
-    /* Interactive Profile Image Wrapper */
+    /* Avatar Change UI */
     .avatar-upload-container { position: relative; width: 96px; height: 96px; margin: 0 auto; cursor: pointer; }
     .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; transition: opacity 0.2s ease; }
     .avatar-upload-overlay {
@@ -55,7 +55,7 @@
     .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
     .profile-card input, .profile-card textarea, .profile-card select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
 
-    /* Settings Sections Inside Profile */
+    /* Settings Sections */
     .settings-section { width: 100%; text-align: left; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-top: 5px; }
     .settings-title { font-weight: bold; font-size: 13px; color: #0084ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
     .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
@@ -143,12 +143,12 @@
     </div>
   </div>
 
-  <!-- Hidden File Input for Avatar Upload -->
+  <!-- Hidden File Inputs -->
   <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
+  <input type="file" id="ringtone-file-input" accept="audio/*" style="display: none;">
 
   <!-- 1. Login / Signup Screen -->
   <div id="auth-screen">
-    <!-- Login Form -->
     <div id="login-box" class="auth-card">
       <h2>ASL Messenger</h2>
       <p style="font-size:13px; color:#666; margin-bottom:10px;">သင့်အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
@@ -163,7 +163,6 @@
       </div>
     </div>
 
-    <!-- Signup Form -->
     <div id="signup-box" class="auth-card" style="display:none;">
       <h2>ASL Messenger</h2>
       <p style="font-size:13px; color:#666; margin-bottom:10px;">အကောင့်အသစ် ဖန်တီးရန်</p>
@@ -179,31 +178,28 @@
 
   <!-- 2. Main App Layout -->
   <div id="app-container">
-    <!-- Left Sidebar -->
     <div id="sidebar">
       <div class="sidebar-header">ASL Messenger</div>
       
-      <!-- Tabs -->
+      <!-- Tab Navigation Bar -->
       <div class="tabs">
-        <button class="tab-btn active" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
-        <button class="tab-btn" id="tab-groups" onclick="switchTab('groups')">Groups</button>
+        <button class="tab-btn active" id="tab-chats" onclick="switchTab('chats')">Chats</button>
+        <button class="tab-btn" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
         <button class="tab-btn" id="tab-noti" onclick="switchTab('noti')">Notifications 🔔</button>
         <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
-      <!-- Group Create Input -->
-      <div class="create-group-area" id="group-create-box" style="display: none;">
-        <input type="text" id="group-name-input" placeholder="Group အမည်..." style="font-size: 12px;">
+      <!-- Create Group Section (Visible in Chats Tab) -->
+      <div class="create-group-area" id="group-create-box">
+        <input type="text" id="group-name-input" placeholder="Group အမည်အသစ်..." style="font-size: 12px;">
         <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
       </div>
 
-      <!-- Contacts, Groups & Notifications List -->
+      <!-- Chats, Contacts & Notifications Dynamic List -->
       <div class="list-container" id="list-content"></div>
 
       <!-- Profile Tab View -->
       <div id="profile-tab-view">
-        
-        <!-- Interactive Avatar Image Container -->
         <div class="avatar-upload-container" onclick="triggerAvatarUpload()">
           <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150" alt="Profile">
           <div class="avatar-upload-overlay">
@@ -215,7 +211,7 @@
         <h3 id="my-profile-name" style="margin: 2px 0 0 0;">-</h3>
         <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
 
-        <!-- 1. Profile Data Section -->
+        <!-- Profile Data Section -->
         <div class="profile-card">
           <div style="font-weight:bold; color:#0084ff; font-size:13px; margin-bottom:5px;">👤 Profile Data (အချက်အလက်များ)</div>
           <div>
@@ -237,7 +233,7 @@
           <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
         </div>
 
-        <!-- 2. 🌐 Language Settings -->
+        <!-- Language Settings -->
         <div class="settings-section">
           <div class="settings-title">🌐 Language Settings (ဘာသာစကား)</div>
           <div class="setting-row">
@@ -250,7 +246,7 @@
           </div>
         </div>
 
-        <!-- 3. 🔤 Font Settings -->
+        <!-- Font Settings -->
         <div class="settings-section">
           <div class="settings-title">🔤 Font Settings (ဖောင့်စတိုင်လ်)</div>
           <div class="setting-row">
@@ -263,23 +259,39 @@
           </div>
         </div>
 
-        <!-- 4. 🔔 Notification Settings -->
+        <!-- Audio & Ringtone Settings Section -->
         <div class="settings-section">
-          <div class="settings-title">🔔 Notification Settings (အသိပေးချက်များ)</div>
+          <div class="settings-title">🔔 Ringtone & Sound Settings</div>
           <div class="setting-row">
             <span>Push Notifications ဖွင့်မည်</span>
             <input type="checkbox" id="set-msg-noti" checked>
           </div>
+          
+          <!-- Online Sound Presets -->
           <div class="setting-row">
-            <span>Message Ringtone (စာဝင်အသံ)</span>
-            <select style="width: auto; padding: 2px 6px;">
-              <option>Default Tone</option>
-              <option>Chime</option>
+            <span>Online Call Ringtone</span>
+            <select id="online-ringtone-select" onchange="handleRingtoneChange(this.value)" style="width: auto; padding: 4px 6px;">
+              <option value="default">Classic Phone Bell</option>
+              <option value="chime">Digital Chime</option>
+              <option value="marimba">Marimba Tone</option>
+              <option value="synth">Modern Synth Tone</option>
+              <option value="custom">Uploaded Custom Audio</option>
             </select>
+          </div>
+
+          <!-- Local Audio File Upload Option -->
+          <div class="setting-row">
+            <span>Upload Local MP3 / Sound</span>
+            <button onclick="triggerRingtoneUpload()" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">📁 File ရွေးမည်</button>
+          </div>
+          <div id="custom-ringtone-name" style="font-size: 11px; color: #28a745; text-align: right; display: none;"></div>
+          
+          <div style="text-align: right; margin-top: 5px;">
+            <button onclick="testRingtoneSound()" style="padding: 4px 10px; font-size: 11px; background: #34c759; border-radius: 4px;">▶️ Ringtone စမ်းနားထောင်မည်</button>
           </div>
         </div>
 
-        <!-- 5. 🔒 Privacy Settings & Security -->
+        <!-- Privacy & Security Settings -->
         <div class="settings-section">
           <div class="settings-title">🔒 Privacy & Security Settings</div>
           <div class="setting-row">
@@ -300,7 +312,7 @@
           </div>
         </div>
 
-        <!-- Log Out Button at the Very Bottom -->
+        <!-- Log Out Button -->
         <button id="btn-logout" style="width: 100%; background: #ff4d4f; border-radius: 8px; margin-top: 10px; padding: 12px; font-weight: bold;">Log Out (အကောင့်ထွက်မည်)</button>
 
       </div>
@@ -406,7 +418,7 @@
     </div>
   </div>
 
-  <!-- Firebase Integration -->
+  <!-- Firebase Integration Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updatePassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -426,7 +438,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let activeTab = 'contacts';
+    let activeTab = 'chats';
     let activeChatId = null;
     let activeChatType = null;
     let activeTargetUserData = null;
@@ -434,20 +446,101 @@
     let incomingCallData = null;
     let incomingCallId = null;
 
-    // WebRTC Variables
+    // WebRTC & Sound Management Variables
     let localStream = null;
     let remoteStream = null;
     let peerConnection = null;
     let isMicMuted = false;
     let isCamOff = false;
-    let audioCtx = null;
-    let ringtoneInterval = null;
+    let currentRingtoneAudio = null;
+    let customRingtoneDataUrl = localStorage.getItem('asl_custom_ringtone') || null;
+
+    const onlineRingtoneUrls = {
+      'default': 'https://actions.google.com/sounds/v1/emergency/beeping_call.ogg',
+      'chime': 'https://actions.google.com/sounds/v1/tones/digital_bell.ogg',
+      'marimba': 'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
+      'synth': 'https://actions.google.com/sounds/v1/science_fiction/scifi_synth_pulse.ogg'
+    };
+
+    const msgNotiSoundUrl = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
     const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
 
-    // --- Profile Picture Change Functionality ---
-    window.triggerAvatarUpload = () => {
-      document.getElementById('avatar-file-input').click();
+    // --- Audio Sound Functions ---
+    function playNotificationSound() {
+      try {
+        if (document.getElementById('set-msg-noti').checked) {
+          const audio = new Audio(msgNotiSoundUrl);
+          audio.play().catch(e => console.log(e));
+        }
+      } catch (e) { console.log(e); }
+    }
+
+    function playCallRingtone() {
+      stopCallRingtone();
+      try {
+        const selectedKey = document.getElementById('online-ringtone-select').value;
+        let soundSource = onlineRingtoneUrls[selectedKey] || onlineRingtoneUrls['default'];
+
+        if (selectedKey === 'custom' && customRingtoneDataUrl) {
+          soundSource = customRingtoneDataUrl;
+        }
+
+        currentRingtoneAudio = new Audio(soundSource);
+        currentRingtoneAudio.loop = true;
+        currentRingtoneAudio.play().catch(e => console.log("Audio play blocked by browser: ", e));
+      } catch (e) { console.log(e); }
+    }
+
+    function stopCallRingtone() {
+      if (currentRingtoneAudio) {
+        currentRingtoneAudio.pause();
+        currentRingtoneAudio.currentTime = 0;
+        currentRingtoneAudio = null;
+      }
+    }
+
+    window.testRingtoneSound = () => {
+      if (currentRingtoneAudio) {
+        stopCallRingtone();
+      } else {
+        playCallRingtone();
+        setTimeout(() => stopCallRingtone(), 4000);
+      }
     };
+
+    window.triggerRingtoneUpload = () => {
+      document.getElementById('ringtone-file-input').click();
+    };
+
+    document.getElementById('ringtone-file-input').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        customRingtoneDataUrl = event.target.result;
+        localStorage.setItem('asl_custom_ringtone', customRingtoneDataUrl);
+        
+        const nameEl = document.getElementById('custom-ringtone-name');
+        nameEl.innerText = `🎵 Custom File: ${file.name}`;
+        nameEl.style.display = 'block';
+
+        const selectEl = document.getElementById('online-ringtone-select');
+        selectEl.value = 'custom';
+        alert("Local MP3 / Audio အား Ringtone အဖြစ် အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ ✨");
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.handleRingtoneChange = (val) => {
+      if (val === 'custom' && !customRingtoneDataUrl) {
+        alert("Local Audio File မရွေးရသေးပါ။ ကျေးဇူးပြု၍ File ရွေးပေးပါ။");
+        document.getElementById('online-ringtone-select').value = 'default';
+      }
+    };
+
+    // Avatar Change
+    window.triggerAvatarUpload = () => document.getElementById('avatar-file-input').click();
 
     document.getElementById('avatar-file-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -464,80 +557,55 @@
             await updateProfile(user, { photoURL: base64Image });
             await setDoc(doc(db, "users", user.uid), { photoURL: base64Image }, { merge: true });
             alert("Profile ဓာတ်ပုံ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ ✨");
-          } catch (err) {
-            alert("Photo update error: " + err.message);
-          }
+          } catch (err) { alert("Photo update error: " + err.message); }
         }
       };
       reader.readAsDataURL(file);
     });
 
-    // --- Font & Language Functions ---
+    // Font & Language Settings Functions
     window.changeFontSetting = (fontKey) => {
-      if (fontKey === 'padauk') {
-        document.body.style.fontFamily = "'Padauk', sans-serif";
-      } else if (fontKey === 'pyidaungsu') {
-        document.body.style.fontFamily = "'Pyidaungsu', sans-serif";
-      } else {
-        document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-      }
+      if (fontKey === 'padauk') document.body.style.fontFamily = "'Padauk', sans-serif";
+      else if (fontKey === 'pyidaungsu') document.body.style.fontFamily = "'Pyidaungsu', sans-serif";
+      else document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
     };
 
     window.changeLanguageSetting = (lang) => {
-      if (lang === 'en') {
-        alert("App language set to English 🇬🇧");
-      } else if (lang === 'zh') {
-        alert("应用语言设置为中文 🇨🇳");
-      } else {
-        alert("မြန်မာဘာသာစကားသို့ ပြောင်းလဲပြီးပါပြီ 🇲🇲");
-      }
+      if (lang === 'en') alert("App language set to English 🇬🇧");
+      else if (lang === 'zh') alert("应用语言设置为中文 🇨🇳");
+      else alert("မြန်မာဘာသာစကားသို့ ပြောင်းလဲပြီးပါပြီ 🇲🇲");
     };
 
-    window.toggle2FASetting = (is2FA) => {
-      alert(is2FA ? "Two-Factor Authentication (2FA) ကို ဖွင့်လိုက်ပါပြီ 🔒" : "2FA ပိတ်လိုက်ပါပြီ");
-    };
-
-    window.openChangePasswordModal = () => {
-      document.getElementById('change-pass-modal').style.display = 'flex';
-    };
+    window.toggle2FASetting = (is2FA) => alert(is2FA ? "Two-Factor Authentication (2FA) ဖွင့်လိုက်ပါပြီ 🔒" : "2FA ပိတ်လိုက်ပါပြီ");
+    window.openChangePasswordModal = () => document.getElementById('change-pass-modal').style.display = 'flex';
 
     window.submitNewPassword = async () => {
       const newPass = document.getElementById('new-pass-input').value.trim();
-      if (!newPass || newPass.length < 6) {
-        alert("စကားဝှက်သည် အနည်းဆုံး ၆ လုံး ရှိရပါမည်။");
-        return;
-      }
+      if (!newPass || newPass.length < 6) { alert("စကားဝှက်သည် အနည်းဆုံး ၆ လုံး ရှိရပါမည်။"); return; }
       try {
         await updatePassword(auth.currentUser, newPass);
         alert("Password အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ ✨");
         document.getElementById('change-pass-modal').style.display = 'none';
         document.getElementById('new-pass-input').value = '';
-      } catch (err) {
-        alert("Password update မအောင်မြင်ပါ: " + err.message);
-      }
+      } catch (err) { alert("Password update မအောင်မြင်ပါ: " + err.message); }
     };
 
-    // Switch between Login and Signup forms
+    // Authentication Actions
     window.switchAuthMode = (mode) => {
       document.getElementById('login-box').style.display = mode === 'login' ? 'flex' : 'none';
       document.getElementById('signup-box').style.display = mode === 'signup' ? 'flex' : 'none';
     };
 
-    // Email/Password Login
     document.getElementById('btn-email-login').onclick = async () => {
       const email = document.getElementById('login-email').value.trim();
       const pass = document.getElementById('login-password').value.trim();
       if (!email || !pass) { alert("Email နှင့် Password ထည့်ပါ။"); return; }
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-      } catch (err) {
-        alert("Login ဝင်၍မရပါ: " + err.message);
-      }
+      try { await signInWithEmailAndPassword(auth, email, pass); } 
+      catch (err) { alert("Login ဝင်၍မရပါ: " + err.message); }
     };
 
-    // Email/Password Signup
     document.getElementById('btn-email-signup').onclick = async () => {
-      const name = document.getElementById('signup-name').value.trim();
+      const name = document.signupName = document.getElementById('signup-name').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const pass = document.getElementById('signup-password').value.trim();
       if (!name || !email || !pass) { alert("အချက်အလက်အားလုံး ဖြည့်ပေးပါ။"); return; }
@@ -545,39 +613,25 @@
         const res = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(res.user, { displayName: name, photoURL: "https://via.placeholder.com/150" });
         await setDoc(doc(db, "users", res.user.uid), {
-          uid: res.user.uid,
-          name: name,
-          email: email,
-          photoURL: "https://via.placeholder.com/150",
+          uid: res.user.uid, name: name, email: email, photoURL: "https://via.placeholder.com/150",
           phone: "", city: "", about: "Hey there! I am using ASL Messenger."
         });
         alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
-      } catch (err) {
-        alert("Signup Error: " + err.message);
-      }
+      } catch (err) { alert("Signup Error: " + err.message); }
     };
 
-    // Forget Password
     window.showForgetPasswordModal = async () => {
       const email = prompt("စကားဝှက်အသစ် ပြန်လည်ရယူရန် သင့် Email လိပ်စာကို ထည့်ပါ:");
       if (!email) return;
       try {
         await sendPasswordResetEmail(auth, email);
         alert("စကားဝှက်ပြောင်းလဲရန် လင့်ခ်ကို သင့် Email သို့ ပို့ပေးလိုက်ပါပြီ။");
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
+      } catch (err) { alert("Error: " + err.message); }
     };
 
-    // Google Login
-    document.getElementById('btn-google').onclick = () => {
-      signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert("Google Login Error: " + err.message));
-    };
-    
-    // Log Out
+    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert("Google Login Error: " + err.message));
     document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    // Auth State Check
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.getElementById('auth-screen').style.display = 'none';
@@ -588,41 +642,69 @@
 
         if (!userDoc.exists()) {
           await setDoc(userDocRef, {
-            uid: user.uid,
-            name: user.displayName || "User",
-            email: user.email,
+            uid: user.uid, name: user.displayName || "User", email: user.email,
             photoURL: user.photoURL || "https://via.placeholder.com/150",
             phone: "", city: "", about: "Hey there! I am using ASL Messenger."
           });
         }
         listenForIncomingCalls();
         listenForGlobalNotifications();
-        switchTab('contacts');
+        switchTab('chats');
       } else {
         document.getElementById('auth-screen').style.display = 'flex';
         document.getElementById('app-container').style.display = 'none';
       }
     });
 
-    // Tab Switching
+    // Tab Navigation Logic
     window.switchTab = (type) => {
       activeTab = type;
+      document.getElementById('tab-chats').classList.toggle('active', type === 'chats');
       document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
-      document.getElementById('tab-groups').classList.toggle('active', type === 'groups');
       document.getElementById('tab-noti').classList.toggle('active', type === 'noti');
       document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
 
-      document.getElementById('group-create-box').style.display = type === 'groups' ? 'flex' : 'none';
+      document.getElementById('group-create-box').style.display = type === 'chats' ? 'flex' : 'none';
       document.getElementById('list-content').style.display = type === 'profile' ? 'none' : 'block';
       document.getElementById('profile-tab-view').style.display = type === 'profile' ? 'flex' : 'none';
 
-      if (type === 'contacts') loadContacts();
-      else if (type === 'groups') loadGroups();
+      if (type === 'chats') loadChatsList();
+      else if (type === 'contacts') loadContactsList();
       else if (type === 'noti') loadNotifications();
       else if (type === 'profile') loadMyProfile();
     };
 
-    function loadContacts() {
+    // Load Recent Conversations & Groups
+    function loadChatsList() {
+      const listContent = document.getElementById('list-content');
+      listContent.innerHTML = '';
+
+      // Groups Section Header
+      const groupHeader = document.createElement('div');
+      groupHeader.style.cssText = 'padding:8px 15px; font-weight:bold; font-size:12px; background:#f0f2f5; color:#666;';
+      groupHeader.innerText = 'GROUPS';
+      listContent.appendChild(groupHeader);
+
+      onSnapshot(collection(db, "groups"), (snapshot) => {
+        snapshot.forEach((docSnap) => {
+          const g = docSnap.data();
+          const item = document.createElement('div');
+          item.className = 'list-item';
+          item.innerHTML = `
+            <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">👥</div>
+            <div class="item-info">
+              <div class="item-name">${g.name}</div>
+              <div class="item-sub">Group Chat</div>
+            </div>
+          `;
+          item.onclick = () => openChat(docSnap.id, { name: g.name }, 'group');
+          listContent.appendChild(item);
+        });
+      });
+    }
+
+    // Load Friends / Contacts Profiles Tab
+    function loadContactsList() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         const listContent = document.getElementById('list-content');
         listContent.innerHTML = '';
@@ -642,27 +724,6 @@
             item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u, 'direct');
             listContent.appendChild(item);
           }
-        });
-      });
-    }
-
-    function loadGroups() {
-      onSnapshot(collection(db, "groups"), (snapshot) => {
-        const listContent = document.getElementById('list-content');
-        listContent.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const g = docSnap.data();
-          const item = document.createElement('div');
-          item.className = 'list-item';
-          item.innerHTML = `
-            <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">👥</div>
-            <div class="item-info">
-              <div class="item-name">${g.name}</div>
-              <div class="item-sub">Group Chat</div>
-            </div>
-          `;
-          item.onclick = () => openChat(docSnap.id, { name: g.name }, 'group');
-          listContent.appendChild(item);
         });
       });
     }
@@ -764,34 +825,6 @@
       });
     }
 
-    function playRingtoneSound() {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (ringtoneInterval) clearInterval(ringtoneInterval);
-
-        const playBeep = () => {
-          if (!audioCtx) return;
-          const osc = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.8);
-          gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start();
-          osc.stop(audioCtx.currentTime + 0.8);
-        };
-        playBeep();
-        ringtoneInterval = setInterval(playBeep, 1500);
-      } catch (e) { console.log(e); }
-    }
-
-    function stopRingtoneSound() {
-      if (ringtoneInterval) { clearInterval(ringtoneInterval); ringtoneInterval = null; }
-    }
-
     // --- WebRTC Video & Voice Call ---
     window.startWebRTCCall = async (isVideo) => {
       if (!activeTargetUserData) return;
@@ -879,10 +912,11 @@
             document.getElementById('call-screen-avatar').src = data.callerPhoto || 'https://via.placeholder.com/150';
             document.getElementById('call-screen-status').innerText = `📞 ${data.isVideo ? 'Video Call' : 'Voice Call'} ဝင်ရောက်လာနေပါသည် . .`;
 
-            playRingtoneSound();
+            // Play Selected Audio Ringtone
+            playCallRingtone();
 
             document.getElementById('btn-accept-call').onclick = () => {
-              stopRingtoneSound();
+              stopCallRingtone();
               answerCall(incomingCallId, incomingCallData);
             };
           }
@@ -891,7 +925,7 @@
     }
 
     window.declineIncomingCall = async () => {
-      stopRingtoneSound();
+      stopCallRingtone();
       document.getElementById('call-screen').style.display = 'none';
       if (incomingCallId) await deleteDoc(doc(db, "calls", incomingCallId)).catch(() => {});
     };
@@ -958,7 +992,7 @@
     };
 
     function updateCamBtnUI() {
-      document.getElementById('btn-cam').classList.toggle('off', !isCamOff);
+      document.getElementById('btn-cam').classList.toggle('off', isCamOff);
       document.getElementById('label-cam').innerText = isCamOff ? 'Start Video' : 'Stop Video';
     }
 
@@ -969,7 +1003,7 @@
     window.toggleSpeaker = () => document.getElementById('btn-speaker').classList.toggle('off');
 
     window.endCall = async () => {
-      stopRingtoneSound();
+      stopCallRingtone();
       document.getElementById('call-screen').style.display = 'none';
       if (localStream) localStream.getTracks().forEach(track => track.stop());
       if (peerConnection) peerConnection.close();
@@ -989,6 +1023,7 @@
           if (change.type === "added") {
             const noti = change.doc.data();
             if (auth.currentUser && noti.targetUid === auth.currentUser.uid) {
+              playNotificationSound();
               showToastNotification(noti.title, noti.body);
             }
           }
