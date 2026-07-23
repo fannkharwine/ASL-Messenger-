@@ -22,130 +22,75 @@
     
     /* Sidebar Section */
     #sidebar { width: 340px; background: #ffffff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
-    .sidebar-header { padding: 15px; background: #0084ff; color: white; font-weight: bold; font-size: 16px; }
+    .sidebar-header { padding: 15px; background: #0084ff; color: white; font-weight: bold; font-size: 16px; display: flex; justify-content: space-between; align-items: center; }
     .tabs { display: flex; background: #e4e6eb; }
     .tab-btn { flex: 1; padding: 10px 2px; border: none; background: #e4e6eb; cursor: pointer; font-weight: bold; color: #555; font-size: 11px; text-align: center; }
     .tab-btn.active { background: #fff; color: #0084ff; border-bottom: 3px solid #0084ff; }
     .list-container { flex: 1; overflow-y: auto; }
     
+    /* Add Friend Header Bar */
+    .add-friend-bar { padding: 10px 15px; background: #f8f9fa; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+    .btn-add-friend { background: #34c759; color: white; border: none; padding: 6px 12px; border-radius: 15px; font-weight: bold; font-size: 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+
     /* Contacts & Chat Items */
     .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; position: relative; }
     .list-item:hover { background: #f5f5f5; }
     .avatar-wrapper { position: relative; width: 44px; height: 44px; }
     .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #ccc; }
-    .online-indicator {
-      position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px;
-      background: #34c759; border: 2px solid white; border-radius: 50%; display: none;
-    }
+    .online-indicator { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #34c759; border: 2px solid white; border-radius: 50%; display: none; }
     .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
     .item-name { font-weight: bold; font-size: 14px; color: #333; }
     .item-sub { font-size: 12px; color: #777; }
 
-    .create-group-area { padding: 10px; border-bottom: 1px solid #ddd; display: flex; gap: 5px; }
-
     /* Profile View Tab */
     #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; width: 100%; }
-    
-    .avatar-upload-container { position: relative; width: 96px; height: 96px; margin: 0 auto; cursor: pointer; }
     .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
-    .avatar-upload-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
-      background: rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: white; font-size: 11px; font-weight: bold; opacity: 0; transition: opacity 0.2s ease;
-    }
-    .avatar-upload-container:hover .avatar-upload-overlay { opacity: 1; }
-
     .profile-card { background: #f8f9fa; border: 1px solid #e0e0e0; border-radius: 10px; width: 100%; padding: 15px; text-align: left; display: flex; flex-direction: column; gap: 10px; }
     .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
-    .profile-card input, .profile-card textarea, .profile-card select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
-
-    .settings-section { width: 100%; text-align: left; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-top: 5px; }
-    .settings-title { font-weight: bold; font-size: 13px; color: #0084ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
-    .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-    .setting-row:last-child { border-bottom: none; }
+    .profile-card input, .profile-card textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
 
     /* Main Chat Section */
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; position: relative; }
     .chat-header { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
     .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
     .chat-user-status { font-size: 11px; font-weight: normal; color: #34c759; }
-    .call-actions { display: flex; gap: 10px; }
-    .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
+    .call-actions { display: flex; gap: 8px; align-items: center; }
+    .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 15px; }
     .call-btn:hover { background: #0084ff; color: white; }
+    .btn-delete-chat { background: #ff3b30; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: bold; }
 
     #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
     .msg-wrapper { display: flex; flex-direction: column; max-width: 70%; }
     .msg-wrapper.sent-wrapper { align-self: flex-end; align-items: flex-end; }
     .msg-wrapper.received-wrapper { align-self: flex-start; align-items: flex-start; }
     
-    .msg { padding: 8px 12px; border-radius: 12px; word-wrap: break-word; font-size: 14px; }
+    .msg { padding: 10px 14px; border-radius: 16px; word-wrap: break-word; font-size: 14px; }
     .sent { background: #0084ff; color: white; }
     .received { background: #e4e6eb; color: black; }
-    .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
-    .msg-status { font-size: 10px; color: #888; margin-top: 2px; text-align: right; display: flex; align-items: center; gap: 3px; }
+    .msg-status { font-size: 10px; color: #888; margin-top: 2px; text-align: right; }
     .msg-status-seen { color: #0084ff; font-weight: bold; }
 
-    #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
-    input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-    button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
+    /* Media Styling in Messages */
+    .msg-media-img, .msg-media-video { max-width: 240px; border-radius: 12px; margin-top: 5px; }
+    .msg-file-link { color: #0084ff; text-decoration: underline; font-weight: bold; background: #fff; padding: 6px 10px; border-radius: 8px; display: inline-block; }
 
+    /* Chat Input Area Fix */
+    #input-area { padding: 10px 15px; background: white; border-top: 1px solid #ddd; display: none; align-items: center; gap: 8px; }
+    .media-btn-group { display: flex; gap: 6px; }
+    .media-btn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; border-radius: 50%; }
+    .media-btn:hover { background: #f0f0f0; }
+    
+    input[type="text"] { flex: 1; padding: 10px 14px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 14px; }
+    .btn-send { padding: 10px 18px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
+    .recording-active { background: #ff3b30 !important; color: white !important; animation: pulse 1s infinite; }
+
+    /* Modal Overlay */
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
-    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 360px; text-align: center; display: flex; flex-direction: column; gap: 12px; }
 
-    /* Custom Call Screen Overlay */
-    #call-screen {
-      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: linear-gradient(180deg, #1e3c72 0%, #2a5298 50%, #111e38 100%);
-      z-index: 99999; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 40px 20px 40px 20px; color: white;
-    }
-    .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 1; background: #000; }
-    #remote-video { width: 100%; height: 100%; object-fit: cover; }
-    #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 70px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 3; }
-
-    .call-top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 4; }
-    .minimize-call-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; backdrop-filter: blur(5px); }
-
-    .call-user-area { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; z-index: 2; }
-    .call-avatar-wrapper { position: relative; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; }
-    .call-avatar-wrapper::before { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); animation: pulse 2s infinite; }
-    .call-avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.8); z-index: 2; }
-    @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 0.2; } 100% { transform: scale(0.95); opacity: 0.8; } }
-
-    .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
-    .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; z-index: 2; }
-
-    .call-controls-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 400px; z-index: 4; }
-    .action-btn-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-    .action-btn-item span { font-size: 12px; opacity: 0.9; }
-    .ctrl-circle-btn { width: 62px; height: 62px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); color: white; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
-    .ctrl-circle-btn:active { transform: scale(0.9); }
-    .ctrl-circle-btn.off { background: rgba(255, 255, 255, 0.8); color: #333; }
-    .btn-end { background: #ff3b30; color: white; }
-    .btn-accept { background: #34c759; color: white; animation: pulse 1.5s infinite; }
-
-    /* Floating Messenger-style Call Bubble */
-    #floating-call-head {
-      display: none; position: fixed; bottom: 25px; right: 25px; width: 68px; height: 68px;
-      border-radius: 50%; background: #0084ff; border: 3px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-      z-index: 999999; cursor: pointer; align-items: center; justify-content: center; overflow: hidden;
-      animation: floatPulse 1.5s infinite;
-    }
-    #floating-call-head img { width: 100%; height: 100%; object-fit: cover; }
-    @keyframes floatPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(0, 132, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0); } }
-
-    /* Toast Notification */
-    #toast-notification {
-      position: fixed; top: 15px; right: 15px; z-index: 9999;
-      background: rgba(255, 255, 255, 0.95); color: #333;
-      padding: 12px 18px; border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-      border-left: 4px solid #0084ff;
-      display: none; align-items: center; gap: 12px;
-      animation: slideIn 0.3s ease-out; cursor: pointer;
-    }
-    @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
+    /* Call Screen */
+    #call-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #111e38; z-index: 99999; flex-direction: column; align-items: center; justify-content: space-between; padding: 40px; color: white; }
+    
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
       #chat-main { display: none; width: 100%; }
@@ -156,263 +101,130 @@
 </head>
 <body>
 
-  <!-- Toast Notification Bar -->
-  <div id="toast-notification">
-    <span id="toast-icon" style="font-size:20px;">💬</span>
-    <div>
-      <div id="toast-title" style="font-weight:bold; font-size:13px;">-</div>
-      <div id="toast-body" style="font-size:12px; color:#666;">-</div>
-    </div>
-  </div>
+  <!-- Hidden File Inputs for Media Attachments -->
+  <input type="file" id="media-file-input" style="display: none;">
 
-  <!-- Minimized Floating Call Head -->
-  <div id="floating-call-head" onclick="restoreCallScreen()" title="Call သို့ ပြန်သွားရန်">
-    <img id="floating-avatar" src="https://via.placeholder.com/150" alt="Call">
-  </div>
-
-  <!-- Hidden File Inputs -->
-  <input type="file" id="avatar-file-input" accept="image/*" style="display: none;">
-  <input type="file" id="ringtone-file-input" accept="audio/*" style="display: none;">
-
-  <!-- 1. Login / Signup Screen -->
+  <!-- Auth Screen -->
   <div id="auth-screen">
     <div id="login-box" class="auth-card">
       <h2>ASL Messenger</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:10px;">သင့်အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
+      <p style="font-size:13px; color:#666;">သင့်အကောင့်ဖြင့် ဝင်ရောက်ပါ</p>
       <input type="email" id="login-email" placeholder="Email သို့မဟုတ် ဖုန်းနံပါတ်">
-      <input type="password" id="login-password" placeholder="Password (စကားဝှက်)">
+      <input type="password" id="login-password" placeholder="Password">
       <button class="btn-primary" id="btn-email-login">Log In</button>
-      <div class="auth-link" onclick="showForgetPasswordModal()">စကားဝှက် မေ့နေပါသလား?</div>
-      <hr style="width:100%; border:0.5px solid #eee; margin:5px 0;">
+      <hr style="width:100%; border:0.5px solid #eee;">
       <button class="btn-google" id="btn-google">🌐 Google ဖြင့် ဝင်ရန်</button>
-      <div style="margin-top:10px; font-size:13px;">
-        အကောင့်မရှိသေးဘူးလား? <span class="auth-link" onclick="switchAuthMode('signup')">အကောင့်အသစ်ဖွင့်ရန် (Sign Up)</span>
+      <div style="font-size:13px;">
+        အကောင့်မရှိသေးဘူးလား? <span class="auth-link" onclick="switchAuthMode('signup')">Sign Up</span>
       </div>
     </div>
 
     <div id="signup-box" class="auth-card" style="display:none;">
       <h2>ASL Messenger</h2>
-      <p style="font-size:13px; color:#666; margin-bottom:10px;">အကောင့်အသစ် ဖန်တီးရန်</p>
       <input type="text" id="signup-name" placeholder="အမည် (Display Name)">
+      <input type="text" id="signup-phone" placeholder="ဖုန်းနံပါတ် (09xxxxxxxxx)">
       <input type="email" id="signup-email" placeholder="Email လိပ်စာ">
-      <input type="password" id="signup-password" placeholder="Password (စကားဝှက်အသစ်)">
+      <input type="password" id="signup-password" placeholder="Password">
       <button class="btn-primary" id="btn-email-signup">Sign Up</button>
-      <div style="margin-top:10px; font-size:13px;">
-        အကောင့်ရှိပြီးသားလား? <span class="auth-link" onclick="switchAuthMode('login')">အကောင့်ထဲ ဝင်ရန် (Log In)</span>
+      <div style="font-size:13px;">
+        အကောင့်ရှိပြီးသားလား? <span class="auth-link" onclick="switchAuthMode('login')">Log In</span>
       </div>
     </div>
   </div>
 
-  <!-- 2. Main App Layout -->
+  <!-- Main App Layout -->
   <div id="app-container">
     <div id="sidebar">
-      <div class="sidebar-header">ASL Messenger</div>
+      <div class="sidebar-header">
+        <span>ASL Messenger</span>
+      </div>
       
-      <!-- Tab Navigation Bar -->
       <div class="tabs">
         <button class="tab-btn active" id="tab-chats" onclick="switchTab('chats')">Chats</button>
         <button class="tab-btn" id="tab-contacts" onclick="switchTab('contacts')">Contacts</button>
-        <button class="tab-btn" id="tab-noti" onclick="switchTab('noti')">Notifications 🔔</button>
         <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
-      <!-- Create Group Section -->
-      <div class="create-group-area" id="group-create-box">
-        <input type="text" id="group-name-input" placeholder="Group အမည်အသစ်..." style="font-size: 12px;">
-        <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
+      <!-- Add Friend Header in Contacts Tab -->
+      <div class="add-friend-bar" id="add-friend-section" style="display:none;">
+        <span style="font-size: 13px; font-weight: bold; color: #555;">Private Contacts</span>
+        <button class="btn-add-friend" onclick="openAddFriendModal()">➕ Add Friend</button>
       </div>
 
-      <!-- Dynamic List Container -->
       <div class="list-container" id="list-content"></div>
 
-      <!-- Profile Tab View -->
+      <!-- Profile View -->
       <div id="profile-tab-view">
-        <div class="avatar-upload-container" onclick="triggerAvatarUpload()">
-          <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150" alt="Profile">
-          <div class="avatar-upload-overlay">
-            <span style="font-size: 18px;">📷</span>
-            <span>ပုံချိန်းရန်</span>
-          </div>
-        </div>
-
-        <h3 id="my-profile-name" style="margin: 2px 0 0 0;">-</h3>
+        <img id="my-profile-img" class="profile-avatar-large" src="https://via.placeholder.com/150">
+        <h3 id="my-profile-name" style="margin:2px 0 0 0;">-</h3>
         <span id="my-profile-email" style="font-size: 12px; color: #666;">-</span>
 
-        <!-- Profile Data Section -->
         <div class="profile-card">
-          <div style="font-weight:bold; color:#0084ff; font-size:13px; margin-bottom:5px;">👤 Profile Data (အချက်အလက်များ)</div>
-          <div>
-            <label>အမည် (Display Name)</label>
-            <input type="text" id="edit-name">
-          </div>
-          <div>
-            <label>ဖုန်းနံပါတ် (Phone)</label>
-            <input type="text" id="edit-phone" placeholder="09xxxxxxxxx">
-          </div>
-          <div>
-            <label>နေရပ်လိပ်စာ (City)</label>
-            <input type="text" id="edit-city" placeholder="ရန်ကုန် / မန္တလေး ...">
-          </div>
-          <div>
-            <label>About / Bio Status</label>
-            <textarea id="edit-about" rows="2" placeholder="Bio စာသား..."></textarea>
-          </div>
-          <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
+          <label>အမည်</label>
+          <input type="text" id="edit-name">
+          <label>ဖုန်းနံပါတ် (Phone)</label>
+          <input type="text" id="edit-phone">
+          <button id="btn-save-profile" style="background:#0084ff; color:white; border:none; padding:8px; border-radius:6px; font-weight:bold; cursor:pointer;">သိမ်းမည်</button>
         </div>
-
-        <!-- Language Settings -->
-        <div class="settings-section">
-          <div class="settings-title">🌐 Language Settings (ဘာသာစကား)</div>
-          <div class="setting-row">
-            <span>App Language</span>
-            <select id="setting-language" onchange="changeLanguageSetting(this.value)" style="width: auto; padding: 4px 8px;">
-              <option value="my">မြန်မာစာ 🇲🇲</option>
-              <option value="en">English 🇬🇧</option>
-              <option value="zh">Chinese (中文) 🇨🇳</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Audio & Ringtone Settings Section -->
-        <div class="settings-section">
-          <div class="settings-title">🔔 Ringtone & Sound Settings</div>
-          <div class="setting-row">
-            <span>Push Notifications ဖွင့်မည်</span>
-            <input type="checkbox" id="set-msg-noti" checked>
-          </div>
-          
-          <div class="setting-row">
-            <span>Online Call Ringtone</span>
-            <select id="online-ringtone-select" onchange="handleRingtoneChange(this.value)" style="width: auto; padding: 4px 6px;">
-              <option value="default">Classic Phone Bell</option>
-              <option value="chime">Digital Chime</option>
-              <option value="marimba">Marimba Tone</option>
-              <option value="synth">Modern Synth Tone</option>
-              <option value="custom">Uploaded Custom Audio</option>
-            </select>
-          </div>
-
-          <div class="setting-row">
-            <span>Upload Local MP3 / Sound</span>
-            <button onclick="triggerRingtoneUpload()" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">📁 File ရွေးမည်</button>
-          </div>
-          <div id="custom-ringtone-name" style="font-size: 11px; color: #28a745; text-align: right; display: none;"></div>
-          
-          <div style="text-align: right; margin-top: 5px;">
-            <button onclick="testRingtoneSound()" style="padding: 4px 10px; font-size: 11px; background: #34c759; border-radius: 4px;">▶️ Ringtone စမ်းနားထောင်မည်</button>
-          </div>
-        </div>
-
-        <button id="btn-logout" style="width: 100%; background: #ff4d4f; border-radius: 8px; margin-top: 10px; padding: 12px; font-weight: bold;">Log Out (အကောင့်ထွက်မည်)</button>
-
+        <button id="btn-logout" style="width:100%; background:#ff4d4f; color:white; border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">Log Out</button>
       </div>
     </div>
 
-    <!-- Right Chat View -->
+    <!-- Right Main Chat Box Section -->
     <div id="chat-main">
       <div class="chat-header">
-        <div class="chat-user-info" id="chat-header-user" onclick="viewCurrentContactProfile()">
-          <button id="btn-back" onclick="event.stopPropagation(); closeChat();" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
+        <div class="chat-user-info" id="chat-header-user">
+          <button id="btn-back" onclick="closeChat()" style="display:none; margin-right:5px; border:none; background:#e4e6eb; border-radius:50%; padding:4px 8px;">←</button>
           <div class="avatar-wrapper" style="width: 36px; height: 36px;">
-            <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="" alt="">
+            <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="">
             <div id="chat-header-online-dot" class="online-indicator"></div>
           </div>
           <div>
-            <div id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</div>
+            <div id="chat-title">Chat ကို ရွေးချယ်ပါ</div>
             <div id="chat-status-text" class="chat-user-status"></div>
           </div>
         </div>
         
         <div class="call-actions" id="call-box" style="display:none;">
-          <button class="call-btn" onclick="startWebRTCCall(false)">📞</button>
-          <button class="call-btn" onclick="startWebRTCCall(true)">📹</button>
+          <button class="call-btn" onclick="startCall(false)">📞</button>
+          <button class="call-btn" onclick="startCall(true)">📹</button>
+          <button class="btn-delete-chat" onclick="deleteCurrentChat()">🗑️ Delete Chat</button>
         </div>
       </div>
 
+      <!-- Messages Stream -->
       <div id="messages"></div>
 
+      <!-- Chat Input Area (Fixed and Fully Working) -->
       <div id="input-area">
+        <div class="media-btn-group">
+          <button class="media-btn" title="Photo" onclick="triggerMediaUpload('image/*')">🖼️</button>
+          <button class="media-btn" title="Video" onclick="triggerMediaUpload('video/*')">🎥</button>
+          <button class="media-btn" title="Document/File" onclick="triggerMediaUpload('*/*')">📁</button>
+          <button class="media-btn" id="btn-voice-rec" title="Voice Message" onclick="toggleVoiceRecording()">🎤</button>
+        </div>
         <input type="text" id="msg-input" placeholder="မက်ဆေ့ချ် ရေးပါ...">
-        <button id="btn-send">ပို့မည်</button>
-      </div>
-
-      <!-- Real-Time Call Interface Screen -->
-      <div id="call-screen">
-        <div class="video-container" id="video-wrapper">
-          <video id="remote-video" autoplay playsinline></video>
-          <video id="local-video" autoplay playsinline muted></video>
-        </div>
-
-        <div class="call-top-bar">
-          <button class="minimize-call-btn" onclick="minimizeCallScreen()">↙️ Minimize</button>
-          <div style="font-size: 13px; font-weight: bold; opacity: 0.9;" id="call-mode-text">Voice / Video Call</div>
-          <div style="width: 60px;"></div>
-        </div>
-
-        <div class="call-user-area" id="call-user-ui">
-          <div class="call-avatar-wrapper">
-            <img id="call-screen-avatar" class="call-avatar-img" src="https://via.placeholder.com/150" alt="Caller">
-          </div>
-          <div id="call-screen-name" class="call-name">-</div>
-          <div id="call-screen-status" class="call-status">Waiting . .</div>
-        </div>
-
-        <div class="call-controls-bar" id="call-controls-active">
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-speaker" onclick="toggleSpeaker()">🔊</button>
-            <span>Speaker</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-cam" onclick="toggleCamera()">📹</button>
-            <span id="label-cam">Start Video</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn" id="btn-mic" onclick="toggleMic()">🎙️</button>
-            <span id="label-mic">Mute</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-end" onclick="endCall()">📞</button>
-            <span>End Call</span>
-          </div>
-        </div>
-
-        <!-- Incoming Call Bar -->
-        <div class="call-controls-bar" id="call-controls-incoming" style="display:none;">
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-end" onclick="declineIncomingCall()">📞</button>
-            <span>ငြင်းမည်</span>
-          </div>
-          <div class="action-btn-item">
-            <button class="ctrl-circle-btn btn-accept" id="btn-accept-call">📞</button>
-            <span>ကိုင်မည်</span>
-          </div>
-        </div>
-
+        <button class="btn-send" id="btn-send">ပို့မည်</button>
       </div>
     </div>
   </div>
 
-  <!-- Contact Profile Detail Modal -->
-  <div id="contact-modal" class="modal">
+  <!-- Add Friend Modal -->
+  <div id="add-friend-modal" class="modal">
     <div class="modal-content">
-      <img id="modal-avatar" class="profile-avatar-large" src="" alt="Avatar">
-      <h3 id="modal-name" style="margin:0;">-</h3>
-      <p id="modal-about" style="font-size:13px; color:#666; margin:0;">-</p>
-      <hr style="width:100%; border:0.5px solid #eee;">
-      <div style="text-align:left; width:100%; font-size:13px; display:flex; flex-direction:column; gap:8px;">
-        <div><b>📞 Phone:</b> <span id="modal-phone">-</span></div>
-        <div><b>📍 City:</b> <span id="modal-city">-</span></div>
-        <div><b>✉️ Email:</b> <span id="modal-email">-</span></div>
-      </div>
-      <button onclick="closeModal()" style="border-radius:6px; margin-top:10px; background:#ff4d4f;">ပိတ်မည်</button>
+      <h3 style="margin:0; color:#0084ff;">Add Friend</h3>
+      <p style="font-size:12px; color:#666; margin:0;">တစ်ဖက်လူ၏ ဖုန်းနံပါတ် သို့မဟုတ် Email ရိုက်ထည့်ပါ</p>
+      <input type="text" id="add-friend-input" placeholder="Email သို့မဟုတ် Phone (e.g. 09xxxxxxxxx)" style="padding:10px; border:1px solid #ccc; border-radius:6px; outline:none;">
+      <button onclick="executeAddFriend()" style="background:#0084ff; color:white; border:none; padding:10px; border-radius:6px; font-weight:bold; cursor:pointer;">Add လုပ်မည်</button>
+      <button onclick="closeModal('add-friend-modal')" style="background:#e4e6eb; border:none; padding:8px; border-radius:6px; cursor:pointer;">မလုပ်တော့ပါ</button>
     </div>
   </div>
 
-  <!-- Firebase Script Integration -->
+  <!-- Firebase Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
@@ -420,58 +232,19 @@
       projectId: "asl-messenger-85a1b",
       storageBucket: "asl-messenger-85a1b.firebasestorage.app",
       messagingSenderId: "593020086365",
-      appId: "1:593020086365:web:666da320bf6917e4ef05b4",
-      measurementId: "G-2KMFNYYZTK"
+      appId: "1:593020086365:web:666da320bf6917e4ef05b4"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    let activeTab = 'chats';
     let activeChatId = null;
-    let activeChatType = null;
     let activeTargetUserData = null;
     let unsubscribeMessages = null;
-    let unsubscribeCallListener = null;
-
-    let localStream = null;
-    let remoteStream = null;
-    let peerConnection = null;
-    let isMicMuted = false;
-    let isCamOff = false;
-    let currentRingtoneAudio = null;
-
-    const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
-
-    // Set User Online Status
-    function setUserOnlineStatus(isOnline) {
-      if (auth.currentUser) {
-        setDoc(doc(db, "users", auth.currentUser.uid), {
-          isOnline: isOnline,
-          lastSeen: serverTimestamp()
-        }, { merge: true });
-      }
-    }
-
-    window.addEventListener('beforeunload', () => setUserOnlineStatus(false));
-
-    function playCallRingtone() {
-      stopCallRingtone();
-      try {
-        currentRingtoneAudio = new Audio('https://actions.google.com/sounds/v1/emergency/beeping_call.ogg');
-        currentRingtoneAudio.loop = true;
-        currentRingtoneAudio.play().catch(e => console.log(e));
-      } catch (e) { console.log(e); }
-    }
-
-    function stopCallRingtone() {
-      if (currentRingtoneAudio) {
-        currentRingtoneAudio.pause();
-        currentRingtoneAudio.currentTime = 0;
-        currentRingtoneAudio = null;
-      }
-    }
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
     window.switchAuthMode = (mode) => {
       document.getElementById('login-box').style.display = mode === 'login' ? 'flex' : 'none';
@@ -481,36 +254,32 @@
     document.getElementById('btn-email-login').onclick = async () => {
       const email = document.getElementById('login-email').value.trim();
       const pass = document.getElementById('login-password').value.trim();
-      if (!email || !pass) { alert("Email နှင့် Password ထည့်ပါ။"); return; }
-      try { await signInWithEmailAndPassword(auth, email, pass); } 
-      catch (err) { alert("Login Error: " + err.message); }
+      if (!email || !pass) return alert("Email/Password ဖြည့်ပါ။");
+      try { await signInWithEmailAndPassword(auth, email, pass); } catch (e) { alert(e.message); }
     };
 
     document.getElementById('btn-email-signup').onclick = async () => {
       const name = document.getElementById('signup-name').value.trim();
+      const phone = document.getElementById('signup-phone').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const pass = document.getElementById('signup-password').value.trim();
-      if (!name || !email || !pass) { alert("အချက်အလက်များ ဖြည့်ပေးပါ။"); return; }
+      if (!name || !email || !pass) return alert("အချက်အလက်များ ဖြည့်ပါ။");
       try {
         const res = await createUserWithEmailAndPassword(auth, email, pass);
-        await updateProfile(res.user, { displayName: name, photoURL: "https://via.placeholder.com/150" });
+        await updateProfile(res.user, { displayName: name });
         await setDoc(doc(db, "users", res.user.uid), {
-          uid: res.user.uid, name: name, email: email, photoURL: "https://via.placeholder.com/150",
-          phone: "", city: "", about: "Hey there! I am using ASL Messenger.", isOnline: true
+          uid: res.user.uid, name: name, email: email, phone: phone, photoURL: "https://via.placeholder.com/150", isOnline: true
         });
-      } catch (err) { alert("Signup Error: " + err.message); }
+      } catch (e) { alert(e.message); }
     };
 
     document.getElementById('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
-    document.getElementById('btn-logout').onclick = () => { setUserOnlineStatus(false); signOut(auth); };
+    document.getElementById('btn-logout').onclick = () => signOut(auth);
 
-    onAuthStateChanged(auth, async (user) => {
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
-
-        setUserOnlineStatus(true);
-        listenForIncomingCalls();
         switchTab('chats');
       } else {
         document.getElementById('auth-screen').style.display = 'flex';
@@ -519,60 +288,35 @@
     });
 
     window.switchTab = (type) => {
-      activeTab = type;
       document.getElementById('tab-chats').classList.toggle('active', type === 'chats');
       document.getElementById('tab-contacts').classList.toggle('active', type === 'contacts');
-      document.getElementById('tab-noti').classList.toggle('active', type === 'noti');
       document.getElementById('tab-profile').classList.toggle('active', type === 'profile');
 
-      document.getElementById('group-create-box').style.display = type === 'chats' ? 'flex' : 'none';
+      document.getElementById('add-friend-section').style.display = type === 'contacts' ? 'flex' : 'none';
       document.getElementById('list-content').style.display = type === 'profile' ? 'none' : 'block';
       document.getElementById('profile-tab-view').style.display = type === 'profile' ? 'flex' : 'none';
 
-      if (type === 'chats') loadChatsList();
-      else if (type === 'contacts') loadContactsList();
+      if (type === 'chats' || type === 'contacts') loadPrivateContacts();
       else if (type === 'profile') loadMyProfile();
     };
 
-    function loadChatsList() {
+    // Private Contacts & Friend List Loader
+    function loadPrivateContacts() {
       const listContent = document.getElementById('list-content');
       listContent.innerHTML = '';
 
-      onSnapshot(collection(db, "users"), (snapshot) => {
+      onSnapshot(collection(db, "users", auth.currentUser.uid, "friends"), async (snapshot) => {
         listContent.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
+        if (snapshot.empty) {
+          listContent.innerHTML = `<div style="padding:20px; text-align:center; font-size:13px; color:#888;">Friends မရှိသေးပါ။ Contacts တွင် Add Friend (+) လုပ်ပါ။</div>`;
+          return;
+        }
+        for (let docSnap of snapshot.docs) {
+          const friendData = docSnap.data();
+          const uSnap = await getDoc(doc(db, "users", friendData.friendUid));
+          if (uSnap.exists()) {
+            const u = uSnap.data();
             const chatId = getDirectChatId(auth.currentUser.uid, u.uid);
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
-            const isOnline = u.isOnline ? 'block' : 'none';
-
-            item.innerHTML = `
-              <div class="avatar-wrapper">
-                <img class="avatar" src="${imgUrl}" alt="Avatar">
-                <div class="online-indicator" style="display:${isOnline}"></div>
-              </div>
-              <div class="item-info">
-                <div class="item-name">${u.name}</div>
-                <div class="item-sub">${u.isOnline ? 'Active Now' : 'Offline'}</div>
-              </div>
-            `;
-            item.onclick = () => openChat(chatId, u, 'direct');
-            listContent.appendChild(item);
-          }
-        });
-      });
-    }
-
-    function loadContactsList() {
-      onSnapshot(collection(db, "users"), (snapshot) => {
-        const listContent = document.getElementById('list-content');
-        listContent.innerHTML = '';
-        snapshot.forEach((docSnap) => {
-          const u = docSnap.data();
-          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
             const item = document.createElement('div');
             item.className = 'list-item';
             item.innerHTML = `
@@ -582,52 +326,58 @@
               </div>
               <div class="item-info">
                 <div class="item-name">${u.name}</div>
-                <div class="item-sub">📞 ${u.phone || 'ဖုန်းမရှိပါ'}</div>
+                <div class="item-sub">${u.phone ? '📞 ' + u.phone : u.email}</div>
               </div>
             `;
-            item.onclick = () => { activeTargetUserData = u; viewCurrentContactProfile(); };
+            item.onclick = () => openChat(chatId, u);
             listContent.appendChild(item);
           }
-        });
+        }
       });
     }
 
-    async function loadMyProfile() {
-      const user = auth.currentUser;
-      if (!user) return;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data();
-        document.getElementById('my-profile-img').src = data.photoURL || "https://via.placeholder.com/150";
-        document.getElementById('my-profile-name').innerText = data.name;
-        document.getElementById('my-profile-email').innerText = data.email;
-        document.getElementById('edit-name').value = data.name || '';
-        document.getElementById('edit-phone').value = data.phone || '';
-        document.getElementById('edit-city').value = data.city || '';
-        document.getElementById('edit-about').value = data.about || '';
-      }
-    }
+    // Add Friend Modal Trigger
+    window.openAddFriendModal = () => document.getElementById('add-friend-modal').style.display = 'flex';
+    window.closeModal = (id) => document.getElementById(id).style.display = 'none';
 
-    function openChat(chatId, targetData, type) {
+    window.executeAddFriend = async () => {
+      const input = document.getElementById('add-friend-input').value.trim();
+      if (!input) return alert("Email သို့မဟုတ် ဖုန်းနံပါတ် ထည့်ပါ။");
+
+      const qEmail = query(collection(db, "users"), where("email", "==", input));
+      const qPhone = query(collection(db, "users"), where("phone", "==", input));
+
+      let querySnap = await getDocs(qEmail);
+      if (querySnap.empty) querySnap = await getDocs(qPhone);
+
+      if (querySnap.empty) {
+        alert("အကောင့် ရှာမတွေ့ပါ။ Email (သို့) Phone မှန်ကန်စွာ ထည့်ပါ။");
+      } else {
+        const targetUser = querySnap.docs[0].data();
+        if (targetUser.uid === auth.currentUser.uid) return alert("မိမိကိုယ်ကို Add လုပ်၍ မရပါ။");
+
+        // Add to each other's friend list
+        await setDoc(doc(db, "users", auth.currentUser.uid, "friends", targetUser.uid), { friendUid: targetUser.uid });
+        await setDoc(doc(db, "users", targetUser.uid, "friends", auth.currentUser.uid), { friendUid: auth.currentUser.uid });
+
+        alert(`${targetUser.name} အား Contact တွင် ပေါင်းထည့်လိုက်ပါပြီ!`);
+        closeModal('add-friend-modal');
+        loadPrivateContacts();
+      }
+    };
+
+    // Open Chat View and Reveal Chat Input Box
+    function openChat(chatId, targetData) {
       activeChatId = chatId;
-      activeChatType = type;
       activeTargetUserData = targetData;
 
       document.getElementById('chat-title').innerText = targetData.name;
       const headerAvatar = document.getElementById('chat-header-avatar');
-      
       headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
       headerAvatar.style.display = 'inline-block';
+      
       document.getElementById('call-box').style.display = 'flex';
-
-      // Listen for Target User Online Status in Chat Header
-      onSnapshot(doc(db, "users", targetData.uid), (docSnap) => {
-        if (docSnap.exists()) {
-          const u = docSnap.data();
-          document.getElementById('chat-status-text').innerText = u.isOnline ? 'Active Now' : 'Offline';
-          document.getElementById('chat-header-online-dot').style.display = u.isOnline ? 'block' : 'none';
-        }
-      });
+      document.getElementById('input-area').style.display = 'flex'; // ✅ Fix Chat Box Input Display
 
       document.body.classList.add('show-chat');
       document.getElementById('btn-back').style.display = 'inline-block';
@@ -643,216 +393,124 @@
         snapshot.forEach((docSnap) => {
           const data = docSnap.data();
           const isMe = data.uid === auth.currentUser.uid;
-          
-          // Mark Received Message as Seen automatically
-          if (!isMe && data.status !== 'seen') {
-            updateDoc(doc(db, 'direct_chats', chatId, 'messages', docSnap.id), { status: 'seen' });
-          }
 
           const msgWrapper = document.createElement('div');
           msgWrapper.className = `msg-wrapper ${isMe ? 'sent-wrapper' : 'received-wrapper'}`;
 
-          let statusText = '';
-          if (isMe) {
-            if (data.status === 'seen') statusText = `<span class="msg-status msg-status-seen">✓✓ Seen</span>`;
-            else if (data.status === 'delivered') statusText = `<span class="msg-status">✓✓ Delivered</span>`;
-            else statusText = `<span class="msg-status">✓ Sent</span>`;
-          }
+          let content = '';
+          if (data.type === 'image') content = `<img class="msg-media-img" src="${data.fileUrl}">`;
+          else if (data.type === 'video') content = `<video class="msg-media-video" controls src="${data.fileUrl}"></video>`;
+          else if (data.type === 'audio') content = `<audio controls src="${data.fileUrl}"></audio>`;
+          else if (data.type === 'file') content = `<a class="msg-file-link" href="${data.fileUrl}" target="_blank">📄 ${data.fileName || 'Download File'}</a>`;
+          else content = data.text || '';
 
-          msgWrapper.innerHTML = `
-            <div class="msg ${isMe ? 'sent' : 'received'}">${data.text}</div>
-            ${statusText}
-          `;
+          msgWrapper.innerHTML = `<div class="msg ${isMe ? 'sent' : 'received'}">${content}</div>`;
           messagesDiv.appendChild(msgWrapper);
         });
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
 
-    // --- Synchronized Messenger Call System ---
-    window.startWebRTCCall = async (isVideo) => {
-      if (!activeTargetUserData) return;
+    window.closeChat = () => {
+      document.body.classList.remove('show-chat');
+      document.getElementById('input-area').style.display = 'none';
+      document.getElementById('call-box').style.display = 'none';
+      activeChatId = null;
+    };
 
-      document.getElementById('call-screen').style.display = 'flex';
-      document.getElementById('floating-call-head').style.display = 'none';
-      document.getElementById('call-controls-active').style.display = 'flex';
-      document.getElementById('call-controls-incoming').style.display = 'none';
-      document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
-      document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
-      document.getElementById('call-screen-status').innerText = 'Calling... (ခေါ်ဆိုနေပါသည်)';
-      
-      toggleVideoDisplay(isVideo);
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStream.getVideoTracks()[0].enabled = isVideo;
-        document.getElementById('local-video').srcObject = localStream;
-        
-        peerConnection = new RTCPeerConnection(servers);
-        remoteStream = new MediaStream();
-        document.getElementById('remote-video').srcObject = remoteStream;
-
-        localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        peerConnection.ontrack = (event) => {
-          event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
-          document.getElementById('call-screen-status').innerText = 'Connected';
-        };
-
-        const callDocRef = doc(db, "calls", activeChatId);
-        const offerCandidates = collection(callDocRef, "offerCandidates");
-        const answerCandidates = collection(callDocRef, "answerCandidates");
-
-        peerConnection.onicecandidate = (e) => {
-          if (e.candidate) addDoc(offerCandidates, e.candidate.toJSON());
-        };
-
-        const offerDescription = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offerDescription);
-
-        await setDoc(callDocRef, {
-          offer: { type: offerDescription.type, sdp: offerDescription.sdp },
-          targetUid: activeTargetUserData.uid,
-          callerUid: auth.currentUser.uid,
-          callerName: auth.currentUser.displayName || "User",
-          callerPhoto: auth.currentUser.photoURL || "https://via.placeholder.com/150",
-          status: 'calling',
-          isVideo: isVideo
-        });
-
-        // Listen for Call Rejection / Termination by the other user
-        unsubscribeCallListener = onSnapshot(callDocRef, (snapshot) => {
-          if (!snapshot.exists() || snapshot.data()?.status === 'ended') {
-            closeCallUI();
-          } else if (snapshot.data()?.answer && peerConnection && !peerConnection.currentRemoteDescription) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(snapshot.data().answer));
-            document.getElementById('call-screen-status').innerText = 'Connected';
-          }
-        });
-
-      } catch (err) {
-        alert("Camera / Mic ခွင့်ပြုချက် လိုအပ်ပါသည်: " + err.message);
-        endCall();
+    // Delete Entire Chat History
+    window.deleteCurrentChat = async () => {
+      if (!activeChatId) return;
+      if (confirm("ဒီ Chat ထဲက Message များကို အပြီးတိုင် ဖျက်ပစ်ရန် သေချာပါသလား?")) {
+        const msgsRef = collection(db, 'direct_chats', activeChatId, 'messages');
+        const snap = await getDocs(msgsRef);
+        snap.forEach(async (d) => await deleteDoc(d.ref));
+        alert("Chat များကို အပြီးဖျက်လိုက်ပါပြီ။");
       }
     };
 
-    function listenForIncomingCalls() {
-      onSnapshot(collection(db, "calls"), (snapshot) => {
-        snapshot.forEach(async (callDoc) => {
-          const data = callDoc.data();
-          if (auth.currentUser && data && data.targetUid === auth.currentUser.uid && data.status === 'calling') {
-            
-            document.getElementById('call-screen').style.display = 'flex';
-            document.getElementById('floating-call-head').style.display = 'none';
-            document.getElementById('call-controls-active').style.display = 'none';
-            document.getElementById('call-controls-incoming').style.display = 'flex';
-            document.getElementById('call-screen-name').innerText = data.callerName;
-            document.getElementById('call-screen-avatar').src = data.callerPhoto || 'https://via.placeholder.com/150';
-            document.getElementById('call-screen-status').innerText = `Ringing... (ဖုန်းဝင်နေပါသည်)`;
-
-            playCallRingtone();
-
-            // Listen if caller hangs up before answering
-            unsubscribeCallListener = onSnapshot(doc(db, "calls", callDoc.id), (docSnap) => {
-              if (!docSnap.exists() || docSnap.data()?.status === 'ended') {
-                stopCallRingtone();
-                closeCallUI();
-              }
-            });
-
-            document.getElementById('btn-accept-call').onclick = () => {
-              stopCallRingtone();
-              answerCall(callDoc.id, data);
-            };
-          }
-        });
-      });
-    }
-
-    window.declineIncomingCall = async () => {
-      stopCallRingtone();
-      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true });
-      closeCallUI();
-    };
-
-    async function answerCall(callId, callData) {
-      document.getElementById('call-controls-incoming').style.display = 'none';
-      document.getElementById('call-controls-active').style.display = 'flex';
-      document.getElementById('call-screen-status').innerText = 'Connecting...';
-
-      toggleVideoDisplay(callData.isVideo);
-
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      localStream.getVideoTracks()[0].enabled = callData.isVideo;
-      document.getElementById('local-video').srcObject = localStream;
-
-      peerConnection = new RTCPeerConnection(servers);
-      remoteStream = new MediaStream();
-      document.getElementById('remote-video').srcObject = remoteStream;
-
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-      peerConnection.ontrack = (event) => {
-        event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
-        document.getElementById('call-screen-status').innerText = 'Connected';
-      };
-
-      const callDocRef = doc(db, "calls", callId);
-      await setDoc(callDocRef, { status: 'connected' }, { merge: true });
-
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
-      const answerDescription = await peerConnection.createAnswer();
-      await peerConnection.setLocalDescription(answerDescription);
-
-      await setDoc(callDocRef, { answer: { type: answerDescription.type, sdp: answerDescription.sdp } }, { merge: true });
-    }
-
-    window.endCall = async () => {
-      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true }).catch(() => {});
-      closeCallUI();
-    };
-
-    function closeCallUI() {
-      stopCallRingtone();
-      document.getElementById('call-screen').style.display = 'none';
-      document.getElementById('floating-call-head').style.display = 'none';
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
-      if (peerConnection) peerConnection.close();
-      if (unsubscribeCallListener) unsubscribeCallListener();
-    }
-
-    window.minimizeCallScreen = () => {
-      document.getElementById('call-screen').style.display = 'none';
-      const floatingHead = document.getElementById('floating-call-head');
-      floatingHead.style.display = 'flex';
-      if (activeTargetUserData && activeTargetUserData.photoURL) {
-        document.getElementById('floating-avatar').src = activeTargetUserData.photoURL;
-      }
-    };
-
-    window.restoreCallScreen = () => {
-      document.getElementById('floating-call-head').style.display = 'none';
-      document.getElementById('call-screen').style.display = 'flex';
-    };
-
-    function toggleVideoDisplay(showVideo) {
-      document.getElementById('video-wrapper').style.display = showVideo ? 'block' : 'none';
-    }
-
-    function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
-
+    // Send Text Message
     document.getElementById('btn-send').onclick = sendMessage;
     document.getElementById('msg-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
 
     async function sendMessage() {
       const input = document.getElementById('msg-input');
       const text = input.value.trim();
-      if (!text || !activeChatId || !auth.currentUser) return;
+      if (!text || !activeChatId) return;
       input.value = '';
       
       await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
-        text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User",
-        status: 'sent', createdAt: serverTimestamp()
+        text: text, type: 'text', uid: auth.currentUser.uid, createdAt: serverTimestamp()
       });
     }
+
+    // Media & File Upload Handler (Base64 for direct Firestore compatibility)
+    window.triggerMediaUpload = (acceptType) => {
+      const fileInput = document.getElementById('media-file-input');
+      fileInput.accept = acceptType;
+      fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        if (file.size > 5 * 1024 * 1024) return alert("File Size မှာ 5MB ထက် မကျော်ရပါ။");
+
+        const reader = new FileReader();
+        reader.onload = async () => {
+          let fileType = 'file';
+          if (file.type.startsWith('image/')) fileType = 'image';
+          else if (file.type.startsWith('video/')) fileType = 'video';
+
+          await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
+            fileUrl: reader.result, fileName: file.name, type: fileType, uid: auth.currentUser.uid, createdAt: serverTimestamp()
+          });
+        };
+        reader.readAsDataURL(file);
+      };
+      fileInput.click();
+    };
+
+    // Voice Record System
+    window.toggleVoiceRecording = async () => {
+      const btn = document.getElementById('btn-voice-rec');
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onload = async () => {
+              await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
+                fileUrl: reader.result, type: 'audio', uid: auth.currentUser.uid, createdAt: serverTimestamp()
+              });
+            };
+            reader.readAsDataURL(audioBlob);
+          };
+          mediaRecorder.start();
+          isRecording = true;
+          btn.classList.add('recording-active');
+        } catch (e) { alert("Mic ခွင့်ပြုချက် လိုအပ်ပါသည်။"); }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        btn.classList.remove('recording-active');
+      }
+    };
+
+    async function loadMyProfile() {
+      const uSnap = await getDoc(doc(db, "users", auth.currentUser.uid));
+      if (uSnap.exists()) {
+        const data = uSnap.data();
+        document.getElementById('my-profile-img').src = data.photoURL || "https://via.placeholder.com/150";
+        document.getElementById('my-profile-name').innerText = data.name;
+        document.getElementById('my-profile-email').innerText = data.email;
+        document.getElementById('edit-name').value = data.name || '';
+        document.getElementById('edit-phone').value = data.phone || '';
+      }
+    }
+
+    function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
   </script>
 </body>
 </html>
