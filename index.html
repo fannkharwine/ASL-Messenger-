@@ -41,9 +41,8 @@
     /* Profile View Tab */
     #profile-tab-view { padding: 20px; display: none; flex-direction: column; align-items: center; text-align: center; gap: 15px; overflow-y: auto; width: 100%; }
     
-    /* Avatar Change UI */
     .avatar-upload-container { position: relative; width: 96px; height: 96px; margin: 0 auto; cursor: pointer; }
-    .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; transition: opacity 0.2s ease; }
+    .profile-avatar-large { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 3px solid #0084ff; }
     .avatar-upload-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%;
       background: rgba(0, 0, 0, 0.4); display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -55,7 +54,6 @@
     .profile-card label { font-size: 11px; color: #888; font-weight: bold; text-transform: uppercase; }
     .profile-card input, .profile-card textarea, .profile-card select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; outline: none; font-size: 13px; margin-top: 3px; }
 
-    /* Settings Sections */
     .settings-section { width: 100%; text-align: left; background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 12px; margin-top: 5px; }
     .settings-title { font-weight: bold; font-size: 13px; color: #0084ff; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
     .setting-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
@@ -79,7 +77,6 @@
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
     button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
 
-    /* Modals */
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
@@ -88,22 +85,25 @@
       display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background: linear-gradient(180deg, #1e3c72 0%, #2a5298 50%, #111e38 100%);
       z-index: 99999; flex-direction: column; align-items: center; justify-content: space-between;
-      padding: 60px 20px 40px 20px; color: white;
+      padding: 40px 20px 40px 20px; color: white;
     }
-    .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 1; }
+    .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; z-index: 1; background: #000; }
     #remote-video { width: 100%; height: 100%; object-fit: cover; }
-    #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 20px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+    #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 70px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 3; }
 
-    .call-user-area { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 40px; z-index: 2; }
+    .call-top-bar { width: 100%; display: flex; justify-content: space-between; align-items: center; z-index: 4; }
+    .minimize-call-btn { background: rgba(255, 255, 255, 0.2); border: none; color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-size: 13px; backdrop-filter: blur(5px); }
+
+    .call-user-area { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; z-index: 2; }
     .call-avatar-wrapper { position: relative; width: 130px; height: 130px; display: flex; align-items: center; justify-content: center; }
     .call-avatar-wrapper::before { content: ''; position: absolute; width: 160px; height: 160px; border-radius: 50%; background: rgba(255, 255, 255, 0.15); animation: pulse 2s infinite; }
     .call-avatar-img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid rgba(255,255,255,0.8); z-index: 2; }
     @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 0.2; } 100% { transform: scale(0.95); opacity: 0.8; } }
 
-    .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; }
+    .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 2; }
+    .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; z-index: 2; }
 
-    .call-controls-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 400px; z-index: 2; }
+    .call-controls-bar { display: flex; justify-content: space-around; align-items: center; width: 100%; max-width: 400px; z-index: 4; }
     .action-btn-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
     .action-btn-item span { font-size: 12px; opacity: 0.9; }
     .ctrl-circle-btn { width: 62px; height: 62px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); color: white; font-size: 22px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s ease; }
@@ -111,6 +111,16 @@
     .ctrl-circle-btn.off { background: rgba(255, 255, 255, 0.8); color: #333; }
     .btn-end { background: #ff3b30; color: white; }
     .btn-accept { background: #34c759; color: white; animation: pulse 1.5s infinite; }
+
+    /* Floating Messenger-style Call Bubble (Minimized) */
+    #floating-call-head {
+      display: none; position: fixed; bottom: 25px; right: 25px; width: 68px; height: 68px;
+      border-radius: 50%; background: #0084ff; border: 3px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      z-index: 999999; cursor: pointer; align-items: center; justify-content: center; overflow: hidden;
+      animation: floatPulse 1.5s infinite;
+    }
+    #floating-call-head img { width: 100%; height: 100%; object-fit: cover; }
+    @keyframes floatPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(0, 132, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0); } }
 
     /* Toast Notification Banner */
     #toast-notification {
@@ -141,6 +151,11 @@
       <div id="toast-title" style="font-weight:bold; font-size:13px;">-</div>
       <div id="toast-body" style="font-size:12px; color:#666;">-</div>
     </div>
+  </div>
+
+  <!-- Messenger-style Minimized Floating Call Head -->
+  <div id="floating-call-head" onclick="restoreCallScreen()" title="Call သို့ ပြန်သွားရန်">
+    <img id="floating-avatar" src="https://via.placeholder.com/150" alt="Call">
   </div>
 
   <!-- Hidden File Inputs -->
@@ -347,6 +362,12 @@
           <video id="local-video" autoplay playsinline muted></video>
         </div>
 
+        <div class="call-top-bar">
+          <button class="minimize-call-btn" onclick="minimizeCallScreen()">↙️ Minimize</button>
+          <div style="font-size: 13px; font-weight: bold; opacity: 0.9;" id="call-mode-text">Voice / Video Call</div>
+          <div style="width: 60px;"></div>
+        </div>
+
         <div class="call-user-area" id="call-user-ui">
           <div class="call-avatar-wrapper">
             <img id="call-screen-avatar" class="call-avatar-img" src="https://via.placeholder.com/150" alt="Caller">
@@ -446,7 +467,6 @@
     let incomingCallData = null;
     let incomingCallId = null;
 
-    // WebRTC & Sound Management Variables
     let localStream = null;
     let remoteStream = null;
     let peerConnection = null;
@@ -465,7 +485,6 @@
     const msgNotiSoundUrl = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
     const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
 
-    // --- Audio Sound Functions ---
     function playNotificationSound() {
       try {
         if (document.getElementById('set-msg-noti').checked) {
@@ -487,7 +506,7 @@
 
         currentRingtoneAudio = new Audio(soundSource);
         currentRingtoneAudio.loop = true;
-        currentRingtoneAudio.play().catch(e => console.log("Audio play blocked by browser: ", e));
+        currentRingtoneAudio.play().catch(e => console.log(e));
       } catch (e) { console.log(e); }
     }
 
@@ -508,9 +527,7 @@
       }
     };
 
-    window.triggerRingtoneUpload = () => {
-      document.getElementById('ringtone-file-input').click();
-    };
+    window.triggerRingtoneUpload = () => document.getElementById('ringtone-file-input').click();
 
     document.getElementById('ringtone-file-input').addEventListener('change', (e) => {
       const file = e.target.files[0];
@@ -525,8 +542,7 @@
         nameEl.innerText = `🎵 Custom File: ${file.name}`;
         nameEl.style.display = 'block';
 
-        const selectEl = document.getElementById('online-ringtone-select');
-        selectEl.value = 'custom';
+        document.getElementById('online-ringtone-select').value = 'custom';
         alert("Local MP3 / Audio အား Ringtone အဖြစ် အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ ✨");
       };
       reader.readAsDataURL(file);
@@ -539,7 +555,6 @@
       }
     };
 
-    // Avatar Change
     window.triggerAvatarUpload = () => document.getElementById('avatar-file-input').click();
 
     document.getElementById('avatar-file-input').addEventListener('change', (e) => {
@@ -563,7 +578,6 @@
       reader.readAsDataURL(file);
     });
 
-    // Font & Language Settings Functions
     window.changeFontSetting = (fontKey) => {
       if (fontKey === 'padauk') document.body.style.fontFamily = "'Padauk', sans-serif";
       else if (fontKey === 'pyidaungsu') document.body.style.fontFamily = "'Pyidaungsu', sans-serif";
@@ -576,7 +590,7 @@
       else alert("မြန်မာဘာသာစကားသို့ ပြောင်းလဲပြီးပါပြီ 🇲🇲");
     };
 
-    window.toggle2FASetting = (is2FA) => alert(is2FA ? "Two-Factor Authentication (2FA) ဖွင့်လိုက်ပါပြီ 🔒" : "2FA ပိတ်လိုက်ပါပြီ");
+    window.toggle2FASetting = (is2FA) => alert(is2FA ? "2FA ဖွင့်လိုက်ပါပြီ 🔒" : "2FA ပိတ်လိုက်ပါပြီ");
     window.openChangePasswordModal = () => document.getElementById('change-pass-modal').style.display = 'flex';
 
     window.submitNewPassword = async () => {
@@ -590,7 +604,6 @@
       } catch (err) { alert("Password update မအောင်မြင်ပါ: " + err.message); }
     };
 
-    // Authentication Actions
     window.switchAuthMode = (mode) => {
       document.getElementById('login-box').style.display = mode === 'login' ? 'flex' : 'none';
       document.getElementById('signup-box').style.display = mode === 'signup' ? 'flex' : 'none';
@@ -605,7 +618,7 @@
     };
 
     document.getElementById('btn-email-signup').onclick = async () => {
-      const name = document.signupName = document.getElementById('signup-name').value.trim();
+      const name = document.getElementById('signup-name').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const pass = document.getElementById('signup-password').value.trim();
       if (!name || !email || !pass) { alert("အချက်အလက်အားလုံး ဖြည့်ပေးပါ။"); return; }
@@ -656,7 +669,6 @@
       }
     });
 
-    // Tab Navigation Logic
     window.switchTab = (type) => {
       activeTab = type;
       document.getElementById('tab-chats').classList.toggle('active', type === 'chats');
@@ -674,17 +686,17 @@
       else if (type === 'profile') loadMyProfile();
     };
 
-    // Load Recent Conversations & Groups
+    // Chat Tab: Displays chats & group chats only
     function loadChatsList() {
       const listContent = document.getElementById('list-content');
       listContent.innerHTML = '';
 
-      // Groups Section Header
       const groupHeader = document.createElement('div');
       groupHeader.style.cssText = 'padding:8px 15px; font-weight:bold; font-size:12px; background:#f0f2f5; color:#666;';
-      groupHeader.innerText = 'GROUPS';
+      groupHeader.innerText = 'GROUPS & DIRECT CHATS';
       listContent.appendChild(groupHeader);
 
+      // Load Groups
       onSnapshot(collection(db, "groups"), (snapshot) => {
         snapshot.forEach((docSnap) => {
           const g = docSnap.data();
@@ -701,9 +713,31 @@
           listContent.appendChild(item);
         });
       });
+
+      // Load Users as Direct Chat Items in Chat Tab
+      onSnapshot(collection(db, "users"), (snapshot) => {
+        snapshot.forEach((docSnap) => {
+          const u = docSnap.data();
+          if (auth.currentUser && u.uid !== auth.currentUser.uid) {
+            const chatId = getDirectChatId(auth.currentUser.uid, u.uid);
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
+            item.innerHTML = `
+              <img class="avatar" src="${imgUrl}" alt="Avatar">
+              <div class="item-info">
+                <div class="item-name">${u.name}</div>
+                <div class="item-sub">စကားပြောရန် နှိပ်ပါ...</div>
+              </div>
+            `;
+            item.onclick = () => openChat(chatId, u, 'direct');
+            listContent.appendChild(item);
+          }
+        });
+      });
     }
 
-    // Load Friends / Contacts Profiles Tab
+    // Contacts Tab: Displays user profiles only (No chat clutter)
     function loadContactsList() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -718,10 +752,13 @@
               <img class="avatar" src="${imgUrl}" alt="Avatar">
               <div class="item-info">
                 <div class="item-name">${u.name}</div>
-                <div class="item-sub">📞 ${u.phone || 'မရှိပါ'} | 📍 ${u.city || '-'}</div>
+                <div class="item-sub">📞 ${u.phone || 'ဖုန်းနံပါတ်မရှိပါ'} | 📍 ${u.city || '-'}</div>
               </div>
             `;
-            item.onclick = () => openChat(getDirectChatId(auth.currentUser.uid, u.uid), u, 'direct');
+            item.onclick = () => {
+              activeTargetUserData = u;
+              viewCurrentContactProfile();
+            };
             listContent.appendChild(item);
           }
         });
@@ -825,16 +862,18 @@
       });
     }
 
-    // --- WebRTC Video & Voice Call ---
+    // --- WebRTC Video & Voice Call with Messenger-style Minimize ---
     window.startWebRTCCall = async (isVideo) => {
       if (!activeTargetUserData) return;
 
       document.getElementById('call-screen').style.display = 'flex';
+      document.getElementById('floating-call-head').style.display = 'none';
       document.getElementById('call-controls-active').style.display = 'flex';
       document.getElementById('call-controls-incoming').style.display = 'none';
       document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
       document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
-      document.getElementById('call-screen-status').innerText = 'Calling . .';
+      document.getElementById('call-screen-status').innerText = 'Calling... (ခေါ်ဆိုနေပါသည်)';
+      document.getElementById('call-mode-text').innerText = isVideo ? 'Video Call' : 'Voice Call';
       
       toggleVideoDisplay(isVideo);
 
@@ -906,13 +945,14 @@
             incomingCallId = callDoc.id;
 
             document.getElementById('call-screen').style.display = 'flex';
+            document.getElementById('floating-call-head').style.display = 'none';
             document.getElementById('call-controls-active').style.display = 'none';
             document.getElementById('call-controls-incoming').style.display = 'flex';
             document.getElementById('call-screen-name').innerText = data.callerName;
             document.getElementById('call-screen-avatar').src = data.callerPhoto || 'https://via.placeholder.com/150';
-            document.getElementById('call-screen-status').innerText = `📞 ${data.isVideo ? 'Video Call' : 'Voice Call'} ဝင်ရောက်လာနေပါသည် . .`;
+            document.getElementById('call-screen-status').innerText = `Ringing... (ဖုန်းဝင်နေပါသည်)`;
+            document.getElementById('call-mode-text').innerText = data.isVideo ? 'Incoming Video Call' : 'Incoming Voice Call';
 
-            // Play Selected Audio Ringtone
             playCallRingtone();
 
             document.getElementById('btn-accept-call').onclick = () => {
@@ -933,7 +973,7 @@
     async function answerCall(callId, callData) {
       document.getElementById('call-controls-incoming').style.display = 'none';
       document.getElementById('call-controls-active').style.display = 'flex';
-      document.getElementById('call-screen-status').innerText = 'Connecting . .';
+      document.getElementById('call-screen-status').innerText = 'Connecting...';
 
       toggleVideoDisplay(callData.isVideo);
 
@@ -975,6 +1015,22 @@
       });
     }
 
+    // Minimize Call Screen to Floating Chat Head (Messenger style)
+    window.minimizeCallScreen = () => {
+      document.getElementById('call-screen').style.display = 'none';
+      const floatingHead = document.getElementById('floating-call-head');
+      floatingHead.style.display = 'flex';
+      if (activeTargetUserData && activeTargetUserData.photoURL) {
+        document.getElementById('floating-avatar').src = activeTargetUserData.photoURL;
+      }
+    };
+
+    // Restore Call Screen from Floating Chat Head
+    window.restoreCallScreen = () => {
+      document.getElementById('floating-call-head').style.display = 'none';
+      document.getElementById('call-screen').style.display = 'flex';
+    };
+
     window.toggleMic = () => {
       if (!localStream) return;
       isMicMuted = !isMicMuted;
@@ -1005,6 +1061,7 @@
     window.endCall = async () => {
       stopCallRingtone();
       document.getElementById('call-screen').style.display = 'none';
+      document.getElementById('floating-call-head').style.display = 'none';
       if (localStream) localStream.getTracks().forEach(track => track.stop());
       if (peerConnection) peerConnection.close();
       if (activeChatId) await deleteDoc(doc(db, "calls", activeChatId)).catch(() => {});
