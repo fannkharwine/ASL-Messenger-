@@ -29,9 +29,14 @@
     .list-container { flex: 1; overflow-y: auto; }
     
     /* Contacts & Chat Items */
-    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; }
+    .list-item { padding: 12px 15px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display: flex; align-items: center; gap: 12px; position: relative; }
     .list-item:hover { background: #f5f5f5; }
+    .avatar-wrapper { position: relative; width: 44px; height: 44px; }
     .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #ccc; }
+    .online-indicator {
+      position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px;
+      background: #34c759; border: 2px solid white; border-radius: 50%; display: none;
+    }
     .item-info { display: flex; flex-direction: column; gap: 2px; flex: 1; }
     .item-name { font-weight: bold; font-size: 14px; color: #333; }
     .item-sub { font-size: 12px; color: #777; }
@@ -63,16 +68,23 @@
     #chat-main { flex: 1; display: flex; flex-direction: column; background: #f9f9f9; position: relative; }
     .chat-header { padding: 10px 15px; background: white; border-bottom: 1px solid #ddd; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
     .chat-user-info { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .chat-user-status { font-size: 11px; font-weight: normal; color: #34c759; }
     .call-actions { display: flex; gap: 10px; }
     .call-btn { background: #e4e6eb; border: none; padding: 8px 12px; border-radius: 50%; cursor: pointer; font-size: 16px; }
     .call-btn:hover { background: #0084ff; color: white; }
 
     #messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-    .msg { padding: 8px 12px; border-radius: 12px; max-width: 70%; word-wrap: break-word; font-size: 14px; }
-    .sent { background: #0084ff; color: white; align-self: flex-end; }
-    .received { background: #e4e6eb; color: black; align-self: flex-start; }
-    .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
+    .msg-wrapper { display: flex; flex-direction: column; max-width: 70%; }
+    .msg-wrapper.sent-wrapper { align-self: flex-end; align-items: flex-end; }
+    .msg-wrapper.received-wrapper { align-self: flex-start; align-items: flex-start; }
     
+    .msg { padding: 8px 12px; border-radius: 12px; word-wrap: break-word; font-size: 14px; }
+    .sent { background: #0084ff; color: white; }
+    .received { background: #e4e6eb; color: black; }
+    .msg-sender { font-size: 10px; color: #666; margin-bottom: 3px; }
+    .msg-status { font-size: 10px; color: #888; margin-top: 2px; text-align: right; display: flex; align-items: center; gap: 3px; }
+    .msg-status-seen { color: #0084ff; font-weight: bold; }
+
     #input-area { padding: 10px; background: white; border-top: 1px solid #ddd; display: flex; gap: 8px; }
     input[type="text"] { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
     button { padding: 10px 16px; border: none; background: #0084ff; color: white; font-weight: bold; border-radius: 20px; cursor: pointer; }
@@ -112,7 +124,7 @@
     .btn-end { background: #ff3b30; color: white; }
     .btn-accept { background: #34c759; color: white; animation: pulse 1.5s infinite; }
 
-    /* Floating Messenger-style Call Bubble (Minimized) */
+    /* Floating Messenger-style Call Bubble */
     #floating-call-head {
       display: none; position: fixed; bottom: 25px; right: 25px; width: 68px; height: 68px;
       border-radius: 50%; background: #0084ff; border: 3px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.3);
@@ -122,7 +134,7 @@
     #floating-call-head img { width: 100%; height: 100%; object-fit: cover; }
     @keyframes floatPulse { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.7); } 70% { transform: scale(1.05); box-shadow: 0 0 0 12px rgba(0, 132, 255, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 132, 255, 0); } }
 
-    /* Toast Notification Banner */
+    /* Toast Notification */
     #toast-notification {
       position: fixed; top: 15px; right: 15px; z-index: 9999;
       background: rgba(255, 255, 255, 0.95); color: #333;
@@ -153,7 +165,7 @@
     </div>
   </div>
 
-  <!-- Messenger-style Minimized Floating Call Head -->
+  <!-- Minimized Floating Call Head -->
   <div id="floating-call-head" onclick="restoreCallScreen()" title="Call သို့ ပြန်သွားရန်">
     <img id="floating-avatar" src="https://via.placeholder.com/150" alt="Call">
   </div>
@@ -204,13 +216,13 @@
         <button class="tab-btn" id="tab-profile" onclick="switchTab('profile')">Profile</button>
       </div>
 
-      <!-- Create Group Section (Visible in Chats Tab) -->
+      <!-- Create Group Section -->
       <div class="create-group-area" id="group-create-box">
         <input type="text" id="group-name-input" placeholder="Group အမည်အသစ်..." style="font-size: 12px;">
         <button onclick="createGroup()" style="border-radius: 5px; padding: 5px 10px; font-size: 12px;">Create</button>
       </div>
 
-      <!-- Chats, Contacts & Notifications Dynamic List -->
+      <!-- Dynamic List Container -->
       <div class="list-container" id="list-content"></div>
 
       <!-- Profile Tab View -->
@@ -261,19 +273,6 @@
           </div>
         </div>
 
-        <!-- Font Settings -->
-        <div class="settings-section">
-          <div class="settings-title">🔤 Font Settings (ဖောင့်စတိုင်လ်)</div>
-          <div class="setting-row">
-            <span>Font Family</span>
-            <select id="setting-font" onchange="changeFontSetting(this.value)" style="width: auto; padding: 4px 8px;">
-              <option value="default">System Default</option>
-              <option value="padauk">Padauk Font</option>
-              <option value="pyidaungsu">Pyidaungsu Font</option>
-            </select>
-          </div>
-        </div>
-
         <!-- Audio & Ringtone Settings Section -->
         <div class="settings-section">
           <div class="settings-title">🔔 Ringtone & Sound Settings</div>
@@ -282,7 +281,6 @@
             <input type="checkbox" id="set-msg-noti" checked>
           </div>
           
-          <!-- Online Sound Presets -->
           <div class="setting-row">
             <span>Online Call Ringtone</span>
             <select id="online-ringtone-select" onchange="handleRingtoneChange(this.value)" style="width: auto; padding: 4px 6px;">
@@ -294,7 +292,6 @@
             </select>
           </div>
 
-          <!-- Local Audio File Upload Option -->
           <div class="setting-row">
             <span>Upload Local MP3 / Sound</span>
             <button onclick="triggerRingtoneUpload()" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">📁 File ရွေးမည်</button>
@@ -306,28 +303,6 @@
           </div>
         </div>
 
-        <!-- Privacy & Security Settings -->
-        <div class="settings-section">
-          <div class="settings-title">🔒 Privacy & Security Settings</div>
-          <div class="setting-row">
-            <span>Last Seen / Online ပြမည်</span>
-            <input type="checkbox" checked>
-          </div>
-          <div class="setting-row">
-            <span>Read Receipts (အပြာရောင်အမှတ်)</span>
-            <input type="checkbox" checked>
-          </div>
-          <div class="setting-row">
-            <span>Two-Factor Authentication (2FA)</span>
-            <input type="checkbox" id="setting-2fa" onchange="toggle2FASetting(this.checked)">
-          </div>
-          <div class="setting-row">
-            <span>Password ပြောင်းလဲရန်</span>
-            <button onclick="openChangePasswordModal()" style="padding: 4px 10px; font-size: 11px; border-radius: 4px;">Update Password</button>
-          </div>
-        </div>
-
-        <!-- Log Out Button -->
         <button id="btn-logout" style="width: 100%; background: #ff4d4f; border-radius: 8px; margin-top: 10px; padding: 12px; font-weight: bold;">Log Out (အကောင့်ထွက်မည်)</button>
 
       </div>
@@ -338,8 +313,14 @@
       <div class="chat-header">
         <div class="chat-user-info" id="chat-header-user" onclick="viewCurrentContactProfile()">
           <button id="btn-back" onclick="event.stopPropagation(); closeChat();" style="display:none; margin-right:5px; padding:2px 8px;">←</button>
-          <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="" alt="">
-          <span id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</span>
+          <div class="avatar-wrapper" style="width: 36px; height: 36px;">
+            <img id="chat-header-avatar" class="avatar" style="width:36px; height:36px; display:none;" src="" alt="">
+            <div id="chat-header-online-dot" class="online-indicator"></div>
+          </div>
+          <div>
+            <div id="chat-title">Chat တစ်ခုကို ရွေးချယ်ပါ</div>
+            <div id="chat-status-text" class="chat-user-status"></div>
+          </div>
         </div>
         
         <div class="call-actions" id="call-box" style="display:none;">
@@ -395,7 +376,7 @@
           </div>
         </div>
 
-        <!-- Incoming Call Bar (Accept / Decline) -->
+        <!-- Incoming Call Bar -->
         <div class="call-controls-bar" id="call-controls-incoming" style="display:none;">
           <div class="action-btn-item">
             <button class="ctrl-circle-btn btn-end" onclick="declineIncomingCall()">📞</button>
@@ -427,23 +408,11 @@
     </div>
   </div>
 
-  <!-- Change Password Modal -->
-  <div id="change-pass-modal" class="modal">
-    <div class="modal-content">
-      <h3 style="margin:0; color:#0084ff;">🔑 Password ပြောင်းလဲရန်</h3>
-      <input type="password" id="new-pass-input" placeholder="Password အသစ်ရိုက်ပါ" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:6px;">
-      <div style="display:flex; gap:10px; width:100%;">
-        <button onclick="submitNewPassword()" style="flex:1; border-radius:6px;">သိမ်းမည်</button>
-        <button onclick="document.getElementById('change-pass-modal').style.display='none'" style="flex:1; border-radius:6px; background:#666;">မလုပ်တော့ပါ</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Firebase Integration Script -->
+  <!-- Firebase Script Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, updatePassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, query, orderBy, onSnapshot, serverTimestamp, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
@@ -464,8 +433,7 @@
     let activeChatType = null;
     let activeTargetUserData = null;
     let unsubscribeMessages = null;
-    let incomingCallData = null;
-    let incomingCallId = null;
+    let unsubscribeCallListener = null;
 
     let localStream = null;
     let remoteStream = null;
@@ -473,38 +441,25 @@
     let isMicMuted = false;
     let isCamOff = false;
     let currentRingtoneAudio = null;
-    let customRingtoneDataUrl = localStorage.getItem('asl_custom_ringtone') || null;
 
-    const onlineRingtoneUrls = {
-      'default': 'https://actions.google.com/sounds/v1/emergency/beeping_call.ogg',
-      'chime': 'https://actions.google.com/sounds/v1/tones/digital_bell.ogg',
-      'marimba': 'https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg',
-      'synth': 'https://actions.google.com/sounds/v1/science_fiction/scifi_synth_pulse.ogg'
-    };
-
-    const msgNotiSoundUrl = 'https://actions.google.com/sounds/v1/cartoon/pop.ogg';
     const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
 
-    function playNotificationSound() {
-      try {
-        if (document.getElementById('set-msg-noti').checked) {
-          const audio = new Audio(msgNotiSoundUrl);
-          audio.play().catch(e => console.log(e));
-        }
-      } catch (e) { console.log(e); }
+    // Set User Online Status
+    function setUserOnlineStatus(isOnline) {
+      if (auth.currentUser) {
+        setDoc(doc(db, "users", auth.currentUser.uid), {
+          isOnline: isOnline,
+          lastSeen: serverTimestamp()
+        }, { merge: true });
+      }
     }
+
+    window.addEventListener('beforeunload', () => setUserOnlineStatus(false));
 
     function playCallRingtone() {
       stopCallRingtone();
       try {
-        const selectedKey = document.getElementById('online-ringtone-select').value;
-        let soundSource = onlineRingtoneUrls[selectedKey] || onlineRingtoneUrls['default'];
-
-        if (selectedKey === 'custom' && customRingtoneDataUrl) {
-          soundSource = customRingtoneDataUrl;
-        }
-
-        currentRingtoneAudio = new Audio(soundSource);
+        currentRingtoneAudio = new Audio('https://actions.google.com/sounds/v1/emergency/beeping_call.ogg');
         currentRingtoneAudio.loop = true;
         currentRingtoneAudio.play().catch(e => console.log(e));
       } catch (e) { console.log(e); }
@@ -518,92 +473,6 @@
       }
     }
 
-    window.testRingtoneSound = () => {
-      if (currentRingtoneAudio) {
-        stopCallRingtone();
-      } else {
-        playCallRingtone();
-        setTimeout(() => stopCallRingtone(), 4000);
-      }
-    };
-
-    window.triggerRingtoneUpload = () => document.getElementById('ringtone-file-input').click();
-
-    document.getElementById('ringtone-file-input').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        customRingtoneDataUrl = event.target.result;
-        localStorage.setItem('asl_custom_ringtone', customRingtoneDataUrl);
-        
-        const nameEl = document.getElementById('custom-ringtone-name');
-        nameEl.innerText = `🎵 Custom File: ${file.name}`;
-        nameEl.style.display = 'block';
-
-        document.getElementById('online-ringtone-select').value = 'custom';
-        alert("Local MP3 / Audio အား Ringtone အဖြစ် အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ ✨");
-      };
-      reader.readAsDataURL(file);
-    });
-
-    window.handleRingtoneChange = (val) => {
-      if (val === 'custom' && !customRingtoneDataUrl) {
-        alert("Local Audio File မရွေးရသေးပါ။ ကျေးဇူးပြု၍ File ရွေးပေးပါ။");
-        document.getElementById('online-ringtone-select').value = 'default';
-      }
-    };
-
-    window.triggerAvatarUpload = () => document.getElementById('avatar-file-input').click();
-
-    document.getElementById('avatar-file-input').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        const base64Image = event.target.result;
-        document.getElementById('my-profile-img').src = base64Image;
-
-        const user = auth.currentUser;
-        if (user) {
-          try {
-            await updateProfile(user, { photoURL: base64Image });
-            await setDoc(doc(db, "users", user.uid), { photoURL: base64Image }, { merge: true });
-            alert("Profile ဓာတ်ပုံ အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ ✨");
-          } catch (err) { alert("Photo update error: " + err.message); }
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-
-    window.changeFontSetting = (fontKey) => {
-      if (fontKey === 'padauk') document.body.style.fontFamily = "'Padauk', sans-serif";
-      else if (fontKey === 'pyidaungsu') document.body.style.fontFamily = "'Pyidaungsu', sans-serif";
-      else document.body.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-    };
-
-    window.changeLanguageSetting = (lang) => {
-      if (lang === 'en') alert("App language set to English 🇬🇧");
-      else if (lang === 'zh') alert("应用语言设置为中文 🇨🇳");
-      else alert("မြန်မာဘာသာစကားသို့ ပြောင်းလဲပြီးပါပြီ 🇲🇲");
-    };
-
-    window.toggle2FASetting = (is2FA) => alert(is2FA ? "2FA ဖွင့်လိုက်ပါပြီ 🔒" : "2FA ပိတ်လိုက်ပါပြီ");
-    window.openChangePasswordModal = () => document.getElementById('change-pass-modal').style.display = 'flex';
-
-    window.submitNewPassword = async () => {
-      const newPass = document.getElementById('new-pass-input').value.trim();
-      if (!newPass || newPass.length < 6) { alert("စကားဝှက်သည် အနည်းဆုံး ၆ လုံး ရှိရပါမည်။"); return; }
-      try {
-        await updatePassword(auth.currentUser, newPass);
-        alert("Password အောင်မြင်စွာ ပြောင်းလဲပြီးပါပြီ ✨");
-        document.getElementById('change-pass-modal').style.display = 'none';
-        document.getElementById('new-pass-input').value = '';
-      } catch (err) { alert("Password update မအောင်မြင်ပါ: " + err.message); }
-    };
-
     window.switchAuthMode = (mode) => {
       document.getElementById('login-box').style.display = mode === 'login' ? 'flex' : 'none';
       document.getElementById('signup-box').style.display = mode === 'signup' ? 'flex' : 'none';
@@ -614,54 +483,34 @@
       const pass = document.getElementById('login-password').value.trim();
       if (!email || !pass) { alert("Email နှင့် Password ထည့်ပါ။"); return; }
       try { await signInWithEmailAndPassword(auth, email, pass); } 
-      catch (err) { alert("Login ဝင်၍မရပါ: " + err.message); }
+      catch (err) { alert("Login Error: " + err.message); }
     };
 
     document.getElementById('btn-email-signup').onclick = async () => {
       const name = document.getElementById('signup-name').value.trim();
       const email = document.getElementById('signup-email').value.trim();
       const pass = document.getElementById('signup-password').value.trim();
-      if (!name || !email || !pass) { alert("အချက်အလက်အားလုံး ဖြည့်ပေးပါ။"); return; }
+      if (!name || !email || !pass) { alert("အချက်အလက်များ ဖြည့်ပေးပါ။"); return; }
       try {
         const res = await createUserWithEmailAndPassword(auth, email, pass);
         await updateProfile(res.user, { displayName: name, photoURL: "https://via.placeholder.com/150" });
         await setDoc(doc(db, "users", res.user.uid), {
           uid: res.user.uid, name: name, email: email, photoURL: "https://via.placeholder.com/150",
-          phone: "", city: "", about: "Hey there! I am using ASL Messenger."
+          phone: "", city: "", about: "Hey there! I am using ASL Messenger.", isOnline: true
         });
-        alert("အကောင့်ဖွင့်ခြင်း အောင်မြင်ပါသည်။");
       } catch (err) { alert("Signup Error: " + err.message); }
     };
 
-    window.showForgetPasswordModal = async () => {
-      const email = prompt("စကားဝှက်အသစ် ပြန်လည်ရယူရန် သင့် Email လိပ်စာကို ထည့်ပါ:");
-      if (!email) return;
-      try {
-        await sendPasswordResetEmail(auth, email);
-        alert("စကားဝှက်ပြောင်းလဲရန် လင့်ခ်ကို သင့် Email သို့ ပို့ပေးလိုက်ပါပြီ။");
-      } catch (err) { alert("Error: " + err.message); }
-    };
-
-    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider()).catch(err => alert("Google Login Error: " + err.message));
-    document.getElementById('btn-logout').onclick = () => signOut(auth);
+    document.getElementById('btn-google').onclick = () => signInWithPopup(auth, new GoogleAuthProvider());
+    document.getElementById('btn-logout').onclick = () => { setUserOnlineStatus(false); signOut(auth); };
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-container').style.display = 'flex';
 
-        const userDocRef = doc(db, "users", user.uid);
-        const userDoc = await getDoc(userDocRef);
-
-        if (!userDoc.exists()) {
-          await setDoc(userDocRef, {
-            uid: user.uid, name: user.displayName || "User", email: user.email,
-            photoURL: user.photoURL || "https://via.placeholder.com/150",
-            phone: "", city: "", about: "Hey there! I am using ASL Messenger."
-          });
-        }
+        setUserOnlineStatus(true);
         listenForIncomingCalls();
-        listenForGlobalNotifications();
         switchTab('chats');
       } else {
         document.getElementById('auth-screen').style.display = 'flex';
@@ -682,40 +531,15 @@
 
       if (type === 'chats') loadChatsList();
       else if (type === 'contacts') loadContactsList();
-      else if (type === 'noti') loadNotifications();
       else if (type === 'profile') loadMyProfile();
     };
 
-    // Chat Tab: Displays chats & group chats only
     function loadChatsList() {
       const listContent = document.getElementById('list-content');
       listContent.innerHTML = '';
 
-      const groupHeader = document.createElement('div');
-      groupHeader.style.cssText = 'padding:8px 15px; font-weight:bold; font-size:12px; background:#f0f2f5; color:#666;';
-      groupHeader.innerText = 'GROUPS & DIRECT CHATS';
-      listContent.appendChild(groupHeader);
-
-      // Load Groups
-      onSnapshot(collection(db, "groups"), (snapshot) => {
-        snapshot.forEach((docSnap) => {
-          const g = docSnap.data();
-          const item = document.createElement('div');
-          item.className = 'list-item';
-          item.innerHTML = `
-            <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center; font-weight:bold;">👥</div>
-            <div class="item-info">
-              <div class="item-name">${g.name}</div>
-              <div class="item-sub">Group Chat</div>
-            </div>
-          `;
-          item.onclick = () => openChat(docSnap.id, { name: g.name }, 'group');
-          listContent.appendChild(item);
-        });
-      });
-
-      // Load Users as Direct Chat Items in Chat Tab
       onSnapshot(collection(db, "users"), (snapshot) => {
+        listContent.innerHTML = '';
         snapshot.forEach((docSnap) => {
           const u = docSnap.data();
           if (auth.currentUser && u.uid !== auth.currentUser.uid) {
@@ -723,11 +547,16 @@
             const item = document.createElement('div');
             item.className = 'list-item';
             const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
+            const isOnline = u.isOnline ? 'block' : 'none';
+
             item.innerHTML = `
-              <img class="avatar" src="${imgUrl}" alt="Avatar">
+              <div class="avatar-wrapper">
+                <img class="avatar" src="${imgUrl}" alt="Avatar">
+                <div class="online-indicator" style="display:${isOnline}"></div>
+              </div>
               <div class="item-info">
                 <div class="item-name">${u.name}</div>
-                <div class="item-sub">စကားပြောရန် နှိပ်ပါ...</div>
+                <div class="item-sub">${u.isOnline ? 'Active Now' : 'Offline'}</div>
               </div>
             `;
             item.onclick = () => openChat(chatId, u, 'direct');
@@ -737,7 +566,6 @@
       });
     }
 
-    // Contacts Tab: Displays user profiles only (No chat clutter)
     function loadContactsList() {
       onSnapshot(collection(db, "users"), (snapshot) => {
         const listContent = document.getElementById('list-content');
@@ -747,48 +575,20 @@
           if (auth.currentUser && u.uid !== auth.currentUser.uid) {
             const item = document.createElement('div');
             item.className = 'list-item';
-            const imgUrl = u.photoURL || 'https://via.placeholder.com/150';
             item.innerHTML = `
-              <img class="avatar" src="${imgUrl}" alt="Avatar">
+              <div class="avatar-wrapper">
+                <img class="avatar" src="${u.photoURL || 'https://via.placeholder.com/150'}">
+                <div class="online-indicator" style="display:${u.isOnline ? 'block' : 'none'}"></div>
+              </div>
               <div class="item-info">
                 <div class="item-name">${u.name}</div>
-                <div class="item-sub">📞 ${u.phone || 'ဖုန်းနံပါတ်မရှိပါ'} | 📍 ${u.city || '-'}</div>
+                <div class="item-sub">📞 ${u.phone || 'ဖုန်းမရှိပါ'}</div>
               </div>
             `;
-            item.onclick = () => {
-              activeTargetUserData = u;
-              viewCurrentContactProfile();
-            };
+            item.onclick = () => { activeTargetUserData = u; viewCurrentContactProfile(); };
             listContent.appendChild(item);
           }
         });
-      });
-    }
-
-    function loadNotifications() {
-      onSnapshot(query(collection(db, "notifications"), orderBy("createdAt", "desc")), (snapshot) => {
-        const listContent = document.getElementById('list-content');
-        listContent.innerHTML = '';
-        let myNotis = 0;
-        snapshot.forEach((docSnap) => {
-          const n = docSnap.data();
-          if (auth.currentUser && n.targetUid === auth.currentUser.uid) {
-            myNotis++;
-            const item = document.createElement('div');
-            item.className = 'list-item';
-            item.innerHTML = `
-              <div class="avatar" style="background:#0084ff; color:white; display:flex; align-items:center; justify-content:center;">🔔</div>
-              <div class="item-info">
-                <div class="item-name">${n.title}</div>
-                <div class="item-sub">${n.body}</div>
-              </div>
-            `;
-            listContent.appendChild(item);
-          }
-        });
-        if (myNotis === 0) {
-          listContent.innerHTML = `<div style="padding:20px; text-align:center; color:#888; font-size:13px;">Notification များ မရှိသေးပါ</div>`;
-        }
       });
     }
 
@@ -801,7 +601,6 @@
         document.getElementById('my-profile-img').src = data.photoURL || "https://via.placeholder.com/150";
         document.getElementById('my-profile-name').innerText = data.name;
         document.getElementById('my-profile-email').innerText = data.email;
-
         document.getElementById('edit-name').value = data.name || '';
         document.getElementById('edit-phone').value = data.phone || '';
         document.getElementById('edit-city').value = data.city || '';
@@ -809,60 +608,68 @@
       }
     }
 
-    document.getElementById('btn-save-profile').onclick = async () => {
-      const user = auth.currentUser;
-      await setDoc(doc(db, "users", user.uid), {
-        name: document.getElementById('edit-name').value.trim() || user.displayName,
-        phone: document.getElementById('edit-phone').value.trim(),
-        city: document.getElementById('edit-city').value.trim(),
-        about: document.getElementById('edit-about').value.trim()
-      }, { merge: true });
-
-      alert("Profile ပြင်ဆင်မှုများ သိမ်းဆည်းပြီးပါပြီ ✨");
-      loadMyProfile();
-    };
-
     function openChat(chatId, targetData, type) {
       activeChatId = chatId;
       activeChatType = type;
-      activeTargetUserData = type === 'direct' ? targetData : null;
+      activeTargetUserData = targetData;
 
       document.getElementById('chat-title').innerText = targetData.name;
       const headerAvatar = document.getElementById('chat-header-avatar');
       
-      if (type === 'direct') {
-        headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
-        headerAvatar.style.display = 'inline-block';
-        document.getElementById('call-box').style.display = 'flex';
-      } else {
-        headerAvatar.style.display = 'none';
-        document.getElementById('call-box').style.display = 'none';
-      }
+      headerAvatar.src = targetData.photoURL || 'https://via.placeholder.com/150';
+      headerAvatar.style.display = 'inline-block';
+      document.getElementById('call-box').style.display = 'flex';
+
+      // Listen for Target User Online Status in Chat Header
+      onSnapshot(doc(db, "users", targetData.uid), (docSnap) => {
+        if (docSnap.exists()) {
+          const u = docSnap.data();
+          document.getElementById('chat-status-text').innerText = u.isOnline ? 'Active Now' : 'Offline';
+          document.getElementById('chat-header-online-dot').style.display = u.isOnline ? 'block' : 'none';
+        }
+      });
 
       document.body.classList.add('show-chat');
       document.getElementById('btn-back').style.display = 'inline-block';
 
       if (unsubscribeMessages) unsubscribeMessages();
 
-      const msgsRef = collection(db, type === 'direct' ? 'direct_chats' : 'group_chats', chatId, 'messages');
+      const msgsRef = collection(db, 'direct_chats', chatId, 'messages');
       const q = query(msgsRef, orderBy("createdAt", "asc"));
 
       unsubscribeMessages = onSnapshot(q, (snapshot) => {
         const messagesDiv = document.getElementById('messages');
         messagesDiv.innerHTML = '';
-        snapshot.forEach((doc) => {
-          const data = doc.data();
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
           const isMe = data.uid === auth.currentUser.uid;
-          const msgEl = document.createElement('div');
-          msgEl.className = `msg ${isMe ? 'sent' : 'received'}`;
-          msgEl.innerHTML = `${type === 'group' && !isMe ? `<div class="msg-sender">${data.name}</div>` : ''}${data.text}`;
-          messagesDiv.appendChild(msgEl);
+          
+          // Mark Received Message as Seen automatically
+          if (!isMe && data.status !== 'seen') {
+            updateDoc(doc(db, 'direct_chats', chatId, 'messages', docSnap.id), { status: 'seen' });
+          }
+
+          const msgWrapper = document.createElement('div');
+          msgWrapper.className = `msg-wrapper ${isMe ? 'sent-wrapper' : 'received-wrapper'}`;
+
+          let statusText = '';
+          if (isMe) {
+            if (data.status === 'seen') statusText = `<span class="msg-status msg-status-seen">✓✓ Seen</span>`;
+            else if (data.status === 'delivered') statusText = `<span class="msg-status">✓✓ Delivered</span>`;
+            else statusText = `<span class="msg-status">✓ Sent</span>`;
+          }
+
+          msgWrapper.innerHTML = `
+            <div class="msg ${isMe ? 'sent' : 'received'}">${data.text}</div>
+            ${statusText}
+          `;
+          messagesDiv.appendChild(msgWrapper);
         });
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       });
     }
 
-    // --- WebRTC Video & Voice Call with Messenger-style Minimize ---
+    // --- Synchronized Messenger Call System ---
     window.startWebRTCCall = async (isVideo) => {
       if (!activeTargetUserData) return;
 
@@ -873,16 +680,12 @@
       document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
       document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
       document.getElementById('call-screen-status').innerText = 'Calling... (ခေါ်ဆိုနေပါသည်)';
-      document.getElementById('call-mode-text').innerText = isVideo ? 'Video Call' : 'Voice Call';
       
       toggleVideoDisplay(isVideo);
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localStream.getVideoTracks()[0].enabled = isVideo;
-        isCamOff = !isVideo;
-        updateCamBtnUI();
-
         document.getElementById('local-video').srcObject = localStream;
         
         peerConnection = new RTCPeerConnection(servers);
@@ -909,25 +712,21 @@
         await setDoc(callDocRef, {
           offer: { type: offerDescription.type, sdp: offerDescription.sdp },
           targetUid: activeTargetUserData.uid,
+          callerUid: auth.currentUser.uid,
           callerName: auth.currentUser.displayName || "User",
           callerPhoto: auth.currentUser.photoURL || "https://via.placeholder.com/150",
+          status: 'calling',
           isVideo: isVideo
         });
 
-        addNotification(activeTargetUserData.uid, "📞 Incoming Call", `${auth.currentUser.displayName || 'User'} ထံမှ Call ခေါ်ဆိုနေပါသည်`);
-
-        onSnapshot(callDocRef, (snapshot) => {
-          const data = snapshot.data();
-          if (peerConnection && !peerConnection.currentRemoteDescription && data?.answer) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+        // Listen for Call Rejection / Termination by the other user
+        unsubscribeCallListener = onSnapshot(callDocRef, (snapshot) => {
+          if (!snapshot.exists() || snapshot.data()?.status === 'ended') {
+            closeCallUI();
+          } else if (snapshot.data()?.answer && peerConnection && !peerConnection.currentRemoteDescription) {
+            peerConnection.setRemoteDescription(new RTCSessionDescription(snapshot.data().answer));
             document.getElementById('call-screen-status').innerText = 'Connected';
           }
-        });
-
-        onSnapshot(answerCandidates, (snapshot) => {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
-          });
         });
 
       } catch (err) {
@@ -940,10 +739,8 @@
       onSnapshot(collection(db, "calls"), (snapshot) => {
         snapshot.forEach(async (callDoc) => {
           const data = callDoc.data();
-          if (auth.currentUser && data && data.targetUid === auth.currentUser.uid && data.offer) {
-            incomingCallData = data;
-            incomingCallId = callDoc.id;
-
+          if (auth.currentUser && data && data.targetUid === auth.currentUser.uid && data.status === 'calling') {
+            
             document.getElementById('call-screen').style.display = 'flex';
             document.getElementById('floating-call-head').style.display = 'none';
             document.getElementById('call-controls-active').style.display = 'none';
@@ -951,13 +748,20 @@
             document.getElementById('call-screen-name').innerText = data.callerName;
             document.getElementById('call-screen-avatar').src = data.callerPhoto || 'https://via.placeholder.com/150';
             document.getElementById('call-screen-status').innerText = `Ringing... (ဖုန်းဝင်နေပါသည်)`;
-            document.getElementById('call-mode-text').innerText = data.isVideo ? 'Incoming Video Call' : 'Incoming Voice Call';
 
             playCallRingtone();
 
+            // Listen if caller hangs up before answering
+            unsubscribeCallListener = onSnapshot(doc(db, "calls", callDoc.id), (docSnap) => {
+              if (!docSnap.exists() || docSnap.data()?.status === 'ended') {
+                stopCallRingtone();
+                closeCallUI();
+              }
+            });
+
             document.getElementById('btn-accept-call').onclick = () => {
               stopCallRingtone();
-              answerCall(incomingCallId, incomingCallData);
+              answerCall(callDoc.id, data);
             };
           }
         });
@@ -966,8 +770,8 @@
 
     window.declineIncomingCall = async () => {
       stopCallRingtone();
-      document.getElementById('call-screen').style.display = 'none';
-      if (incomingCallId) await deleteDoc(doc(db, "calls", incomingCallId)).catch(() => {});
+      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true });
+      closeCallUI();
     };
 
     async function answerCall(callId, callData) {
@@ -979,9 +783,6 @@
 
       localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       localStream.getVideoTracks()[0].enabled = callData.isVideo;
-      isCamOff = !callData.isVideo;
-      updateCamBtnUI();
-
       document.getElementById('local-video').srcObject = localStream;
 
       peerConnection = new RTCPeerConnection(servers);
@@ -995,27 +796,29 @@
       };
 
       const callDocRef = doc(db, "calls", callId);
-      const answerCandidates = collection(callDocRef, "answerCandidates");
-      const offerCandidates = collection(callDocRef, "offerCandidates");
-
-      peerConnection.onicecandidate = (e) => {
-        if (e.candidate) addDoc(answerCandidates, e.candidate.toJSON());
-      };
+      await setDoc(callDocRef, { status: 'connected' }, { merge: true });
 
       await peerConnection.setRemoteDescription(new RTCSessionDescription(callData.offer));
       const answerDescription = await peerConnection.createAnswer();
       await peerConnection.setLocalDescription(answerDescription);
 
       await setDoc(callDocRef, { answer: { type: answerDescription.type, sdp: answerDescription.sdp } }, { merge: true });
-
-      onSnapshot(offerCandidates, (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
-        });
-      });
     }
 
-    // Minimize Call Screen to Floating Chat Head (Messenger style)
+    window.endCall = async () => {
+      if (activeChatId) await setDoc(doc(db, "calls", activeChatId), { status: 'ended' }, { merge: true }).catch(() => {});
+      closeCallUI();
+    };
+
+    function closeCallUI() {
+      stopCallRingtone();
+      document.getElementById('call-screen').style.display = 'none';
+      document.getElementById('floating-call-head').style.display = 'none';
+      if (localStream) localStream.getTracks().forEach(track => track.stop());
+      if (peerConnection) peerConnection.close();
+      if (unsubscribeCallListener) unsubscribeCallListener();
+    }
+
     window.minimizeCallScreen = () => {
       document.getElementById('call-screen').style.display = 'none';
       const floatingHead = document.getElementById('floating-call-head');
@@ -1025,99 +828,14 @@
       }
     };
 
-    // Restore Call Screen from Floating Chat Head
     window.restoreCallScreen = () => {
       document.getElementById('floating-call-head').style.display = 'none';
       document.getElementById('call-screen').style.display = 'flex';
     };
 
-    window.toggleMic = () => {
-      if (!localStream) return;
-      isMicMuted = !isMicMuted;
-      localStream.getAudioTracks()[0].enabled = !isMicMuted;
-      document.getElementById('btn-mic').classList.toggle('off', isMicMuted);
-      document.getElementById('label-mic').innerText = isMicMuted ? 'Unmute' : 'Mute';
-    };
-
-    window.toggleCamera = () => {
-      if (!localStream) return;
-      isCamOff = !isCamOff;
-      localStream.getVideoTracks()[0].enabled = !isCamOff;
-      toggleVideoDisplay(!isCamOff);
-      updateCamBtnUI();
-    };
-
-    function updateCamBtnUI() {
-      document.getElementById('btn-cam').classList.toggle('off', isCamOff);
-      document.getElementById('label-cam').innerText = isCamOff ? 'Start Video' : 'Stop Video';
-    }
-
     function toggleVideoDisplay(showVideo) {
       document.getElementById('video-wrapper').style.display = showVideo ? 'block' : 'none';
     }
-
-    window.toggleSpeaker = () => document.getElementById('btn-speaker').classList.toggle('off');
-
-    window.endCall = async () => {
-      stopCallRingtone();
-      document.getElementById('call-screen').style.display = 'none';
-      document.getElementById('floating-call-head').style.display = 'none';
-      if (localStream) localStream.getTracks().forEach(track => track.stop());
-      if (peerConnection) peerConnection.close();
-      if (activeChatId) await deleteDoc(doc(db, "calls", activeChatId)).catch(() => {});
-      if (incomingCallId) await deleteDoc(doc(db, "calls", incomingCallId)).catch(() => {});
-    };
-
-    async function addNotification(targetUid, title, body) {
-      await addDoc(collection(db, "notifications"), {
-        targetUid: targetUid, title: title, body: body, createdAt: serverTimestamp()
-      });
-    }
-
-    function listenForGlobalNotifications() {
-      onSnapshot(collection(db, "notifications"), (snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            const noti = change.doc.data();
-            if (auth.currentUser && noti.targetUid === auth.currentUser.uid) {
-              playNotificationSound();
-              showToastNotification(noti.title, noti.body);
-            }
-          }
-        });
-      });
-    }
-
-    function showToastNotification(title, body) {
-      if (!document.getElementById('set-msg-noti').checked) return;
-      const toast = document.getElementById('toast-notification');
-      document.getElementById('toast-title').innerText = title;
-      document.getElementById('toast-body').innerText = body;
-      toast.style.display = 'flex';
-      setTimeout(() => { toast.style.display = 'none'; }, 4000);
-    }
-
-    window.viewCurrentContactProfile = () => {
-      if (!activeTargetUserData) return;
-      document.getElementById('modal-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
-      document.getElementById('modal-name').innerText = activeTargetUserData.name;
-      document.getElementById('modal-about').innerText = `"${activeTargetUserData.about || 'Bio မရှိပါ'}"`;
-      document.getElementById('modal-phone').innerText = activeTargetUserData.phone || '-';
-      document.getElementById('modal-city').innerText = activeTargetUserData.city || '-';
-      document.getElementById('modal-email').innerText = activeTargetUserData.email || '-';
-      document.getElementById('contact-modal').style.display = 'flex';
-    };
-
-    window.closeModal = () => document.getElementById('contact-modal').style.display = 'none';
-    window.closeChat = () => document.body.classList.remove('show-chat');
-
-    window.createGroup = async () => {
-      const gInput = document.getElementById('group-name-input');
-      const gName = gInput.value.trim();
-      if (!gName) return;
-      await addDoc(collection(db, "groups"), { name: gName, createdBy: auth.currentUser.uid, createdAt: serverTimestamp() });
-      gInput.value = '';
-    };
 
     function getDirectChatId(uid1, uid2) { return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`; }
 
@@ -1130,14 +848,10 @@
       if (!text || !activeChatId || !auth.currentUser) return;
       input.value = '';
       
-      const colName = activeChatType === 'direct' ? 'direct_chats' : 'group_chats';
-      await addDoc(collection(db, colName, activeChatId, 'messages'), {
-        text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User", createdAt: serverTimestamp()
+      await addDoc(collection(db, 'direct_chats', activeChatId, 'messages'), {
+        text: text, uid: auth.currentUser.uid, name: auth.currentUser.displayName || "User",
+        status: 'sent', createdAt: serverTimestamp()
       });
-
-      if (activeChatType === 'direct' && activeTargetUserData) {
-        addNotification(activeTargetUserData.uid, `💬 ${auth.currentUser.displayName || 'User'}`, text);
-      }
     }
   </script>
 </body>
