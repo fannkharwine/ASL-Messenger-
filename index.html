@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASL Messenger</title>
-  <!-- Google Fonts & Font Awesome Icons -->
-  <link rel="manifest" href="manifest.json">
-
   
+  <link rel="manifest" href="manifest.json">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Socket.IO Library -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
   <style>
     /* Global & Dynamic Theme Variables */
@@ -540,17 +541,12 @@
         <p style="font-size:12px; color:var(--text-muted);">Connect securely with friends</p>
       </div>
 
-      <input type="text" id="loginId" class="input-field" placeholder="Email or Phone Number">
-      <input type="password" id="loginPass" class="input-field" placeholder="Password">
+      <input type="text" id="loginName" class="input-field" placeholder="Your Name (e.g. Aung Aung)">
+      <input type="text" id="loginId" class="input-field" placeholder="Your Personal ID or Phone">
       
       <button class="btn" onclick="app.login()">Login</button>
-      
-      <button class="btn google-btn" onclick="app.googleLogin()">
-        <i class="fa-brands fa-google"></i> Continue with Google
-      </button>
 
       <div class="auth-links">
-        <p><a onclick="app.showModal('forgotModal')">Forgot Password?</a></p>
         <p style="margin-top: 10px;">Don't have an account? <a onclick="app.switchAuth('signupScreen')">Sign Up</a></p>
       </div>
     </div>
@@ -574,35 +570,6 @@
 
       <label>Personal ID (Unique)</label>
       <input type="text" id="regPersonalId" class="input-field" placeholder="JD2026">
-
-      <div style="display: flex; gap: 8px;">
-        <div style="flex:1;">
-          <label>Birthday</label>
-          <input type="date" id="regDob" class="input-field" onchange="app.calculateAge()">
-        </div>
-        <div style="width: 80px;">
-          <label>Age</label>
-          <input type="number" id="regAge" class="input-field" readonly>
-        </div>
-      </div>
-
-      <label>Gender</label>
-      <select id="regGender" class="input-field">
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-      </select>
-
-      <label>Password</label>
-      <input type="password" id="regPass" class="input-field">
-
-      <label>Confirm Password</label>
-      <input type="password" id="regConfirmPass" class="input-field">
-
-      <div style="display:flex; align-items:center; gap:8px; margin-bottom:12px; font-size:12px;">
-        <input type="checkbox" id="regTerms">
-        <label for="regTerms" style="margin:0;">I agree to Terms & Conditions</label>
-      </div>
 
       <button class="btn" onclick="app.signup()">Sign Up</button>
 
@@ -666,17 +633,17 @@
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px;">
           <img id="settingsAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:80px; height:80px;">
-          <h3 id="settingsName">John Doe</h3>
-          <p id="settingsPersonalId" style="font-size:12px; color:var(--text-muted);">ID: JD2026001</p>
+          <h3 id="settingsName">User Name</h3>
+          <p id="settingsPersonalId" style="font-size:12px; color:var(--text-muted);">ID: -</p>
         </div>
 
         <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
           <h4 style="margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;" data-i18n="profileData">Profile Data</h4>
           <label data-i18n="about">About/Bio</label>
-          <input type="text" id="setAbout" class="input-field" value="Software Developer | ASL User">
+          <input type="text" id="setAbout" class="input-field" value="ASL Messenger User">
           
           <label data-i18n="email">Email</label>
-          <input type="text" id="setEmail" class="input-field" readonly>
+          <input type="text" id="setEmail" class="input-field">
 
           <label data-i18n="phone">Phone</label>
           <input type="text" id="setPhone" class="input-field">
@@ -737,10 +704,10 @@
   <div id="chatView" class="chat-view">
     <div class="chat-header">
       <button class="icon-btn" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
-      <img id="activeChatAvatar" src="" class="avatar" style="width:36px; height:36px;">
+      <img id="activeChatAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:36px; height:36px;">
       <div style="flex:1;">
         <div id="activeChatTitle" style="font-weight:600; font-size:14px;">User</div>
-        <div id="activeChatSub" style="font-size:10px; color:var(--text-muted);">Online</div>
+        <div id="activeChatSub" style="font-size:10px; color:var(--text-muted);">Connected</div>
       </div>
       <button class="icon-btn" onclick="app.startCall('audio')"><i class="fa-solid fa-phone"></i></button>
       <button class="icon-btn" onclick="app.startCall('video')"><i class="fa-solid fa-video"></i></button>
@@ -756,7 +723,6 @@
       </label>
       <input type="text" id="msgInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter') app.sendMessage()">
       <button class="icon-btn" onclick="app.sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
-      <button class="icon-btn" onmousedown="app.startRecording()" onmouseup="app.stopRecording()"><i class="fa-solid fa-microphone"></i></button>
     </div>
   </div>
 
@@ -769,7 +735,7 @@
       <p id="callStatusText" style="color:#aaa; font-size:14px; margin-top:4px;">Ringing...</p>
     </div>
 
-    <img id="callTargetAvatar" src="" class="call-avatar">
+    <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
 
     <div class="call-actions">
       <button class="call-btn call-end-btn" onclick="app.endCall()"><i class="fa-solid fa-phone-slash"></i></button>
@@ -779,15 +745,15 @@
 
   <!-- ==================== MODALS ==================== -->
   
-  <!-- Add Friend Modal -->
+  <!-- Add Friend / Join Room Modal -->
   <div id="addFriendModal" class="modal">
     <div class="modal-content">
-      <div class="modal-header" data-i18n="addFriend">Add Friend</div>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Search by Personal ID, Email, or Phone Number</p>
-      <input type="text" id="friendSearchQuery" class="input-field" placeholder="Search...">
+      <div class="modal-header">Add Friend / Room ID</div>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Enter Friend ID or Room Name to Chat:</p>
+      <input type="text" id="friendSearchQuery" class="input-field" placeholder="e.g. room123 or friend_id">
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')" data-i18n="cancel">Cancel</button>
-        <button class="btn" onclick="app.sendFriendRequest()" data-i18n="sendRequest">Send Request</button>
+        <button class="btn" onclick="app.sendFriendRequest()">Connect</button>
       </div>
     </div>
   </div>
@@ -796,9 +762,7 @@
   <div id="createGroupModal" class="modal">
     <div class="modal-content">
       <div class="modal-header" data-i18n="createGroup">Create Group Chat</div>
-      <input type="text" id="groupNameInput" class="input-field" placeholder="Group Name">
-      <label style="margin-bottom:8px;" data-i18n="selectFriends">Select Friends:</label>
-      <div id="groupMembersSelection" style="max-height:150px; overflow-y:auto; margin-bottom:12px;"></div>
+      <input type="text" id="groupNameInput" class="input-field" placeholder="Group Name/ID">
       <div class="modal-footer">
         <button class="btn btn-secondary" onclick="app.closeModal('createGroupModal')" data-i18n="cancel">Cancel</button>
         <button class="btn" onclick="app.createGroup()" data-i18n="create">Create</button>
@@ -806,26 +770,15 @@
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
-  <div id="forgotModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">Reset Password</div>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Enter your registered Email or Phone</p>
-      <input type="text" class="input-field" placeholder="Email or Phone">
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="app.closeModal('forgotModal')">Cancel</button>
-        <button class="btn" onclick="app.simulatedResetPassword()">Send Reset Link</button>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 
-<!-- ==================== JS APPLICATION LOGIC ==================== -->
+<!-- ==================== REALTIME LOGIC ==================== -->
 
 <script>
-  // Translations Dictionary
+  // Connect to your Vercel Socket Server
+  const socket = io('https://asl-messenger-server.vercel.app');
+
   const translations = {
     en: {
       chats: "Chats", calls: "Calls", people: "People", status: "Status", settings: "Settings",
@@ -833,8 +786,7 @@
       addStatus: "Tap to update status", recentUpdates: "Recent Updates", profileData: "Profile Data",
       about: "About/Bio", email: "Email", phone: "Phone", saveProfile: "Save Profile",
       preferences: "Preferences", language: "Language", fontStyle: "Font Style", logout: "Logout",
-      addFriend: "Add Friend", createGroup: "Create Group Chat", cancel: "Cancel",
-      sendRequest: "Send Request", selectFriends: "Select Friends:", create: "Create"
+      createGroup: "Create Group Chat", cancel: "Cancel", create: "Create"
     },
     my: {
       chats: "စကားပြောများ", calls: "ဖုန်းခေါ်ဆိုမှုများ", people: "မိတ်ဆွေများ", status: "အခြေအနေ", settings: "ဆက်တင်များ",
@@ -842,99 +794,70 @@
       addStatus: "အခြေအနေအသစ်တင်ရန်နှိပ်ပါ", recentUpdates: "လတ်တလောတင်ဆက်မှုများ", profileData: "ကိုယ်ရေးအချက်အလက်",
       about: "အကြောင်းအရာ", email: "အီးမေးလ်", phone: "ဖုန်းနံပါတ်", saveProfile: "သိမ်းဆည်းပါ",
       preferences: "ရွေးချယ်မှုများ", language: "ဘာသာစကား", fontStyle: "စာလုံးဒီဇိုင်း", logout: "ထွက်မည်",
-      addFriend: "မိတ်ဆွေသစ်ထည့်ရန်", createGroup: "အဖွဲ့သစ်ဖွဲ့ရန်", cancel: "မလုပ်တော့ပါ",
-      sendRequest: "တောင်းဆိုမှုပို့ရန်", selectFriends: "မိတ်ဆွေများရွေးရန်:", create: "ဖန်တီးပါ"
-    },
-    zh: {
-      chats: "聊天", calls: "通话", people: "联系人", status: "动态", settings: "设置",
-      friendRequests: "好友请求", myFriends: "我的好友", myStatus: "我的动态",
-      addStatus: "点击更新动态", recentUpdates: "近期更新", profileData: "个人资料",
-      about: "签名", email: "邮箱", phone: "电话", saveProfile: "保存资料",
-      preferences: "偏好设置", language: "语言", fontStyle: "字体", logout: "退出登录",
-      addFriend: "添加好友", createGroup: "创建群聊", cancel: "取消",
-      sendRequest: "发送请求", selectFriends: "选择好友:", create: "创建"
+      createGroup: "အဖွဲ့သစ်ဖွဲ့ရန်", cancel: "မလုပ်တော့ပါ", create: "ဖန်တီးပါ"
     }
   };
 
-  // State Management
   const state = {
     currentUser: {
-      id: "USR001", name: "John Doe", email: "john@email.com", phone: "+959123456789",
-      personalId: "JD2026001", birthday: "1995-05-15", age: 31, sex: "Male",
-      about: "Software Developer | ASL Messenger User", online: true,
-      settings: { language: "en", font: "default" }
+      id: "", name: "", email: "", phone: "", personalId: "",
+      about: "ASL Messenger User", settings: { language: "en", font: "default" }
     },
-    friends: [
-      { id: "USR002", name: "Aung Aung", email: "aung@email.com", phone: "+959987654321", personalId: "AA2026002", profilePic: "https://picsum.photos/id/1005/200", online: true, lastSeen: "now", isFriend: true },
-      { id: "USR003", name: "Su Su", email: "susu@email.com", phone: "+959111222333", personalId: "SS2026003", profilePic: "https://picsum.photos/id/1027/200", online: true, lastSeen: "now", isFriend: true },
-      { id: "USR004", name: "Min Thant", email: "min@email.com", phone: "+959444555666", personalId: "MT2026004", profilePic: "https://picsum.photos/id/1012/200", online: false, lastSeen: "2 hours ago", isFriend: true },
-      { id: "USR005", name: "Li Wei", email: "liwei@email.com", phone: "+8613800138000", personalId: "LW2026005", profilePic: "https://picsum.photos/id/1062/200", online: false, lastSeen: "yesterday", isFriend: true },
-      { id: "USR006", name: "Khin Wint", email: "khin@email.com", phone: "+959777888999", personalId: "KW2026006", profilePic: "https://picsum.photos/id/1025/200", online: true, lastSeen: "now", isFriend: true }
-    ],
-    pendingRequests: [
-      { id: "USR007", name: "Kyaw Kyaw", email: "kyaw@email.com", personalId: "KK2026007", profilePic: "https://picsum.photos/id/1074/200" },
-      { id: "USR008", name: "Jessica", email: "jess@email.com", personalId: "JS2026008", profilePic: "https://picsum.photos/id/1020/200" }
-    ],
-    groups: [
-      { id: "GRP001", name: "Tech Team", members: ["USR001", "USR002", "USR003"], profilePic: "https://picsum.photos/id/1060/200" },
-      { id: "GRP002", name: "Weekend Plan", members: ["USR001", "USR004", "USR006"], profilePic: "https://picsum.photos/id/1050/200" }
-    ],
-    messages: {
-      "USR002": [
-        { sender: "USR002", text: "Hey! How is ASL Messenger working?", time: "09:30 AM", status: "seen" },
-        { sender: "USR001", text: "It works great! Full functionality prototype.", time: "09:31 AM", status: "seen" }
-      ],
-      "GRP001": [
-        { sender: "USR002", text: "Meeting at 3 PM today guys.", time: "10:00 AM", status: "seen" }
-      ]
-    },
-    callLogs: [
-      { id: "USR002", type: "incoming", time: "Yesterday, 8:30 PM", duration: "05:23", isVideo: false },
-      { id: "USR003", type: "outgoing", time: "Today, 11:15 AM", duration: "01:45", isVideo: true }
-    ],
-    statuses: [
-      { id: "USR002", name: "Aung Aung", text: "Coding all night!", time: "1 hour ago", profilePic: "https://picsum.photos/id/1005/200" },
-      { id: "USR003", name: "Su Su", text: "Coffee time ☕", time: "3 hours ago", profilePic: "https://picsum.photos/id/1027/200" }
-    ],
-    activeChat: { id: null, type: null },
-    activeCallTimer: null
+    friends: [],
+    messages: {},
+    callLogs: [],
+    statuses: [],
+    activeChatRoom: null
   };
 
-  // Controller Application
   class AppController {
     constructor() {
-      this.init();
+      this.initSocketListeners();
     }
 
-    init() {
-      this.renderAll();
+    initSocketListeners() {
+      socket.on('receive_message', (data) => {
+        if (!state.messages[data.room]) {
+          state.messages[data.room] = [];
+        }
+        state.messages[data.room].push(data);
+        
+        if (state.activeChatRoom === data.room) {
+          this.renderMessages();
+        }
+        this.renderChatsList();
+      });
     }
 
-    // Switch Screens / Views
     switchAuth(targetScreenId) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(targetScreenId).classList.add('active');
     }
 
     login() {
-      const id = document.getElementById('loginId').value;
-      if (!id) return alert('Please enter Email or Phone Number');
+      const name = document.getElementById('loginName').value.trim();
+      const id = document.getElementById('loginId').value.trim();
+      
+      if (!name || !id) return alert('Please enter both Name and Personal ID/Phone!');
+
+      state.currentUser.name = name;
+      state.currentUser.personalId = id;
+      state.currentUser.id = id;
+
       this.switchAuth('mainDashboard');
       this.loadSettings();
     }
 
     signup() {
-      const name = document.getElementById('regName').value;
-      const terms = document.getElementById('regTerms').checked;
-      if (!name || !terms) return alert('Please complete required fields and accept terms.');
-      state.currentUser.name = name;
-      state.currentUser.email = document.getElementById('regEmail').value;
-      this.switchAuth('mainDashboard');
-      this.loadSettings();
-    }
+      const name = document.getElementById('regName').value.trim();
+      const pId = document.getElementById('regPersonalId').value.trim();
+      if (!name || !pId) return alert('Please fill in required fields!');
 
-    googleLogin() {
-      alert("Google Login Successful! Welcome.");
+      state.currentUser.name = name;
+      state.currentUser.personalId = pId;
+      state.currentUser.email = document.getElementById('regEmail').value;
+      state.currentUser.phone = document.getElementById('regPhone').value;
+
       this.switchAuth('mainDashboard');
       this.loadSettings();
     }
@@ -945,16 +868,6 @@
       }
     }
 
-    calculateAge() {
-      const dobVal = document.getElementById('regDob').value;
-      if (dobVal) {
-        const birthDate = new Date(dobVal);
-        const age = new Date().getFullYear() - birthDate.getFullYear();
-        document.getElementById('regAge').value = age;
-      }
-    }
-
-    // Tab Navigation
     switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -963,10 +876,10 @@
       event.currentTarget.classList.add('active');
     }
 
-    // Language & Theme Management
     changeLanguage(lang) {
       state.currentUser.settings.language = lang;
       const dict = translations[lang];
+      if (!dict) return;
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.textContent = dict[key];
@@ -989,57 +902,27 @@
 
     saveProfile() {
       state.currentUser.about = document.getElementById('setAbout').value;
-      state.currentUser.phone = document.getElementById('setPhone').value;
       alert("Profile Saved!");
-    }
-
-    // Render Data Lists
-    renderAll() {
-      this.renderChatsList();
-      this.renderCallsList();
-      this.renderPeopleList();
-      this.renderStatusList();
     }
 
     renderChatsList() {
       const container = document.getElementById('chatsList');
       container.innerHTML = '';
 
-      // Private Friends Chats
       state.friends.forEach(f => {
-        const msgs = state.messages[f.id] || [];
-        const lastMsg = msgs[msgs.length - 1] ? msgs[msgs.length - 1].text : "Tap to start conversation";
-        
+        const msgs = state.messages[f.room] || [];
+        const lastMsg = msgs[msgs.length - 1] ? msgs[msgs.length - 1].message : "Connected. Tap to chat";
+
         container.innerHTML += `
-          <div class="list-item" onclick="app.openChat('${f.id}', 'private')">
+          <div class="list-item" onclick="app.openChat('${f.room}', '${f.name}')">
             <div class="avatar-wrapper">
-              <img src="${f.profilePic}" class="avatar">
-              <div class="${f.online ? 'online-indicator' : 'offline-indicator'}"></div>
+              <img src="https://picsum.photos/id/1005/200" class="avatar">
+              <div class="online-indicator"></div>
             </div>
             <div class="item-details">
               <div class="item-top">
                 <span class="item-title">${f.name}</span>
-                <span class="item-time">Now</span>
-              </div>
-              <div class="item-sub">${lastMsg}</div>
-            </div>
-          </div>`;
-      });
-
-      // Group Chats
-      state.groups.forEach(g => {
-        const msgs = state.messages[g.id] || [];
-        const lastMsg = msgs[msgs.length - 1] ? msgs[msgs.length - 1].text : "Group created";
-        
-        container.innerHTML += `
-          <div class="list-item" onclick="app.openChat('${g.id}', 'group')">
-            <div class="avatar-wrapper">
-              <img src="${g.profilePic}" class="avatar">
-            </div>
-            <div class="item-details">
-              <div class="item-top">
-                <span class="item-title">${g.name} <span class="badge">Group</span></span>
-                <span class="item-time">10:00 AM</span>
+                <span class="item-time">Active</span>
               </div>
               <div class="item-sub">${lastMsg}</div>
             </div>
@@ -1047,118 +930,36 @@
       });
     }
 
-    renderCallsList() {
-      const container = document.getElementById('callsList');
-      container.innerHTML = '';
-      state.callLogs.forEach(c => {
-        const friend = state.friends.find(f => f.id === c.id) || { name: "User", profilePic: "https://picsum.photos/id/64/200" };
-        const icon = c.isVideo ? 'fa-video' : 'fa-phone';
-        const color = c.type === 'incoming' ? '#34a853' : '#1a73e8';
+    openChat(room, name) {
+      state.activeChatRoom = room;
+      document.getElementById('activeChatTitle').textContent = name || room;
+      document.getElementById('chatView').style.display = 'flex';
 
-        container.innerHTML += `
-          <div class="list-item">
-            <img src="${friend.profilePic}" class="avatar" style="margin-right:12px;">
-            <div class="item-details">
-              <div class="item-title">${friend.name}</div>
-              <div class="item-sub"><i class="fa-solid ${icon}" style="color:${color}"></i> ${c.type} • ${c.time}</div>
-            </div>
-          </div>`;
-      });
-    }
-
-    renderPeopleList() {
-      const reqContainer = document.getElementById('requestsList');
-      reqContainer.innerHTML = '';
-      state.pendingRequests.forEach(r => {
-        reqContainer.innerHTML += `
-          <div class="list-item">
-            <img src="${r.profilePic}" class="avatar" style="margin-right:12px;">
-            <div class="item-details">
-              <div class="item-title">${r.name}</div>
-              <div class="item-sub">ID: ${r.personalId}</div>
-            </div>
-            <button class="btn" style="width:auto; padding:6px 12px; font-size:12px;" onclick="app.acceptFriend('${r.id}')">Accept</button>
-          </div>`;
-      });
-
-      const friendsContainer = document.getElementById('friendsList');
-      friendsContainer.innerHTML = '';
-      state.friends.forEach(f => {
-        friendsContainer.innerHTML += `
-          <div class="list-item" onclick="app.openChat('${f.id}', 'private')">
-            <div class="avatar-wrapper">
-              <img src="${f.profilePic}" class="avatar">
-              <div class="${f.online ? 'online-indicator' : 'offline-indicator'}"></div>
-            </div>
-            <div class="item-details">
-              <div class="item-title">${f.name}</div>
-              <div class="item-sub">${f.online ? 'Online' : 'Last seen ' + f.lastSeen}</div>
-            </div>
-          </div>`;
-      });
-    }
-
-    renderStatusList() {
-      const container = document.getElementById('statusList');
-      container.innerHTML = '';
-      state.statuses.forEach(s => {
-        container.innerHTML += `
-          <div class="list-item">
-            <img src="${s.profilePic}" class="avatar" style="margin-right:12px; border:2px solid var(--primary-color);">
-            <div class="item-details">
-              <div class="item-title">${s.name}</div>
-              <div class="item-sub">${s.text} • ${s.time}</div>
-            </div>
-          </div>`;
-      });
-    }
-
-    // Active Chat Interface
-    openChat(id, type) {
-      // Restriction Guard: Check if non-friend
-      if (type === 'private') {
-        const isFriend = state.friends.some(f => f.id === id);
-        if (!isFriend) {
-          return alert("Restriction: You can only chat with confirmed friends!");
-        }
-      }
-
-      state.activeChat = { id, type };
-      const chatView = document.getElementById('chatView');
-      chatView.style.display = 'flex';
-
-      let entity = (type === 'private') 
-        ? state.friends.find(f => f.id === id) 
-        : state.groups.find(g => g.id === id);
-
-      document.getElementById('activeChatTitle').textContent = entity.name;
-      document.getElementById('activeChatAvatar').src = entity.profilePic;
-      document.getElementById('activeChatSub').textContent = (type === 'private') ? (entity.online ? 'Online' : 'Offline') : `${entity.members.length} members`;
-
+      socket.emit('join_room', { username: state.currentUser.name, room: room });
       this.renderMessages();
     }
 
     closeChat() {
       document.getElementById('chatView').style.display = 'none';
-      state.activeChat = { id: null, type: null };
+      state.activeChatRoom = null;
     }
 
     renderMessages() {
       const container = document.getElementById('chatMessages');
       container.innerHTML = '';
-      const msgs = state.messages[state.activeChat.id] || [];
+      const msgs = state.messages[state.activeChatRoom] || [];
 
       msgs.forEach(m => {
-        const isMe = m.sender === 'USR001';
+        const isMe = m.author === state.currentUser.name;
         const bubbleClass = isMe ? 'sent' : 'received';
-        
+
         container.innerHTML += `
           <div class="message-bubble ${bubbleClass}">
+            ${!isMe ? `<div style="font-size:10px; color:gray; margin-bottom:2px;">${m.author}</div>` : ''}
             ${m.media ? `<img src="${m.media}" class="media-preview"><br>` : ''}
-            ${m.text}
+            ${m.message}
             <div class="msg-meta">
-              <span>${m.time}</span>
-              ${isMe ? `<i class="fa-solid fa-check-double" style="color:#1a73e8;"></i>` : ''}
+              <span>${m.time || ''}</span>
             </div>
           </div>`;
       });
@@ -1166,48 +967,28 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    sendMessage(customText = null, mediaData = null) {
+    sendMessage() {
       const input = document.getElementById('msgInput');
-      const text = customText || input.value.trim();
-      if (!text && !mediaData) return;
+      const text = input.value.trim();
+      if (!text || !state.activeChatRoom) return;
 
-      if (!state.messages[state.activeChat.id]) {
-        state.messages[state.activeChat.id] = [];
+      const messageData = {
+        room: state.activeChatRoom,
+        author: state.currentUser.name,
+        message: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      socket.emit('send_message', messageData);
+
+      if (!state.messages[state.activeChatRoom]) {
+        state.messages[state.activeChatRoom] = [];
       }
+      state.messages[state.activeChatRoom].push(messageData);
 
-      state.messages[state.activeChat.id].push({
-        sender: 'USR001',
-        text: text,
-        media: mediaData,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        status: 'sent'
-      });
-
-      if (!customText) input.value = '';
+      input.value = '';
       this.renderMessages();
       this.renderChatsList();
-
-      // Simulate Automated Typing Reply
-      this.simulateReply();
-    }
-
-    simulateReply() {
-      const indicator = document.getElementById('typingIndicator');
-      indicator.classList.remove('hidden');
-
-      setTimeout(() => {
-        indicator.classList.add('hidden');
-        if (state.activeChat.id) {
-          state.messages[state.activeChat.id].push({
-            sender: state.activeChat.id,
-            text: "Got it! Thanks for sending.",
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            status: 'seen'
-          });
-          this.renderMessages();
-          this.renderChatsList();
-        }
-      }, 2000);
     }
 
     handleFileUpload(e) {
@@ -1215,142 +996,62 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (event) => {
-          this.sendMessage(`Shared file: ${file.name}`, event.target.result);
+          const messageData = {
+            room: state.activeChatRoom,
+            author: state.currentUser.name,
+            message: `Shared file: ${file.name}`,
+            media: event.target.result,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          };
+          socket.emit('send_message', messageData);
+          state.messages[state.activeChatRoom].push(messageData);
+          this.renderMessages();
         };
         reader.readAsDataURL(file);
       }
     }
 
-    startRecording() {
-      const input = document.getElementById('msgInput');
-      input.placeholder = "Recording voice message...";
-    }
-
-    stopRecording() {
-      const input = document.getElementById('msgInput');
-      input.placeholder = "Type a message...";
-      this.sendMessage("🎤 Voice Message (0:05)");
-    }
-
-    // Call System Logic
-    startCall(type) {
-      if (!state.activeChat.id) return;
-      const entity = state.friends.find(f => f.id === state.activeChat.id) || { name: "Group Call", profilePic: "https://picsum.photos/id/1060/200" };
-
-      document.getElementById('callTargetName').textContent = entity.name;
-      document.getElementById('callTargetAvatar').src = entity.profilePic;
-      document.getElementById('callStatusText').textContent = type === 'video' ? "Starting Video Call..." : "Ringing...";
-      
-      document.getElementById('callOverlay').style.display = 'flex';
-
-      // Log the Call
-      state.callLogs.unshift({
-        id: state.activeChat.id,
-        type: 'outgoing',
-        time: 'Just now',
-        duration: '00:00',
-        isVideo: type === 'video'
-      });
-      this.renderCallsList();
-    }
-
-    endCall() {
-      document.getElementById('callOverlay').style.display = 'none';
-    }
-
-    // Modal Actions & Friend Requests
-    openAddFriendModal() {
-      document.getElementById('addFriendModal').style.display = 'flex';
-    }
-
-    openGroupModal() {
-      const container = document.getElementById('groupMembersSelection');
-      container.innerHTML = '';
-      state.friends.forEach(f => {
-        container.innerHTML += `
-          <div style="display:flex; gap:8px; align-items:center; margin-bottom:4px;">
-            <input type="checkbox" value="${f.id}" id="chk_${f.id}">
-            <label for="chk_${f.id}" style="margin:0;">${f.name}</label>
-          </div>`;
-      });
-      document.getElementById('createGroupModal').style.display = 'flex';
-    }
-
-    closeModal(id) {
-      document.getElementById(id).style.display = 'none';
-    }
-
-    showModal(id) {
-      document.getElementById(id).style.display = 'flex';
-    }
+    openAddFriendModal() { document.getElementById('addFriendModal').style.display = 'flex'; }
+    openGroupModal() { document.getElementById('createGroupModal').style.display = 'flex'; }
+    closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
     sendFriendRequest() {
-      const q = document.getElementById('friendSearchQuery').value;
-      if (!q) return alert('Enter search term');
-      alert(`Friend request sent to "${q}" (Status: Pending)`);
-      this.closeModal('addFriendModal');
-    }
+      const room = document.getElementById('friendSearchQuery').value.trim();
+      if (!room) return alert('Enter Room or Friend ID');
 
-    acceptFriend(id) {
-      const reqIdx = state.pendingRequests.findIndex(r => r.id === id);
-      if (reqIdx > -1) {
-        const user = state.pendingRequests[reqIdx];
-        state.pendingRequests.splice(reqIdx, 1);
-        state.friends.push({
-          ...user,
-          online: true,
-          lastSeen: 'now',
-          isFriend: true
-        });
-        this.renderAll();
-        alert(`You are now friends with ${user.name}!`);
-      }
+      state.friends.push({ room: room, name: "Room: " + room });
+      this.renderChatsList();
+      this.closeModal('addFriendModal');
+      this.openChat(room, "Room: " + room);
     }
 
     createGroup() {
-      const name = document.getElementById('groupNameInput').value;
-      if (!name) return alert('Please enter Group Name');
+      const name = document.getElementById('groupNameInput').value.trim();
+      if (!name) return alert('Enter Group Name');
 
-      const selected = ['USR001'];
-      state.friends.forEach(f => {
-        const chk = document.getElementById(`chk_${f.id}`);
-        if (chk && chk.checked) selected.push(f.id);
-      });
-
-      const newGrp = {
-        id: "GRP" + Date.now(),
-        name: name,
-        members: selected,
-        profilePic: "https://picsum.photos/id/1060/200"
-      };
-
-      state.groups.push(newGrp);
+      state.friends.push({ room: name, name: "Group: " + name });
       this.renderChatsList();
       this.closeModal('createGroupModal');
-      alert(`Group "${name}" Created Successfully!`);
+      this.openChat(name, "Group: " + name);
     }
+
+    startCall(type) {
+      document.getElementById('callTargetName').textContent = state.activeChatRoom || "User";
+      document.getElementById('callStatusText').textContent = type === 'video' ? "Calling Video..." : "Calling Voice...";
+      document.getElementById('callOverlay').style.display = 'flex';
+    }
+
+    endCall() { document.getElementById('callOverlay').style.display = 'none'; }
 
     updateMyStatus() {
       const text = prompt("Enter text status update:");
       if (text) {
-        state.statuses.unshift({
-          id: "USR001",
-          name: "My Status",
-          text: text,
-          time: "Just now",
-          profilePic: "https://picsum.photos/id/64/200"
-        });
-        this.renderStatusList();
+        state.statuses.unshift({ name: state.currentUser.name, text: text, time: "Just now" });
+        alert("Status updated!");
       }
-    }
-
-    simulatedResetPassword() {
-      alert("A reset link has been sent to your registered contact!");
-      this.closeModal('forgotModal');
     }
   }
 
-  // Initialize App
   const app = new AppController();
 </script>
 
