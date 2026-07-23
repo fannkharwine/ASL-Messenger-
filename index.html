@@ -5,1053 +5,367 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASL Messenger</title>
   
-  <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Socket.IO Library -->
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <!-- Firebase SDKs (v9 Compat Mode) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* Global & Dynamic Theme Variables */
     :root {
       --primary-color: #1A73E8;
-      --primary-hover: #1557b0;
       --bg-color: #F0F2F5;
       --card-bg: #FFFFFF;
       --text-main: #1C1E21;
       --text-muted: #65676B;
       --border-color: #E4E6EB;
       --sent-msg: #E3F2FD;
-      --received-msg: #F1F0F0;
-      --font-family: 'Inter', sans-serif;
+      --received-msg: #FFFFFF;
     }
 
-    body.font-serif { --font-family: 'Merriweather', serif; }
-    body.font-mono { --font-family: 'Roboto Mono', monospace; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: #121212; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: var(--font-family);
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: #121212;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-    }
-
-    /* Mobile Container Frame */
     .app-container {
-      width: 100%;
-      max-width: 480px;
-      height: 100vh;
-      max-height: 900px;
-      background: var(--bg-color);
-      display: flex;
-      flex-direction: column;
-      position: relative;
-      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-      overflow: hidden;
+      width: 100%; max-width: 480px; height: 100vh; max-height: 900px;
+      background: var(--bg-color); display: flex; flex-direction: column;
+      position: relative; box-shadow: 0 12px 32px rgba(0,0,0,0.5); overflow: hidden;
     }
+    @media (min-width: 481px) { .app-container { height: 92vh; border-radius: 20px; } }
 
-    @media (min-width: 481px) {
-      .app-container {
-        height: 92vh;
-        border-radius: 20px;
-      }
-    }
+    .screen { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--bg-color); overflow-y: auto; }
+    .screen.active { display: flex; }
 
-    /* Screen Management */
-    .screen {
-      display: none;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-      background: var(--bg-color);
-      overflow-y: auto;
-    }
-
-    .screen.active {
-      display: flex;
-    }
-
-    /* Common Components */
     header {
-      background: var(--card-bg);
-      padding: 14px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      background: var(--card-bg); padding: 14px 16px; display: flex;
+      justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 10;
     }
+    header h2 { font-size: 20px; color: var(--primary-color); font-weight: 700; }
 
-    header h2 {
-      font-size: 20px;
-      color: var(--primary-color);
-      font-weight: 700;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      font-size: 18px;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 50%;
-      transition: background 0.2s;
-    }
-
-    .icon-btn:hover { background: rgba(26,115,232,0.1); }
-
-    .btn {
-      background: var(--primary-color);
-      color: #fff;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      transition: background 0.2s;
-    }
-
-    .btn:hover { background: var(--primary-hover); }
-
-    .btn-secondary {
-      background: #E4E6EB;
-      color: var(--text-main);
-    }
-
-    .btn-secondary:hover { background: #d8dadf; }
-
+    .icon-btn { background: none; border: none; color: var(--primary-color); font-size: 18px; cursor: pointer; padding: 6px; }
+    .btn { background: var(--primary-color); color: #fff; border: none; padding: 12px 18px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 8px; }
+    .btn-google { background: #4285F4; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .btn-secondary { background: #E4E6EB; color: var(--text-main); }
     .btn-danger { background: #d93025; }
 
-    .input-field {
-      width: 100%;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      background: #fff;
-      font-size: 14px;
-      outline: none;
-    }
+    .input-field { width: 100%; padding: 12px 14px; margin-bottom: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 14px; outline: none; }
+    
+    .tab-content { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+    nav.tab-bar { position: absolute; bottom: 0; left: 0; width: 100%; height: 60px; background: var(--card-bg); display: flex; border-top: 1px solid var(--border-color); z-index: 20; }
+    .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text-muted); font-size: 11px; cursor: pointer; }
+    .tab-item.active { color: var(--primary-color); font-weight: 600; }
 
-    .input-field:focus { border-color: var(--primary-color); }
+    .list-item { display: flex; align-items: center; padding: 12px 16px; background: var(--card-bg); border-bottom: 1px solid var(--border-color); cursor: pointer; }
+    .avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; margin-right: 12px; }
+    .item-details { flex: 1; min-width: 0; }
+    .item-title { font-weight: 600; font-size: 15px; }
+    .item-sub { font-size: 12px; color: var(--text-muted); }
 
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
+    .chat-view { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-color); z-index: 30; display: none; flex-direction: column; }
+    .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .message-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .message-bubble.sent { align-self: flex-end; background: var(--sent-msg); }
+    .message-bubble.received { align-self: flex-start; background: var(--received-msg); }
 
-    /* Auth Screens Styling */
-    .auth-container {
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      min-height: 100%;
-    }
+    .chat-input-bar { background: var(--card-bg); padding: 10px 12px; display: flex; align-items: center; gap: 8px; }
+    .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; }
 
-    .auth-header {
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    .auth-header i {
-      font-size: 48px;
-      color: var(--primary-color);
-      margin-bottom: 8px;
-    }
-
-    .auth-header h1 {
-      font-size: 24px;
-      color: var(--text-main);
-    }
-
-    .auth-links {
-      text-align: center;
-      margin-top: 14px;
-      font-size: 13px;
-    }
-
-    .auth-links a {
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .google-btn {
-      background: #fff;
-      color: #757575;
-      border: 1px solid #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    /* Tab Navigation */
-    .tab-content {
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 60px;
-    }
-
-    nav.tab-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 60px;
-      background: var(--card-bg);
-      display: flex;
-      border-top: 1px solid var(--border-color);
-      z-index: 20;
-    }
-
-    .tab-item {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-muted);
-      font-size: 11px;
-      cursor: pointer;
-      gap: 3px;
-    }
-
-    .tab-item i { font-size: 18px; }
-
-    .tab-item.active {
-      color: var(--primary-color);
-      font-weight: 600;
-    }
-
-    /* Chat List Item */
-    .list-item {
-      display: flex;
-      align-items: center;
-      padding: 12px 16px;
-      background: var(--card-bg);
-      border-bottom: 1px solid var(--border-color);
-      cursor: pointer;
-      position: relative;
-    }
-
-    .list-item:hover { background: #f8f9fa; }
-
-    .avatar-wrapper {
-      position: relative;
-      margin-right: 12px;
-    }
-
-    .avatar {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #ccc;
-    }
-
-    .online-indicator {
-      width: 12px;
-      height: 12px;
-      background: #34a853;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-    }
-
-    .offline-indicator {
-      width: 12px;
-      height: 12px;
-      background: #9aa0a6;
-      border: 2px solid #fff;
-      border-radius: 50%;
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-    }
-
-    .item-details {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .item-top {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-    }
-
-    .item-title {
-      font-weight: 600;
-      color: var(--text-main);
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .item-time {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .item-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .badge {
-      background: var(--primary-color);
-      color: white;
-      font-size: 10px;
-      font-weight: bold;
-      border-radius: 10px;
-      padding: 2px 6px;
-      margin-left: 6px;
-    }
-
-    /* Active Chat Screen */
-    .chat-view {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: var(--bg-color);
-      z-index: 30;
-      display: none;
-      flex-direction: column;
-    }
-
-    .chat-header {
-      background: var(--card-bg);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid var(--border-color);
-      gap: 10px;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .message-bubble {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      line-height: 1.4;
-      position: relative;
-      word-wrap: break-word;
-    }
-
-    .message-bubble.sent {
-      align-self: flex-end;
-      background: var(--sent-msg);
-      border-bottom-right-radius: 2px;
-    }
-
-    .message-bubble.received {
-      align-self: flex-start;
-      background: var(--received-msg);
-      border-bottom-left-radius: 2px;
-    }
-
-    .msg-meta {
-      font-size: 10px;
-      color: var(--text-muted);
-      text-align: right;
-      margin-top: 4px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 4px;
-      align-items: center;
-    }
-
-    .chat-input-bar {
-      background: var(--card-bg);
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .chat-input-bar input {
-      flex: 1;
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 10px 14px;
-      outline: none;
-    }
-
-    .media-btn {
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .media-btn:hover { color: var(--primary-color); }
-
-    .typing-status {
-      font-size: 11px;
-      color: var(--primary-color);
-      font-style: italic;
-      padding: 0 16px 4px;
-    }
-
-    /* Call Overlay Screen */
-    .call-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: #111;
-      color: white;
-      z-index: 100;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 60px 20px;
-    }
-
-    .call-avatar {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      margin-bottom: 20px;
-      border: 3px solid var(--primary-color);
-    }
-
-    .call-actions {
-      display: flex;
-      gap: 24px;
-    }
-
-    .call-btn {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      border: none;
-      cursor: pointer;
-      color: white;
-    }
-
-    .call-end-btn { background: #ea4335; }
-    .call-accept-btn { background: #34a853; }
-
-    /* Modals */
-    .modal {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      z-index: 50;
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: var(--card-bg);
-      width: 90%;
-      max-width: 380px;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    .modal-header {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    /* Helper utility classes */
-    .section-title {
-      padding: 10px 16px 4px;
-      font-size: 12px;
-      font-weight: bold;
-      color: var(--text-muted);
-      text-transform: uppercase;
-    }
-
+    .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 50; display: none; justify-content: center; align-items: center; }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; }
     .hidden { display: none !important; }
-    .media-preview { max-width: 100%; border-radius: 8px; margin-top: 4px; }
   </style>
 </head>
 <body>
 
 <div class="app-container">
 
-  <!-- ==================== AUTHENTICATION SCREENS ==================== -->
-  
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="screen active">
-    <div class="auth-container">
-      <div class="auth-header">
-        <i class="fa-solid fa-comments"></i>
-        <h1>ASL Messenger</h1>
-        <p style="font-size:12px; color:var(--text-muted);">Connect securely with friends</p>
-      </div>
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="screen active">
+    <div style="padding: 24px; text-align: center; margin: auto 0;">
+      <i class="fa-solid fa-comments" style="font-size: 48px; color: var(--primary-color); margin-bottom: 12px;"></i>
+      <h1 style="margin-bottom: 8px;">ASL Messenger</h1>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 24px;">Authenticating via Firebase</p>
 
-      <input type="text" id="loginName" class="input-field" placeholder="Your Name (e.g. Aung Aung)">
-      <input type="text" id="loginId" class="input-field" placeholder="Your Personal ID or Phone">
-      
-      <button class="btn" onclick="app.login()">Login</button>
-
-      <div class="auth-links">
-        <p style="margin-top: 10px;">Don't have an account? <a onclick="app.switchAuth('signupScreen')">Sign Up</a></p>
-      </div>
+      <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
+        <i class="fa-brands fa-google"></i> Login with Google
+      </button>
     </div>
   </div>
 
-  <!-- SIGNUP SCREEN -->
-  <div id="signupScreen" class="screen">
-    <div class="auth-container" style="justify-content: flex-start; padding-top: 20px;">
-      <div class="auth-header" style="margin-bottom: 12px;">
-        <h2>Create Account</h2>
-      </div>
-
-      <label>Full Name</label>
-      <input type="text" id="regName" class="input-field" placeholder="John Doe">
-
-      <label>Email</label>
-      <input type="email" id="regEmail" class="input-field" placeholder="john@example.com">
-
-      <label>Phone Number</label>
-      <input type="text" id="regPhone" class="input-field" placeholder="+959123456789">
-
-      <label>Personal ID (Unique)</label>
-      <input type="text" id="regPersonalId" class="input-field" placeholder="JD2026">
-
-      <button class="btn" onclick="app.signup()">Sign Up</button>
-
-      <div class="auth-links">
-        <p>Already have an account? <a onclick="app.switchAuth('loginScreen')">Login</a></p>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- ==================== MAIN APP DASHBOARD ==================== -->
-  
+  <!-- MAIN DASHBOARD -->
   <div id="mainDashboard" class="screen">
-    
-    <!-- HEADER -->
     <header>
-      <h2 id="appHeaderTitle">ASL Messenger</h2>
-      <div>
-        <button class="icon-btn" onclick="app.openAddFriendModal()"><i class="fa-solid fa-user-plus"></i></button>
-        <button class="icon-btn" onclick="app.openGroupModal()"><i class="fa-solid fa-users"></i></button>
-      </div>
+      <h2>ASL Messenger</h2>
+      <button class="icon-btn" onclick="app.openModal('addFriendModal')"><i class="fa-solid fa-user-plus"></i></button>
     </header>
 
-    <!-- TAB 1: CHATS -->
     <div id="chatsTab" class="tab-content">
       <div id="chatsList"></div>
     </div>
 
-    <!-- TAB 2: CALLS -->
-    <div id="callsTab" class="tab-content hidden">
-      <div id="callsList"></div>
-    </div>
-
-    <!-- TAB 3: PEOPLE / FRIENDS -->
     <div id="peopleTab" class="tab-content hidden">
-      <div class="section-title" data-i18n="friendRequests">Friend Requests</div>
+      <div style="padding:10px 16px; font-weight:bold; color:gray; font-size:12px;">FRIEND REQUESTS</div>
       <div id="requestsList"></div>
-      
-      <div class="section-title" data-i18n="myFriends">My Friends</div>
+      <div style="padding:10px 16px; font-weight:bold; color:gray; font-size:12px;">MY FRIENDS</div>
       <div id="friendsList"></div>
     </div>
 
-    <!-- TAB 4: STATUS / STORIES -->
-    <div id="statusTab" class="tab-content hidden">
-      <div class="list-item" onclick="app.updateMyStatus()">
-        <div class="avatar-wrapper">
-          <img src="https://picsum.photos/id/64/200" class="avatar">
-          <div style="position:absolute; bottom:0; right:0; background:var(--primary-color); color:white; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px;">+</div>
-        </div>
-        <div class="item-details">
-          <div class="item-title" data-i18n="myStatus">My Status</div>
-          <div class="item-sub" data-i18n="addStatus">Tap to update status</div>
-        </div>
-      </div>
-      <div class="section-title" data-i18n="recentUpdates">Recent Updates</div>
-      <div id="statusList"></div>
-    </div>
-
-    <!-- TAB 5: SETTINGS -->
     <div id="settingsTab" class="tab-content hidden">
-      <div style="padding: 16px;">
-        <div style="text-align:center; margin-bottom: 16px;">
-          <img id="settingsAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:80px; height:80px;">
-          <h3 id="settingsName">User Name</h3>
-          <p id="settingsPersonalId" style="font-size:12px; color:var(--text-muted);">ID: -</p>
-        </div>
-
-        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-          <h4 style="margin-bottom:8px; border-bottom:1px solid #eee; padding-bottom:4px;" data-i18n="profileData">Profile Data</h4>
-          <label data-i18n="about">About/Bio</label>
-          <input type="text" id="setAbout" class="input-field" value="ASL Messenger User">
-          
-          <label data-i18n="email">Email</label>
-          <input type="text" id="setEmail" class="input-field">
-
-          <label data-i18n="phone">Phone</label>
-          <input type="text" id="setPhone" class="input-field">
-
-          <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()" data-i18n="saveProfile">Save Profile</button>
-        </div>
-
-        <div style="background: white; border-radius: 8px; padding: 12px; margin-bottom: 12px;">
-          <h4 style="margin-bottom:8px;" data-i18n="preferences">Preferences</h4>
-          <label data-i18n="language">Language</label>
-          <select id="langSelect" class="input-field" onchange="app.changeLanguage(this.value)">
-            <option value="en">English</option>
-            <option value="my">မြန်မာ (Myanmar)</option>
-            <option value="zh">中文 (Chinese)</option>
-          </select>
-
-          <label data-i18n="fontStyle">Font Style</label>
-          <select id="fontSelect" class="input-field" onchange="app.changeFont(this.value)">
-            <option value="default">Default (Inter)</option>
-            <option value="serif">Serif</option>
-            <option value="mono">Monospace</option>
-          </select>
-        </div>
-
-        <button class="btn btn-danger" onclick="app.logout()" data-i18n="logout">Logout</button>
+      <div style="padding: 16px; text-align:center;">
+        <img id="myAvatar" class="avatar" style="width:80px; height:80px; margin-bottom:10px;" src="https://picsum.photos/200">
+        <h3 id="myName">User Name</h3>
+        <p id="myEmail" style="font-size:12px; color:gray;"></p>
+        <p id="myUid" style="font-size:11px; color:var(--primary-color); margin-top:5px; margin-bottom:15px; word-break:break-all; user-select:all;"></p>
+        <button class="btn btn-danger" onclick="authApp.logout()">Logout</button>
       </div>
     </div>
 
-    <!-- TAB BAR NAVIGATION -->
     <nav class="tab-bar">
       <div class="tab-item active" onclick="app.switchTab('chats')">
         <i class="fa-solid fa-comment-dots"></i>
-        <span data-i18n="chats">Chats</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('calls')">
-        <i class="fa-solid fa-phone"></i>
-        <span data-i18n="calls">Calls</span>
+        <span>Chats</span>
       </div>
       <div class="tab-item" onclick="app.switchTab('people')">
         <i class="fa-solid fa-user-group"></i>
-        <span data-i18n="people">People</span>
-      </div>
-      <div class="tab-item" onclick="app.switchTab('status')">
-        <i class="fa-solid fa-circle-notch"></i>
-        <span data-i18n="status">Status</span>
+        <span>People</span>
       </div>
       <div class="tab-item" onclick="app.switchTab('settings')">
         <i class="fa-solid fa-gear"></i>
-        <span data-i18n="settings">Settings</span>
+        <span>Settings</span>
       </div>
     </nav>
-
   </div>
 
-
-  <!-- ==================== ACTIVE CHAT WINDOW ==================== -->
-  
+  <!-- CHAT VIEW -->
   <div id="chatView" class="chat-view">
-    <div class="chat-header">
+    <header>
       <button class="icon-btn" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
-      <img id="activeChatAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:36px; height:36px;">
-      <div style="flex:1;">
-        <div id="activeChatTitle" style="font-weight:600; font-size:14px;">User</div>
-        <div id="activeChatSub" style="font-size:10px; color:var(--text-muted);">Connected</div>
+      <div style="flex:1; margin-left:10px;">
+        <div id="chatTitle" style="font-weight:600;">User</div>
       </div>
-      <button class="icon-btn" onclick="app.startCall('audio')"><i class="fa-solid fa-phone"></i></button>
-      <button class="icon-btn" onclick="app.startCall('video')"><i class="fa-solid fa-video"></i></button>
-    </div>
-
+    </header>
     <div id="chatMessages" class="chat-messages"></div>
-    <div id="typingIndicator" class="typing-status hidden">typing...</div>
-
     <div class="chat-input-bar">
-      <label class="media-btn">
-        <i class="fa-solid fa-paperclip"></i>
-        <input type="file" id="fileAttachment" style="display:none" onchange="app.handleFileUpload(event)">
-      </label>
       <input type="text" id="msgInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter') app.sendMessage()">
       <button class="icon-btn" onclick="app.sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 
-
-  <!-- ==================== CALL OVERLAY ==================== -->
-  
-  <div id="callOverlay" class="call-overlay">
-    <div style="text-align:center;">
-      <h3 id="callTargetName">User</h3>
-      <p id="callStatusText" style="color:#aaa; font-size:14px; margin-top:4px;">Ringing...</p>
-    </div>
-
-    <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
-
-    <div class="call-actions">
-      <button class="call-btn call-end-btn" onclick="app.endCall()"><i class="fa-solid fa-phone-slash"></i></button>
-    </div>
-  </div>
-
-
-  <!-- ==================== MODALS ==================== -->
-  
-  <!-- Add Friend / Join Room Modal -->
+  <!-- ADD FRIEND MODAL -->
   <div id="addFriendModal" class="modal">
     <div class="modal-content">
-      <div class="modal-header">Add Friend / Room ID</div>
-      <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Enter Friend ID or Room Name to Chat:</p>
-      <input type="text" id="friendSearchQuery" class="input-field" placeholder="e.g. room123 or friend_id">
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')" data-i18n="cancel">Cancel</button>
-        <button class="btn" onclick="app.sendFriendRequest()">Connect</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Create Group Modal -->
-  <div id="createGroupModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header" data-i18n="createGroup">Create Group Chat</div>
-      <input type="text" id="groupNameInput" class="input-field" placeholder="Group Name/ID">
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="app.closeModal('createGroupModal')" data-i18n="cancel">Cancel</button>
-        <button class="btn" onclick="app.createGroup()" data-i18n="create">Create</button>
+      <h3 style="margin-bottom:8px;">Add Friend</h3>
+      <p style="font-size:12px; color:gray; margin-bottom:10px;">Paste your friend's UID here:</p>
+      <input type="text" id="friendUidInput" class="input-field" placeholder="Target User UID">
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')">Cancel</button>
+        <button class="btn" onclick="app.sendFriendRequest()">Send Request</button>
       </div>
     </div>
   </div>
 
 </div>
 
-
-<!-- ==================== REALTIME LOGIC ==================== -->
-
 <script>
-  // Connect to your Vercel Socket Server
-  const socket = io('https://asl-messenger-server.vercel.app');
-
-  const translations = {
-    en: {
-      chats: "Chats", calls: "Calls", people: "People", status: "Status", settings: "Settings",
-      friendRequests: "Friend Requests", myFriends: "My Friends", myStatus: "My Status",
-      addStatus: "Tap to update status", recentUpdates: "Recent Updates", profileData: "Profile Data",
-      about: "About/Bio", email: "Email", phone: "Phone", saveProfile: "Save Profile",
-      preferences: "Preferences", language: "Language", fontStyle: "Font Style", logout: "Logout",
-      createGroup: "Create Group Chat", cancel: "Cancel", create: "Create"
-    },
-    my: {
-      chats: "စကားပြောများ", calls: "ဖုန်းခေါ်ဆိုမှုများ", people: "မိတ်ဆွေများ", status: "အခြေအနေ", settings: "ဆက်တင်များ",
-      friendRequests: "မိတ်ဆွေတောင်းဆိုမှုများ", myFriends: "ကျနော့်မိတ်ဆွေများ", myStatus: "ကျွန်ုပ်၏အခြေအနေ",
-      addStatus: "အခြေအနေအသစ်တင်ရန်နှိပ်ပါ", recentUpdates: "လတ်တလောတင်ဆက်မှုများ", profileData: "ကိုယ်ရေးအချက်အလက်",
-      about: "အကြောင်းအရာ", email: "အီးမေးလ်", phone: "ဖုန်းနံပါတ်", saveProfile: "သိမ်းဆည်းပါ",
-      preferences: "ရွေးချယ်မှုများ", language: "ဘာသာစကား", fontStyle: "စာလုံးဒီဇိုင်း", logout: "ထွက်မည်",
-      createGroup: "အဖွဲ့သစ်ဖွဲ့ရန်", cancel: "မလုပ်တော့ပါ", create: "ဖန်တီးပါ"
-    }
+  // ==================== FIREBASE CONFIGURATION ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyB4mHK8vq_dVKs8f8FHGvPKof4kkVR1Uzs",
+    authDomain: "asl-messenger-85a1b.firebaseapp.com",
+    projectId: "asl-messenger-85a1b",
+    storageBucket: "asl-messenger-85a1b.firebasestorage.app",
+    messagingSenderId: "593020086365",
+    appId: "1:593020086365:web:fd4b8e5800c1079cef05b4",
+    measurementId: "G-0CBVDQ989P"
   };
 
-  const state = {
-    currentUser: {
-      id: "", name: "", email: "", phone: "", personalId: "",
-      about: "ASL Messenger User", settings: { language: "en", font: "default" }
-    },
-    friends: [],
-    messages: {},
-    callLogs: [],
-    statuses: [],
-    activeChatRoom: null
-  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
 
-  class AppController {
+  let currentUser = null;
+  let activeChatUid = null;
+
+  // ==================== AUTHENTICATION LOGIC ====================
+  class AuthController {
     constructor() {
-      this.initSocketListeners();
-    }
-
-    initSocketListeners() {
-      socket.on('receive_message', (data) => {
-        if (!state.messages[data.room]) {
-          state.messages[data.room] = [];
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          currentUser = user;
+          this.saveUserProfile(user);
+          document.getElementById('authScreen').classList.remove('active');
+          document.getElementById('mainDashboard').classList.add('active');
+          app.initDashboard();
+        } else {
+          document.getElementById('authScreen').classList.add('active');
+          document.getElementById('mainDashboard').classList.remove('active');
         }
-        state.messages[data.room].push(data);
-        
-        if (state.activeChatRoom === data.room) {
-          this.renderMessages();
-        }
-        this.renderChatsList();
       });
     }
 
-    switchAuth(targetScreenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(targetScreenId).classList.add('active');
+    loginWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      auth.signInWithPopup(provider).catch(e => alert(e.message));
     }
 
-    login() {
-      const name = document.getElementById('loginName').value.trim();
-      const id = document.getElementById('loginId').value.trim();
-      
-      if (!name || !id) return alert('Please enter both Name and Personal ID/Phone!');
-
-      state.currentUser.name = name;
-      state.currentUser.personalId = id;
-      state.currentUser.id = id;
-
-      this.switchAuth('mainDashboard');
-      this.loadSettings();
+    saveUserProfile(user) {
+      db.collection('users').doc(user.uid).set({
+        uid: user.uid,
+        name: user.displayName || "User",
+        email: user.email || "",
+        photo: user.photoURL || "https://picsum.photos/200"
+      }, { merge: true });
     }
 
-    signup() {
-      const name = document.getElementById('regName').value.trim();
-      const pId = document.getElementById('regPersonalId').value.trim();
-      if (!name || !pId) return alert('Please fill in required fields!');
+    logout() { auth.signOut(); }
+  }
 
-      state.currentUser.name = name;
-      state.currentUser.personalId = pId;
-      state.currentUser.email = document.getElementById('regEmail').value;
-      state.currentUser.phone = document.getElementById('regPhone').value;
+  // ==================== REALTIME APP LOGIC (FIRESTORE) ====================
+  class AppController {
+    initDashboard() {
+      document.getElementById('myName').textContent = currentUser.displayName || "User";
+      document.getElementById('myEmail').textContent = currentUser.email || "";
+      document.getElementById('myUid').textContent = "My UID: " + currentUser.uid;
+      if (currentUser.photoURL) document.getElementById('myAvatar').src = currentUser.photoURL;
 
-      this.switchAuth('mainDashboard');
-      this.loadSettings();
+      this.loadFriendsAndChats();
+      this.loadFriendRequests();
     }
 
-    logout() {
-      if (confirm("Are you sure you want to logout?")) {
-        this.switchAuth('loginScreen');
-      }
-    }
-
-    switchTab(tabName) {
+    switchTab(tab) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-
-      document.getElementById(tabName + 'Tab').classList.remove('hidden');
+      document.getElementById(tab + 'Tab').classList.remove('hidden');
       event.currentTarget.classList.add('active');
     }
 
-    changeLanguage(lang) {
-      state.currentUser.settings.language = lang;
-      const dict = translations[lang];
-      if (!dict) return;
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (dict[key]) el.textContent = dict[key];
-      });
+    sendFriendRequest() {
+      const targetUid = document.getElementById('friendUidInput').value.trim();
+      if (!targetUid || targetUid === currentUser.uid) return alert('Invalid User UID');
+
+      db.collection('requests').doc(targetUid).collection('incoming').doc(currentUser.uid).set({
+        fromUid: currentUser.uid,
+        fromName: currentUser.displayName || "User"
+      }).then(() => {
+        alert('Friend Request Sent!');
+        this.closeModal('addFriendModal');
+      }).catch(err => alert("Error: " + err.message));
     }
 
-    changeFont(fontKey) {
-      document.body.className = '';
-      if (fontKey === 'serif') document.body.classList.add('font-serif');
-      if (fontKey === 'mono') document.body.classList.add('font-mono');
+    loadFriendRequests() {
+      db.collection('requests').doc(currentUser.uid).collection('incoming')
+        .onSnapshot(snapshot => {
+          const list = document.getElementById('requestsList');
+          list.innerHTML = '';
+          snapshot.forEach(doc => {
+            const req = doc.data();
+            list.innerHTML += `
+              <div class="list-item">
+                <div class="item-details">
+                  <div class="item-title">${req.fromName}</div>
+                </div>
+                <button class="btn" style="width:auto; padding:6px 12px;" onclick="app.acceptFriend('${req.fromUid}')">Accept</button>
+              </div>`;
+          });
+        });
     }
 
-    loadSettings() {
-      document.getElementById('settingsName').textContent = state.currentUser.name;
-      document.getElementById('settingsPersonalId').textContent = "ID: " + state.currentUser.personalId;
-      document.getElementById('setAbout').value = state.currentUser.about;
-      document.getElementById('setEmail').value = state.currentUser.email;
-      document.getElementById('setPhone').value = state.currentUser.phone;
+    acceptFriend(targetUid) {
+      db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid).set({ active: true });
+      db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid).set({ active: true });
+      db.collection('requests').doc(currentUser.uid).collection('incoming').doc(targetUid).delete();
+      alert('Friend Accepted!');
     }
 
-    saveProfile() {
-      state.currentUser.about = document.getElementById('setAbout').value;
-      alert("Profile Saved!");
+    loadFriendsAndChats() {
+      db.collection('users').doc(currentUser.uid).collection('friends')
+        .onSnapshot(snapshot => {
+          const chatsList = document.getElementById('chatsList');
+          const friendsList = document.getElementById('friendsList');
+          chatsList.innerHTML = '';
+          friendsList.innerHTML = '';
+
+          snapshot.forEach(doc => {
+            const friendUid = doc.id;
+            db.collection('users').doc(friendUid).get().then(uSnap => {
+              const u = uSnap.data();
+              if (!u) return;
+
+              const friendHTML = `
+                <div class="list-item" onclick="app.openChat('${u.uid}', '${u.name}')">
+                  <img src="${u.photo}" class="avatar">
+                  <div class="item-details">
+                    <div class="item-title">${u.name}</div>
+                    <div class="item-sub">Tap to open real-time chat</div>
+                  </div>
+                </div>`;
+
+              chatsList.innerHTML += friendHTML;
+              friendsList.innerHTML += friendHTML;
+            });
+          });
+        });
     }
 
-    renderChatsList() {
-      const container = document.getElementById('chatsList');
-      container.innerHTML = '';
-
-      state.friends.forEach(f => {
-        const msgs = state.messages[f.room] || [];
-        const lastMsg = msgs[msgs.length - 1] ? msgs[msgs.length - 1].message : "Connected. Tap to chat";
-
-        container.innerHTML += `
-          <div class="list-item" onclick="app.openChat('${f.room}', '${f.name}')">
-            <div class="avatar-wrapper">
-              <img src="https://picsum.photos/id/1005/200" class="avatar">
-              <div class="online-indicator"></div>
-            </div>
-            <div class="item-details">
-              <div class="item-top">
-                <span class="item-title">${f.name}</span>
-                <span class="item-time">Active</span>
-              </div>
-              <div class="item-sub">${lastMsg}</div>
-            </div>
-          </div>`;
-      });
-    }
-
-    openChat(room, name) {
-      state.activeChatRoom = room;
-      document.getElementById('activeChatTitle').textContent = name || room;
+    openChat(uid, name) {
+      activeChatUid = uid;
+      document.getElementById('chatTitle').textContent = name;
       document.getElementById('chatView').style.display = 'flex';
-
-      socket.emit('join_room', { username: state.currentUser.name, room: room });
-      this.renderMessages();
+      this.listenForMessages();
     }
 
     closeChat() {
       document.getElementById('chatView').style.display = 'none';
-      state.activeChatRoom = null;
+      activeChatUid = null;
     }
 
-    renderMessages() {
-      const container = document.getElementById('chatMessages');
-      container.innerHTML = '';
-      const msgs = state.messages[state.activeChatRoom] || [];
-
-      msgs.forEach(m => {
-        const isMe = m.author === state.currentUser.name;
-        const bubbleClass = isMe ? 'sent' : 'received';
-
-        container.innerHTML += `
-          <div class="message-bubble ${bubbleClass}">
-            ${!isMe ? `<div style="font-size:10px; color:gray; margin-bottom:2px;">${m.author}</div>` : ''}
-            ${m.media ? `<img src="${m.media}" class="media-preview"><br>` : ''}
-            ${m.message}
-            <div class="msg-meta">
-              <span>${m.time || ''}</span>
-            </div>
-          </div>`;
-      });
-
-      container.scrollTop = container.scrollHeight;
+    getChatRoomId() {
+      return currentUser.uid < activeChatUid 
+        ? `${currentUser.uid}_${activeChatUid}` 
+        : `${activeChatUid}_${currentUser.uid}`;
     }
 
     sendMessage() {
       const input = document.getElementById('msgInput');
       const text = input.value.trim();
-      if (!text || !state.activeChatRoom) return;
+      if (!text || !activeChatUid) return;
 
-      const messageData = {
-        room: state.activeChatRoom,
-        author: state.currentUser.name,
-        message: text,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-
-      socket.emit('send_message', messageData);
-
-      if (!state.messages[state.activeChatRoom]) {
-        state.messages[state.activeChatRoom] = [];
-      }
-      state.messages[state.activeChatRoom].push(messageData);
+      const roomId = this.getChatRoomId();
+      db.collection('chats').doc(roomId).collection('messages').add({
+        sender: currentUser.uid,
+        text: text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
 
       input.value = '';
-      this.renderMessages();
-      this.renderChatsList();
     }
 
-    handleFileUpload(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const messageData = {
-            room: state.activeChatRoom,
-            author: state.currentUser.name,
-            message: `Shared file: ${file.name}`,
-            media: event.target.result,
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-          };
-          socket.emit('send_message', messageData);
-          state.messages[state.activeChatRoom].push(messageData);
-          this.renderMessages();
-        };
-        reader.readAsDataURL(file);
-      }
+    listenForMessages() {
+      const roomId = this.getChatRoomId();
+      db.collection('chats').doc(roomId).collection('messages')
+        .orderBy('timestamp', 'asc')
+        .onSnapshot(snapshot => {
+          const container = document.getElementById('chatMessages');
+          container.innerHTML = '';
+          snapshot.forEach(doc => {
+            const msg = doc.data();
+            const isMe = msg.sender === currentUser.uid;
+            container.innerHTML += `
+              <div class="message-bubble ${isMe ? 'sent' : 'received'}">
+                ${msg.text}
+              </div>`;
+          });
+          container.scrollTop = container.scrollHeight;
+        });
     }
 
-    openAddFriendModal() { document.getElementById('addFriendModal').style.display = 'flex'; }
-    openGroupModal() { document.getElementById('createGroupModal').style.display = 'flex'; }
+    openModal(id) { document.getElementById(id).style.display = 'flex'; }
     closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-    sendFriendRequest() {
-      const room = document.getElementById('friendSearchQuery').value.trim();
-      if (!room) return alert('Enter Room or Friend ID');
-
-      state.friends.push({ room: room, name: "Room: " + room });
-      this.renderChatsList();
-      this.closeModal('addFriendModal');
-      this.openChat(room, "Room: " + room);
-    }
-
-    createGroup() {
-      const name = document.getElementById('groupNameInput').value.trim();
-      if (!name) return alert('Enter Group Name');
-
-      state.friends.push({ room: name, name: "Group: " + name });
-      this.renderChatsList();
-      this.closeModal('createGroupModal');
-      this.openChat(name, "Group: " + name);
-    }
-
-    startCall(type) {
-      document.getElementById('callTargetName').textContent = state.activeChatRoom || "User";
-      document.getElementById('callStatusText').textContent = type === 'video' ? "Calling Video..." : "Calling Voice...";
-      document.getElementById('callOverlay').style.display = 'flex';
-    }
-
-    endCall() { document.getElementById('callOverlay').style.display = 'none'; }
-
-    updateMyStatus() {
-      const text = prompt("Enter text status update:");
-      if (text) {
-        state.statuses.unshift({ name: state.currentUser.name, text: text, time: "Just now" });
-        alert("Status updated!");
-      }
-    }
   }
 
+  const authApp = new AuthController();
   const app = new AppController();
 </script>
 
