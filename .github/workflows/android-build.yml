@@ -1,4 +1,4 @@
-name: Build Android APK
+run-name: name: Build Android APK
 
 on:
   push:
@@ -16,20 +16,20 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 18
 
-    - name: Setup Java JDK
+    - name: Setup Java JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '21'
+        java-version: '17'
 
-    - name: Prepare Web Assets & Capacitor
+    - name: Prepare Web Assets & Capacitor 5
       run: |
-        mkdir www
+        mkdir -p www
         cp index.html manifest.json logo.png www/ 2>/dev/null || cp index.html www/
         npm init -y
-        npm install @capacitor/core @capacitor/cli @capacitor/android
+        npm install @capacitor/core@5 @capacitor/cli@5 @capacitor/android@5
         echo '{"appId": "com.fannkharwine.aslmessenger", "appName": "ASL Messenger", "webDir": "www"}' > capacitor.config.json
 
     - name: Add Android Platform
@@ -41,7 +41,7 @@ jobs:
       run: |
         cd android
         chmod +x gradlew
-        ./gradlew assembleDebug
+        ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
