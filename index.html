@@ -15,7 +15,7 @@
       --text-main: #1c1e21;
       --text-muted: #65676b;
       --border-color: #e4e6eb;
-      --chat-bg: #f8f9fa;
+      --chat-bg: #f0f2f5;
       --message-out: #e3eee0;
       --message-in: #ffffff;
       --online-color: #31a24c;
@@ -23,7 +23,6 @@
       --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Font Variations */
     body.font-default { --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body.font-serif { --font-family: Georgia, "Times New Roman", Times, serif; }
     body.font-mono { --font-family: "Courier New", Courier, monospace; }
@@ -44,7 +43,6 @@
       color: var(--text-main);
     }
 
-    /* Outer Wrapper for Mobile Container simulation on Desktop */
     .app-viewport {
       width: 100%;
       max-width: 480px;
@@ -65,11 +63,127 @@
       }
     }
 
-    /* Header */
+    /* Auth Screens */
+    .auth-screen {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: #ffffff;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .auth-logo {
+      font-size: 3.5rem;
+      color: var(--primary-color);
+      margin-bottom: 10px;
+    }
+
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      margin-bottom: 4px;
+    }
+
+    .auth-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .auth-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: #f5f6f7;
+      outline: none;
+    }
+
+    .auth-input:focus {
+      background: #fff;
+      border-color: var(--primary-color);
+    }
+
+    .btn-auth {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background-color: var(--primary-color);
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-auth:hover {
+      background-color: var(--primary-dark);
+    }
+
+    .btn-google {
+      background-color: #ffffff;
+      color: #757575;
+      border: 1px solid #dadce0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 500;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 16px 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .auth-divider::before { margin-right: .5em; }
+    .auth-divider::after { margin-left: .5em; }
+
+    .auth-link {
+      color: var(--primary-color);
+      font-size: 0.85rem;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn-signup-toggle {
+      background-color: #42b72a;
+      color: white;
+      margin-top: 10px;
+    }
+
+    /* Main App Layout */
     .app-header {
       background-color: var(--primary-color);
       color: #fff;
-      padding: 14px 16px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -88,7 +202,6 @@
       cursor: pointer;
     }
 
-    /* View Area */
     .view-container {
       flex: 1;
       overflow-y: auto;
@@ -106,7 +219,7 @@
       display: flex;
     }
 
-    /* Navigation Bottom Bar */
+    /* Tab Bar */
     .tab-bar {
       display: flex;
       background-color: var(--card-bg);
@@ -125,7 +238,6 @@
       color: var(--text-muted);
       cursor: pointer;
       font-size: 0.75rem;
-      transition: color 0.2s ease;
     }
 
     .tab-item i {
@@ -138,7 +250,7 @@
       font-weight: 600;
     }
 
-    /* List Item Styles */
+    /* Lists */
     .list-item {
       display: flex;
       align-items: center;
@@ -163,7 +275,7 @@
       height: 48px;
       border-radius: 50%;
       object-fit: cover;
-      background-color: #ddd;
+      background-color: #999;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -219,17 +331,14 @@
       text-overflow: ellipsis;
     }
 
-    /* Chat Detail Screen */
+    /* Chat Screen */
     .chat-screen {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0; width: 100%; height: 100%;
       background-color: var(--chat-bg);
       display: flex;
       flex-direction: column;
-      z-index: 20;
+      z-index: 30;
       transform: translateX(100%);
       transition: transform 0.3s ease;
     }
@@ -300,6 +409,12 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     }
 
+    .message-bubble img, .message-bubble video {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 4px;
+    }
+
     .message-meta {
       display: flex;
       align-items: center;
@@ -310,8 +425,26 @@
       margin-top: 4px;
     }
 
+    .chat-attachment-bar {
+      display: flex;
+      gap: 12px;
+      padding: 6px 12px;
+      background: #f0f0f0;
+      border-top: 1px solid var(--border-color);
+      font-size: 1.1rem;
+      color: var(--text-muted);
+    }
+
+    .chat-attachment-bar i {
+      cursor: pointer;
+    }
+
+    .chat-attachment-bar i:hover {
+      color: var(--primary-color);
+    }
+
     .chat-input-area {
-      padding: 10px;
+      padding: 8px 10px;
       background-color: #fff;
       border-top: 1px solid var(--border-color);
       display: flex;
@@ -341,7 +474,6 @@
       justify-content: center;
     }
 
-    /* Typing indicator */
     .typing-indicator {
       font-style: italic;
       font-size: 0.75rem;
@@ -373,17 +505,12 @@
       font-size: 0.95rem;
     }
 
-    .settings-row select, .settings-row input[type="checkbox"] {
-      cursor: pointer;
-    }
-
     .settings-row select {
       padding: 6px 10px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
     }
 
-    /* Switch styling */
     .switch {
       position: relative;
       display: inline-block;
@@ -391,11 +518,7 @@
       height: 24px;
     }
 
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .switch input { opacity: 0; width: 0; height: 0; }
 
     .slider {
       position: absolute;
@@ -409,24 +532,16 @@
     .slider:before {
       position: absolute;
       content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
       background-color: white;
       transition: .3s;
       border-radius: 50%;
     }
 
-    input:checked + .slider {
-      background-color: var(--primary-color);
-    }
+    input:checked + .slider { background-color: var(--primary-color); }
+    input:checked + .slider:before { transform: translateX(20px); }
 
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-
-    /* Profile Section Header in Settings */
     .profile-card {
       display: flex;
       align-items: center;
@@ -436,8 +551,7 @@
     }
 
     .profile-card .avatar {
-      width: 60px;
-      height: 60px;
+      width: 60px; height: 60px;
       font-size: 1.5rem;
     }
 
@@ -446,23 +560,8 @@
       flex: 1;
     }
 
-    .profile-name {
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-
-    .profile-about {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    .btn-edit {
-      background: none;
-      border: none;
-      color: var(--primary-color);
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
+    .profile-name { font-weight: bold; font-size: 1.1rem; }
+    .profile-about { font-size: 0.85rem; color: var(--text-muted); }
 
     /* Modals & Overlays */
     .modal-overlay {
@@ -475,28 +574,24 @@
       justify-content: center;
     }
 
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
 
     .modal-box {
       background: white;
-      width: 85%;
+      width: 88%;
+      max-height: 90%;
+      overflow-y: auto;
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      text-align: center;
     }
 
-    .modal-box h3 {
-      margin-bottom: 12px;
-      font-size: 1.1rem;
-    }
+    .modal-box h3 { margin-bottom: 12px; font-size: 1.1rem; text-align: center; }
 
-    .modal-box input {
+    .modal-box input, .modal-box select {
       width: 100%;
       padding: 10px;
-      margin: 10px 0;
+      margin: 8px 0;
       border: 1px solid var(--border-color);
       border-radius: 6px;
     }
@@ -516,22 +611,10 @@
       font-size: 0.9rem;
     }
 
-    .btn-primary {
-      background: var(--primary-color);
-      color: white;
-    }
+    .btn-primary { background: var(--primary-color); color: white; }
+    .btn-secondary { background: #e4e6eb; color: var(--text-main); }
+    .btn-danger { background: var(--danger-color); color: white; }
 
-    .btn-secondary {
-      background: #e4e6eb;
-      color: var(--text-main);
-    }
-
-    .btn-danger {
-      background: var(--danger-color);
-      color: white;
-    }
-
-    /* Call Simulation Modal */
     .call-overlay {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -545,13 +628,10 @@
       padding: 60px 20px;
     }
 
-    .call-overlay.active {
-      display: flex;
-    }
+    .call-overlay.active { display: flex; }
 
     .call-avatar {
-      width: 100px;
-      height: 100px;
+      width: 100px; height: 100px;
       border-radius: 50%;
       font-size: 2.5rem;
       display: flex;
@@ -562,8 +642,7 @@
     }
 
     .call-end-btn {
-      width: 60px;
-      height: 60px;
+      width: 60px; height: 60px;
       border-radius: 50%;
       background: var(--danger-color);
       color: white;
@@ -572,39 +651,31 @@
       cursor: pointer;
     }
 
-    /* Login / Welcome Screen */
-    .login-screen {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: white;
-      z-index: 200;
+    .checkbox-list {
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      padding: 8px;
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+
+    .checkbox-item {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
+      gap: 8px;
+      padding: 4px 0;
     }
 
-    .login-screen i.logo-icon {
-      font-size: 4rem;
-      color: var(--primary-color);
-      margin-bottom: 16px;
-    }
-
-    .login-screen h2 {
-      margin-bottom: 8px;
-    }
-
-    .login-screen p {
-      color: var(--text-muted);
-      margin-bottom: 24px;
-    }
-
-    .login-screen button {
-      width: 80%;
-      padding: 12px;
-      font-size: 1rem;
+    .audio-recorder-badge {
+      display: none;
+      background: #ffebee;
+      color: #c62828;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      border-top: 1px solid #ffcdd2;
+      align-items: center;
+      justify-content: space-between;
     }
   </style>
 </head>
@@ -612,24 +683,41 @@
 
 <div class="app-viewport">
 
-  <!-- Login Overlay -->
-  <div id="login-screen" class="login-screen">
-    <i class="fa-solid fa-paper-plane logo-icon"></i>
-    <h2 data-i18n="loginTitle">Welcome to ASL Messenger</h2>
-    <p data-i18n="loginSub">Fast, Simple & Secure Communication</p>
-    <button class="btn btn-primary" onclick="login()" data-i18n="loginButton">Login</button>
+  <!-- AUTH / LOGIN VIEW -->
+  <div id="auth-screen" class="auth-screen">
+    <i class="fa-solid fa-paper-plane auth-logo"></i>
+    <div class="auth-title" data-i18n="appName">ASL Messenger</div>
+    <div class="auth-subtitle" data-i18n="loginSub">Connect privately with friends & groups</div>
+
+    <div id="login-form-view" class="auth-form">
+      <input type="text" class="auth-input" id="login-email" placeholder="Email or Phone Number" data-i18n-ph="emailPhone">
+      <input type="password" class="auth-input" id="login-password" placeholder="Password" data-i18n-ph="password">
+      <button class="btn-auth" onclick="doLogin()" data-i18n="loginButton">Log In</button>
+      <a class="auth-link" onclick="showForgotPasswordModal()" data-i18n="forgotPassword">Forgot Password?</a>
+
+      <div class="auth-divider" data-i18n="or">OR</div>
+
+      <button class="btn-auth btn-google" onclick="doGoogleLogin()">
+        <i class="fa-brands fa-google" style="color: #ea4335;"></i>
+        <span data-i18n="googleLogin">Log In with Google</span>
+      </button>
+
+      <div style="border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; text-align: center;">
+        <button class="btn-auth btn-signup-toggle" onclick="showSignUpModal()" data-i18n="createAccount">Create New Account</button>
+      </div>
+    </div>
   </div>
 
-  <!-- Main Header -->
+  <!-- MAIN APP HEADER -->
   <header class="app-header">
     <h1 id="header-title" data-i18n="appName">ASL Messenger</h1>
     <div class="header-actions">
-      <i class="fa-solid fa-magnifying-glass"></i>
-      <i class="fa-solid fa-ellipsis-vertical"></i>
+      <i class="fa-solid fa-users-rectangle" title="Create Group" onclick="openCreateGroupModal()"></i>
+      <i class="fa-solid fa-user-plus" title="Add Friend" onclick="openAddFriendModal()"></i>
     </div>
   </header>
 
-  <!-- Views Container -->
+  <!-- VIEWS CONTAINER -->
   <main class="view-container">
 
     <!-- CHATS VIEW -->
@@ -642,13 +730,16 @@
       <div id="calls-list"></div>
     </section>
 
-    <!-- PEOPLE / CONTACTS VIEW -->
+    <!-- PEOPLE / FRIENDS VIEW -->
     <section id="view-people" class="view-page">
-      <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-weight: 600;" data-i18n="contacts">Contacts</span>
-        <button class="btn btn-primary" onclick="openAddFriendModal()" style="font-size: 0.8rem;" data-i18n="addFriend">+ Add Friend</button>
+      <div style="padding: 10px 16px; background: #f8f9fa; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 600; font-size:0.9rem;" data-i18n="friendRequests">Friend Requests</span>
+        <button class="btn btn-primary" onclick="openAddFriendModal()" style="font-size: 0.75rem;" data-i18n="addFriend">+ Add Friend</button>
       </div>
-      <div id="contacts-list"></div>
+      <div id="requests-list"></div>
+
+      <div style="padding: 10px 16px; background: #f8f9fa; border-bottom: 1px solid var(--border-color); font-weight: 600; font-size:0.9rem; margin-top: 10px;" data-i18n="confirmedFriends">Confirmed Friends</div>
+      <div id="friends-list"></div>
     </section>
 
     <!-- STATUS VIEW -->
@@ -662,7 +753,7 @@
           <div class="list-subtext" data-i18n="addStatus">Tap to add status update</div>
         </div>
       </div>
-      <div style="padding: 8px 16px; background: var(--bg-color); font-size: 0.8rem; font-weight: bold; color: var(--text-muted);" data-i18n="recentUpdates">RECENT UPDATES</div>
+      <div style="padding: 8px 16px; background: var(--bg-color); font-size: 0.75rem; font-weight: bold; color: var(--text-muted);" data-i18n="recentUpdates">RECENT UPDATES</div>
       <div id="status-list"></div>
     </section>
 
@@ -671,8 +762,8 @@
       <div class="profile-card">
         <div class="avatar" style="background-color: #673ab7;" id="my-avatar">U</div>
         <div class="profile-info">
-          <div class="profile-name" id="my-name">User Name</div>
-          <div class="profile-about" id="my-about">Hey there! I am using ASL Messenger.</div>
+          <div class="profile-name" id="my-name">Alex Johnson</div>
+          <div class="profile-about" id="my-about">Coding with ASL Messenger!</div>
         </div>
         <button class="btn-edit" onclick="openEditProfileModal()"><i class="fa-solid fa-pen"></i></button>
       </div>
@@ -701,7 +792,6 @@
             <option value="default">Default</option>
             <option value="classic">Classic</option>
             <option value="vibrant">Vibrant</option>
-            <option value="calm">Calm</option>
           </select>
         </div>
       </div>
@@ -713,40 +803,20 @@
           <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
         </div>
         <div class="settings-row">
-          <span data-i18n="grpNotif">Group Notifications</span>
-          <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-        </div>
-        <div class="settings-row">
           <span data-i18n="callNotif">Call Notifications</span>
           <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
         </div>
       </div>
 
-      <div class="settings-group">
-        <div class="settings-title" data-i18n="privacy">Privacy & Security</div>
-        <div class="settings-row">
-          <span data-i18n="lastSeen">Last Seen</span>
-          <select>
-            <option value="everyone" data-i18n="everyone">Everyone</option>
-            <option value="contacts" data-i18n="myContacts">My Contacts</option>
-            <option value="nobody" data-i18n="nobody">Nobody</option>
-          </select>
-        </div>
-        <div class="settings-row">
-          <span data-i18n="twoFactor">Two-Factor Authentication</span>
-          <label class="switch"><input type="checkbox"><span class="slider"></span></label>
-        </div>
-      </div>
-
-      <div class="settings-group" style="padding: 10px 16px; display: flex; gap: 10px;">
-        <button class="btn btn-secondary" style="flex:1;" onclick="resetSettings()" data-i18n="resetDefault">Reset to Default</button>
+      <div class="settings-group" style="padding: 12px 16px; display: flex; gap: 10px;">
+        <button class="btn btn-secondary" style="flex:1;" onclick="resetSettings()" data-i18n="resetDefault">Reset</button>
         <button class="btn btn-danger" style="flex:1;" onclick="openLogoutModal()" data-i18n="logout">Log Out</button>
       </div>
     </section>
 
   </main>
 
-  <!-- Navigation Tab Bar -->
+  <!-- TAB BAR -->
   <nav class="tab-bar">
     <div class="tab-item active" onclick="switchTab('chats')">
       <i class="fa-solid fa-comment"></i>
@@ -758,7 +828,7 @@
     </div>
     <div class="tab-item" onclick="switchTab('people')">
       <i class="fa-solid fa-user-group"></i>
-      <span data-i18n="people">People</span>
+      <span data-i18n="people">Friends</span>
     </div>
     <div class="tab-item" onclick="switchTab('status')">
       <i class="fa-solid fa-circle-notch"></i>
@@ -784,15 +854,33 @@
         <i class="fa-solid fa-video" onclick="startCall('video')"></i>
       </div>
     </div>
+
     <div class="chat-messages" id="chat-messages"></div>
     <div class="typing-indicator" id="typing-indicator">typing...</div>
+
+    <!-- Recording Indicator Bar -->
+    <div class="audio-recorder-badge" id="audio-recorder-badge">
+      <span><i class="fa-solid fa-circle" style="color:red; animation: blink 1s infinite;"></i> Recording Voice Message...</span>
+      <button class="btn btn-primary" style="padding: 2px 8px; font-size: 0.75rem;" onclick="sendVoiceMessage()">Send</button>
+    </div>
+
+    <!-- Media / Attachment Bar -->
+    <div class="chat-attachment-bar">
+      <i class="fa-solid fa-image" title="Send Photo" onclick="triggerFileInput('photo')"></i>
+      <i class="fa-solid fa-video" title="Send Video" onclick="triggerFileInput('video')"></i>
+      <i class="fa-solid fa-paperclip" title="Send File" onclick="triggerFileInput('file')"></i>
+      <i class="fa-solid fa-microphone" title="Record Voice" onclick="toggleVoiceRecording()"></i>
+    </div>
+
+    <input type="file" id="media-file-input" style="display:none;" onchange="handleFileSelect(event)">
+
     <div class="chat-input-area">
       <input type="text" id="message-input" placeholder="Type a message..." data-i18n-ph="typeMessage" onkeypress="handleKeyPress(event)">
       <button onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
   </div>
 
-  <!-- CALL SIMULATION OVERLAY -->
+  <!-- CALL OVERLAY -->
   <div id="call-overlay" class="call-overlay">
     <div>
       <div class="call-avatar" id="call-avatar">A</div>
@@ -802,14 +890,61 @@
     <button class="call-end-btn" onclick="endCall()"><i class="fa-solid fa-phone-slash"></i></button>
   </div>
 
+  <!-- SIGN UP MODAL -->
+  <div id="signup-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="createAccount">Create New Account</h3>
+      <input type="text" id="signup-fullname" placeholder="Full Name">
+      <input type="text" id="signup-email" placeholder="Email or Phone Number">
+      <input type="password" id="signup-password" placeholder="New Password">
+      <input type="date" id="signup-dob" title="Date of Birth">
+      <select id="signup-gender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('signup-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="completeSignUp()" data-i18n="signUp">Sign Up</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD MODAL -->
+  <div id="forgot-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="resetPassword">Reset Password</h3>
+      <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 8px;">Enter your email or phone number to receive a reset code.</p>
+      <input type="text" id="forgot-email" placeholder="Email or Phone Number">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('forgot-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="sendPasswordReset()" data-i18n="sendCode">Send Code</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ADD FRIEND MODAL -->
   <div id="add-friend-modal" class="modal-overlay">
     <div class="modal-box">
       <h3 data-i18n="addFriend">Add Friend</h3>
-      <input type="text" id="friend-name-input" placeholder="Enter friend's name">
+      <input type="text" id="friend-name-input" placeholder="Enter friend's name or phone">
       <div class="modal-actions">
         <button class="btn btn-secondary" onclick="closeModal('add-friend-modal')" data-i18n="cancel">Cancel</button>
-        <button class="btn btn-primary" onclick="addFriend()" data-i18n="sendRequest">Send Request</button>
+        <button class="btn btn-primary" onclick="addFriendRequest()" data-i18n="sendRequest">Send Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREATE GROUP MODAL -->
+  <div id="create-group-modal" class="modal-overlay">
+    <div class="modal-box">
+      <h3 data-i18n="createGroup">Create Group Chat</h3>
+      <input type="text" id="group-name-input" placeholder="Group Name">
+      <div style="font-size:0.85rem; font-weight:bold; margin-top:8px;" data-i18n="selectFriends">Select Friends:</div>
+      <div class="checkbox-list" id="group-friends-checkboxes"></div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('create-group-modal')" data-i18n="cancel">Cancel</button>
+        <button class="btn btn-primary" onclick="createNewGroup()" data-i18n="create">Create Group</button>
       </div>
     </div>
   </div>
@@ -841,21 +976,31 @@
 </div>
 
 <script>
-  // --- TRANSLATION DATA ---
+  // --- TRANSLATION OBJECTS ---
   const translations = {
     en: {
       appName: "ASL Messenger",
+      loginSub: "Connect privately with friends & groups",
+      emailPhone: "Email or Phone Number",
+      password: "Password",
+      loginButton: "Log In",
+      forgotPassword: "Forgot Password?",
+      or: "OR",
+      googleLogin: "Log In with Google",
+      createAccount: "Create New Account",
+      resetPassword: "Reset Password",
+      sendCode: "Send Code",
+      signUp: "Sign Up",
       chats: "Chats",
       calls: "Calls",
-      people: "People",
+      people: "Friends",
       status: "Status",
       settings: "Settings",
-      loginTitle: "Welcome to ASL Messenger",
-      loginSub: "Fast, Simple & Secure Communication",
-      loginButton: "Login",
-      logout: "Log Out",
-      contacts: "Contacts",
+      friendRequests: "Friend Requests",
+      confirmedFriends: "Confirmed Friends",
       addFriend: "Add Friend",
+      confirm: "Confirm",
+      delete: "Delete",
       myStatus: "My Status",
       addStatus: "Tap to add status update",
       recentUpdates: "RECENT UPDATES",
@@ -868,15 +1013,9 @@
       ringtone: "Ringtone",
       notifications: "Notifications",
       msgNotif: "Message Notifications",
-      grpNotif: "Group Notifications",
       callNotif: "Call Notifications",
-      privacy: "Privacy & Security",
-      lastSeen: "Last Seen",
-      everyone: "Everyone",
-      myContacts: "My Contacts",
-      nobody: "Nobody",
-      twoFactor: "Two-Factor Authentication",
       resetDefault: "Reset to Default",
+      logout: "Log Out",
       typeMessage: "Type a message...",
       calling: "Calling...",
       cancel: "Cancel",
@@ -885,27 +1024,39 @@
       save: "Save",
       confirmLogout: "Are you sure you want to log out?",
       pending: "Pending",
-      confirm: "Confirm",
       online: "Online",
       offline: "Offline",
       typing: "typing...",
       sending: "Sending...",
       sent: "Sent",
-      seen: "Seen"
+      seen: "Seen",
+      createGroup: "Create Group Chat",
+      selectFriends: "Select Friends:",
+      create: "Create"
     },
     my: {
       appName: "ASL မက်ဆင်ဂျာ",
+      loginSub: "မိတ်ဆွေများနှင့် လုံခြုံစွာ စကားပြောဆိုပါ",
+      emailPhone: "အီးမေးလ် သို့မဟုတ် ဖုန်းနံပါတ်",
+      password: "စကားဝှက်",
+      loginButton: "ဝင်ရောက်မည်",
+      forgotPassword: "စကားဝှက် မေ့နေပါသလား?",
+      or: "သို့မဟုတ်",
+      googleLogin: "Google အကောင့်ဖြင့် ဝင်မည်",
+      createAccount: "အကောင့်သစ် ပြုလုပ်မည်",
+      resetPassword: "စကားဝှက် ပြန်လည်ပြင်ဆင်မည်",
+      sendCode: "ကုဒ်ပို့ပါ",
+      signUp: "အကောင့်ဖွင့်မည်",
       chats: "စကားဝိုင်းများ",
       calls: "ခေါ်ဆိုမှုများ",
-      people: "လူများ",
+      people: "မိတ်ဆွေများ",
       status: "အခြေအနေ",
       settings: "ပြင်ဆင်မှုများ",
-      loginTitle: "ASL မက်ဆင်ဂျာမှ ကြိုဆိုပါသည်",
-      loginSub: "မြန်ဆန် စိတ်ချရသော မက်ဆေ့ဂျာ",
-      loginButton: "ဝင်ရန်",
-      logout: "ထွက်ရန်",
-      contacts: "မိတ်ဆွေများ",
+      friendRequests: "မိတ်ဆွေ တောင်းဆိုမှုများ",
+      confirmedFriends: "မိတ်ဆွေရင်းများ",
       addFriend: "မိတ်ဆွေသစ်ထည့်ရန်",
+      confirm: "လက်ခံမည်",
+      delete: "ပယ်ဖျက်မည်",
       myStatus: "ကျွနုပ်၏ အခြေအနေ",
       addStatus: "အခြေအနေအသစ်တင်ရန် နှိပ်ပါ",
       recentUpdates: "လတ်တလော တင်ထားမှုများ",
@@ -918,15 +1069,9 @@
       ringtone: "ဖုန်းမြည်သံ",
       notifications: "အကြောင်းကြားချက်များ",
       msgNotif: "မက်ဆေ့ဂျ် အကြောင်းကြားချက်",
-      grpNotif: "ဂရုပျ အကြောင်းကြားချက်",
       callNotif: "ဖုန်းခေါ်ဆိုမှု အကြောင်းကြားချက်",
-      privacy: "လုံခြုံရေးနှင့် သီးသန့်စနစ်",
-      lastSeen: "နောက်ဆုံးတွေ့ရှိချိန်",
-      everyone: "လူတိုင်း",
-      myContacts: "ကျွနုပ်၏မိတ်ဆွေများ",
-      nobody: "မည်သူမျှ",
-      twoFactor: "နှစ်ဆင့်လုံခြုံရေးစနစ်",
       resetDefault: "မူလအတိုင်းပြန်ထားရန်",
+      logout: "ထွက်ရန်",
       typeMessage: "စာရိုက်ပါ...",
       calling: "ခေါ်ဆိုနေပါသည်...",
       cancel: "မလုပ်တော့ပါ",
@@ -935,27 +1080,39 @@
       save: "သိမ်းဆည်းပါ",
       confirmLogout: "အကောင့်မှ ထွက်မှာ သေချာပါသလား?",
       pending: "စောင့်ဆိုင်းဆဲ",
-      confirm: "လက်ခံမည်",
       online: "လိုင်းပေါ်တွင်",
       offline: "လိုင်းမရှိပါ",
       typing: "စာရိုက်နေသည်...",
       sending: "ပေးပို့နေသည်...",
       sent: "ပေးပို့ပြီး",
-      seen: "ကြည့်ပြီး"
+      seen: "ကြည့်ပြီး",
+      createGroup: "ဂရုချတ် အသစ်ဖွဲ့မည်",
+      selectFriends: "မိတ်ဆွေများ ရွေးချယ်ပါ:",
+      create: "ဖွဲ့စည်းမည်"
     },
     zh: {
       appName: "ASL 信使",
+      loginSub: "与朋友及群组私密互通",
+      emailPhone: "邮箱或手机号码",
+      password: "密码",
+      loginButton: "登录",
+      forgotPassword: "忘记密码？",
+      or: "或",
+      googleLogin: "使用 Google 登录",
+      createAccount: "创建新账户",
+      resetPassword: "重置密码",
+      sendCode: "发送验证码",
+      signUp: "注册",
       chats: "聊天",
       calls: "通话",
-      people: "联系人",
+      people: "好友",
       status: "动态",
       settings: "设置",
-      loginTitle: "欢迎使用 ASL 信使",
-      loginSub: "快速、简单且安全的通信",
-      loginButton: "登录",
-      logout: "退出登录",
-      contacts: "联系人列表",
+      friendRequests: "好友请求",
+      confirmedFriends: "我的好友",
       addFriend: "添加好友",
+      confirm: "确认",
+      delete: "删除",
       myStatus: "我的动态",
       addStatus: "点击发布状态",
       recentUpdates: "最近更新",
@@ -968,136 +1125,171 @@
       ringtone: "铃声",
       notifications: "通知设置",
       msgNotif: "消息通知",
-      grpNotif: "群组通知",
       callNotif: "通话通知",
-      privacy: "隐私与安全",
-      lastSeen: "最后上线",
-      everyone: "所有人",
-      myContacts: "我的联系人",
-      nobody: "没有人",
-      twoFactor: "双重身份验证",
-      resetDefault: "恢复默认设置",
+      resetDefault: "恢复默认",
+      logout: "退出登录",
       typeMessage: "输入消息...",
       calling: "正在呼叫...",
       cancel: "取消",
       sendRequest: "发送请求",
-      editProfile: "编辑个人资料",
+      editProfile: "编辑资料",
       save: "保存",
-      confirmLogout: "您确定要退出登录吗？",
+      confirmLogout: "确定要退出登录吗？",
       pending: "等待中",
-      confirm: "确认",
       online: "在线",
       offline: "离线",
       typing: "正在输入...",
       sending: "发送中...",
       sent: "已发送",
-      seen: "已读"
+      seen: "已读",
+      createGroup: "新建群聊",
+      selectFriends: "选择好友：",
+      create: "创建"
     }
   };
 
   let currentLang = 'en';
 
-  // --- INITIAL DATA ---
-  let userProfile = {
+  // --- STATE DATA ---
+  let currentUser = {
     name: "Alex Johnson",
-    about: "Coding the future with ASL Messenger!"
+    email: "alex@example.com",
+    about: "Coding with ASL Messenger!"
   };
 
-  let contacts = [
-    { id: 1, name: "Aung Ko", online: true, status: "Pending", bg: "#e91e63" },
-    { id: 2, name: "Sophia Chen", online: true, status: "Accepted", bg: "#9c27b0" },
-    { id: 3, name: "Michael Scott", online: false, status: "Accepted", bg: "#009688" },
-    { id: 4, name: "David Miller", online: true, status: "Accepted", bg: "#ff9800" },
-    { id: 5, name: "Emma Watson", online: false, status: "Accepted", bg: "#3f51b5" }
+  let friendRequests = [
+    { id: 101, name: "Thura Lin", bg: "#e91e63" }
+  ];
+
+  let friends = [
+    { id: 1, name: "Sophia Chen", online: true, bg: "#9c27b0" },
+    { id: 2, name: "David Miller", online: true, bg: "#ff9800" },
+    { id: 3, name: "Michael Scott", online: false, bg: "#009688" },
+    { id: 4, name: "Aung Ko", online: true, bg: "#3f51b5" }
   ];
 
   let chats = [
     {
       id: 'c1',
       isGroup: false,
-      contactId: 2,
+      friendId: 1,
       name: "Sophia Chen",
       online: true,
       bg: "#9c27b0",
       messages: [
-        { sender: 'them', text: "Hey! Did you check out the new design?", time: "10:30 AM", status: "seen" },
-        { sender: 'me', text: "Yes! It looks fantastic and super slick.", time: "10:32 AM", status: "seen" }
+        { sender: 'them', text: "Hey Alex! Welcome to ASL Messenger.", time: "10:30 AM", status: "seen" },
+        { sender: 'me', text: "Thanks! The app works great.", time: "10:32 AM", status: "seen" }
       ]
     },
     {
       id: 'c2',
       isGroup: false,
-      contactId: 4,
+      friendId: 2,
       name: "David Miller",
       online: true,
       bg: "#ff9800",
       messages: [
-        { sender: 'them', text: "Are we still meeting today?", time: "09:15 AM", status: "seen" }
+        { sender: 'them', text: "Can you send me the project media?", time: "09:15 AM", status: "seen" }
       ]
     },
     {
       id: 'g1',
       isGroup: true,
-      name: "Tech Innovators Group",
+      name: "Dev Innovators Group",
       online: true,
       bg: "#2196f3",
+      members: [1, 2, 4],
       messages: [
-        { sender: 'them', text: "Aung Ko: Welcome everyone to ASL Messenger!", time: "Yesterday", status: "seen" },
-        { sender: 'me', text: "Glad to be here!", time: "Yesterday", status: "seen" }
-      ]
-    },
-    {
-      id: 'g2',
-      isGroup: true,
-      name: "Weekend Developers",
-      online: false,
-      bg: "#4caf50",
-      messages: [
-        { sender: 'them', text: "Michael: Anyone up for a quick sprint?", time: "2 days ago", status: "seen" }
+        { sender: 'them', text: "Aung Ko: Private Group Chat initialized!", time: "Yesterday", status: "seen" }
       ]
     }
   ];
 
   let calls = [
     { name: "Sophia Chen", type: "incoming", icon: "fa-arrow-down-left", color: "#31a24c", time: "Today, 10:45 AM", bg: "#9c27b0" },
-    { name: "David Miller", type: "outgoing", icon: "fa-arrow-up-right", color: "#1A73E8", time: "Yesterday, 4:20 PM", bg: "#ff9800" },
-    { name: "Michael Scott", type: "missed", icon: "fa-arrow-down-left", color: "#dc3545", time: "July 20, 2:15 PM", bg: "#009688" },
-    { name: "Tech Innovators Group", type: "incoming", icon: "fa-arrow-down-left", color: "#31a24c", time: "July 18, 8:00 PM", bg: "#2196f3" },
-    { name: "Emma Watson", type: "outgoing", icon: "fa-arrow-up-right", color: "#1A73E8", time: "July 15, 11:10 AM", bg: "#3f51b5" }
+    { name: "David Miller", type: "outgoing", icon: "fa-arrow-up-right", color: "#1A73E8", time: "Yesterday, 4:20 PM", bg: "#ff9800" }
   ];
 
   let statuses = [
     { name: "Sophia Chen", time: "10 mins ago", text: "Enjoying coffee! ☕", bg: "#9c27b0" },
-    { name: "David Miller", time: "1 hour ago", text: "Working on new project...", bg: "#ff9800" },
-    { name: "Tech Innovators", time: "3 hours ago", text: "Release v1.0 is Live!", bg: "#2196f3" }
+    { name: "David Miller", time: "1 hour ago", text: "Working on new project...", bg: "#ff9800" }
   ];
 
   let activeChatId = null;
+  let currentFileTypeToUpload = 'photo';
 
-  // --- CORE INITIALIZATION ---
+  // --- INITIALIZATION ---
   window.onload = function() {
     renderProfile();
     renderChats();
     renderCalls();
-    renderContacts();
+    renderFriendsAndRequests();
     renderStatuses();
     updateLanguageTexts();
   };
 
-  // --- NAVIGATION ---
+  // --- AUTHENTICATION FLOW ---
+  function doLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    if (!email) {
+      alert("Please enter Email or Phone Number.");
+      return;
+    }
+    currentUser.name = email.split('@')[0] || email;
+    renderProfile();
+    document.getElementById('auth-screen').style.display = 'none';
+  }
+
+  function doGoogleLogin() {
+    currentUser.name = "Google User";
+    renderProfile();
+    document.getElementById('auth-screen').style.display = 'none';
+  }
+
+  function showSignUpModal() {
+    document.getElementById('signup-modal').classList.add('active');
+  }
+
+  function completeSignUp() {
+    const name = document.getElementById('signup-fullname').value.trim();
+    const email = document.getElementById('signup-email').value.trim();
+    if (name && email) {
+      currentUser.name = name;
+      currentUser.email = email;
+      renderProfile();
+      closeModal('signup-modal');
+      document.getElementById('auth-screen').style.display = 'none';
+      alert("Account created successfully!");
+    } else {
+      alert("Please fill in your details.");
+    }
+  }
+
+  function showForgotPasswordModal() {
+    document.getElementById('forgot-modal').classList.add('active');
+  }
+
+  function sendPasswordReset() {
+    alert("Reset link or verification code sent to your email/phone.");
+    closeModal('forgot-modal');
+  }
+
+  function confirmLogout() {
+    closeModal('logout-modal');
+    document.getElementById('auth-screen').style.display = 'flex';
+  }
+
+  // --- TAB NAVIGATION ---
   function switchTab(tabName) {
     document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.view-page').forEach(el => el.classList.remove('active'));
 
-    const tabMap = {
-      'chats': 0, 'calls': 1, 'people': 2, 'status': 3, 'settings': 4
-    };
-    
+    const tabMap = { 'chats': 0, 'calls': 1, 'people': 2, 'status': 3, 'settings': 4 };
     document.querySelectorAll('.tab-item')[tabMap[tabName]].classList.add('active');
     document.getElementById(`view-${tabName}`).classList.add('active');
   }
 
-  // --- LANGUAGE SWITCHING ---
+  // --- LANGUAGE & FONT ---
   function changeLanguage(lang) {
     currentLang = lang;
     updateLanguageTexts();
@@ -1105,30 +1297,166 @@
 
   function updateLanguageTexts() {
     const t = translations[currentLang];
-    
-    // Static text elements
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.getAttribute('data-i18n');
       if (t[key]) el.textContent = t[key];
     });
-
-    // Inputs placeholders
     document.querySelectorAll('[data-i18n-ph]').forEach(el => {
       const key = el.getAttribute('data-i18n-ph');
       if (t[key]) el.placeholder = t[key];
     });
-
-    // Re-render lists to update status text dynamically
-    renderContacts();
-    renderChats();
+    renderFriendsAndRequests();
   }
 
-  // --- FONT SWITCHING ---
   function changeFont(fontClass) {
     document.body.className = fontClass;
   }
 
-  // --- CHAT RENDERING & LOGIC ---
+  // --- FRIENDS & REQUESTS ---
+  function renderFriendsAndRequests() {
+    const t = translations[currentLang];
+    
+    // Requests
+    const reqContainer = document.getElementById('requests-list');
+    reqContainer.innerHTML = '';
+    if (friendRequests.length === 0) {
+      reqContainer.innerHTML = `<div style="padding:12px 16px; font-size:0.85rem; color:var(--text-muted);">No pending requests.</div>`;
+    } else {
+      friendRequests.forEach(req => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        item.innerHTML = `
+          <div class="avatar-wrapper">
+            <div class="avatar" style="background-color: ${req.bg}">${req.name.charAt(0)}</div>
+          </div>
+          <div class="list-info">
+            <div class="list-title">${req.name}</div>
+            <div class="list-subtext">${t.pending}</div>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-primary" style="font-size:0.75rem; padding:4px 8px;" onclick="acceptFriendRequest(${req.id})">${t.confirm}</button>
+            <button class="btn btn-secondary" style="font-size:0.75rem; padding:4px 8px;" onclick="deleteFriendRequest(${req.id})">${t.delete}</button>
+          </div>
+        `;
+        reqContainer.appendChild(item);
+      });
+    }
+
+    // Confirmed Friends
+    const friContainer = document.getElementById('friends-list');
+    friContainer.innerHTML = '';
+    friends.forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'list-item';
+      item.onclick = () => openPrivateChatWithFriend(f);
+      item.innerHTML = `
+        <div class="avatar-wrapper">
+          <div class="avatar" style="background-color: ${f.bg}">${f.name.charAt(0)}</div>
+          <div class="status-dot ${f.online ? '' : 'offline'}"></div>
+        </div>
+        <div class="list-info">
+          <div class="list-title">${f.name}</div>
+          <div class="list-subtext">${f.online ? t.online : t.offline}</div>
+        </div>
+        <i class="fa-solid fa-comment" style="color:var(--primary-color);"></i>
+      `;
+      friContainer.appendChild(item);
+    });
+  }
+
+  function openAddFriendModal() {
+    document.getElementById('add-friend-modal').classList.add('active');
+  }
+
+  function addFriendRequest() {
+    const input = document.getElementById('friend-name-input');
+    const name = input.value.trim();
+    if (name) {
+      alert(`Friend request sent to ${name}!`);
+      input.value = '';
+      closeModal('add-friend-modal');
+    }
+  }
+
+  function acceptFriendRequest(id) {
+    const reqIndex = friendRequests.findIndex(r => r.id === id);
+    if (reqIndex !== -1) {
+      const req = friendRequests[reqIndex];
+      friends.push({ id: Date.now(), name: req.name, online: true, bg: req.bg });
+      friendRequests.splice(reqIndex, 1);
+      renderFriendsAndRequests();
+    }
+  }
+
+  function deleteFriendRequest(id) {
+    friendRequests = friendRequests.filter(r => r.id !== id);
+    renderFriendsAndRequests();
+  }
+
+  function openPrivateChatWithFriend(friend) {
+    let chat = chats.find(c => !c.isGroup && c.friendId === friend.id);
+    if (!chat) {
+      chat = {
+        id: 'c_' + Date.now(),
+        isGroup: false,
+        friendId: friend.id,
+        name: friend.name,
+        online: friend.online,
+        bg: friend.bg,
+        messages: []
+      };
+      chats.unshift(chat);
+    }
+    openChat(chat.id);
+  }
+
+  // --- GROUP CHAT CREATION ---
+  function openCreateGroupModal() {
+    const container = document.getElementById('group-friends-checkboxes');
+    container.innerHTML = '';
+    friends.forEach(f => {
+      container.innerHTML += `
+        <div class="checkbox-item">
+          <input type="checkbox" value="${f.id}" id="chk-friend-${f.id}">
+          <label for="chk-friend-${f.id}">${f.name}</label>
+        </div>
+      `;
+    });
+    document.getElementById('create-group-modal').classList.add('active');
+  }
+
+  function createNewGroup() {
+    const groupName = document.getElementById('group-name-input').value.trim();
+    if (!groupName) {
+      alert("Please enter a group name.");
+      return;
+    }
+
+    const selectedMembers = [];
+    friends.forEach(f => {
+      const chk = document.getElementById(`chk-friend-${f.id}`);
+      if (chk && chk.checked) selectedMembers.push(f.id);
+    });
+
+    const newGroup = {
+      id: 'g_' + Date.now(),
+      isGroup: true,
+      name: groupName,
+      online: true,
+      bg: '#2196f3',
+      members: selectedMembers,
+      messages: [
+        { sender: 'them', text: `Group "${groupName}" created!`, time: "Just now", status: "seen" }
+      ]
+    };
+
+    chats.unshift(newGroup);
+    closeModal('create-group-modal');
+    renderChats();
+    openChat(newGroup.id);
+  }
+
+  // --- CHAT RENDERING & MESSAGING ---
   function renderChats() {
     const container = document.getElementById('chats-list');
     container.innerHTML = '';
@@ -1164,7 +1492,7 @@
     document.getElementById('chat-header-name').textContent = chat.name;
     document.getElementById('chat-header-avatar').textContent = chat.name.charAt(0);
     document.getElementById('chat-header-avatar').style.backgroundColor = chat.bg;
-    document.getElementById('chat-header-status').textContent = chat.online ? t.online : t.offline;
+    document.getElementById('chat-header-status').textContent = chat.isGroup ? `${chat.members ? chat.members.length : 0} members` : (chat.online ? t.online : t.offline);
 
     renderMessages();
     document.getElementById('chat-screen').classList.add('open');
@@ -1185,7 +1513,18 @@
     chat.messages.forEach(msg => {
       const bubble = document.createElement('div');
       bubble.className = `message-bubble ${msg.sender === 'me' ? 'outgoing' : 'incoming'}`;
-      
+
+      let contentHtml = `<div>${msg.text}</div>`;
+      if (msg.mediaType === 'photo') {
+        contentHtml += `<img src="${msg.mediaUrl}">`;
+      } else if (msg.mediaType === 'video') {
+        contentHtml += `<video controls src="${msg.mediaUrl}"></video>`;
+      } else if (msg.mediaType === 'file') {
+        contentHtml += `<div style="padding:6px; background:#eef; border-radius:4px; margin-top:4px;"><i class="fa-solid fa-file"></i> ${msg.fileName || 'Attachment'}</div>`;
+      } else if (msg.mediaType === 'voice') {
+        contentHtml += `<div style="display:flex; align-items:center; gap:8px; margin-top:4px;"><i class="fa-solid fa-play"></i> <div style="height:4px; background:#aaa; flex:1; border-radius:2px;"></div> <span>0:05</span></div>`;
+      }
+
       let statusIcon = '';
       if (msg.sender === 'me') {
         if (msg.status === 'sending') statusIcon = `<span style="font-size:0.65rem">${t.sending}</span>`;
@@ -1194,7 +1533,7 @@
       }
 
       bubble.innerHTML = `
-        <div>${msg.text}</div>
+        ${contentHtml}
         <div class="message-meta">
           <span>${msg.time}</span>
           ${statusIcon}
@@ -1215,32 +1554,30 @@
     const text = input.value.trim();
     if (!text || !activeChatId) return;
 
+    postMessageToChat(text, null, null, null);
+    input.value = '';
+  }
+
+  function postMessageToChat(text, mediaType, mediaUrl, fileName) {
     const chat = chats.find(c => c.id === activeChatId);
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const newMsg = {
       sender: 'me',
-      text: text,
+      text: text || '',
+      mediaType: mediaType,
+      mediaUrl: mediaUrl,
+      fileName: fileName,
       time: timeStr,
       status: 'sending'
     };
 
     chat.messages.push(newMsg);
-    input.value = '';
     renderMessages();
 
-    // Status transition simulation: sending -> sent -> seen
-    setTimeout(() => {
-      newMsg.status = 'sent';
-      renderMessages();
-    }, 1000);
-
-    setTimeout(() => {
-      newMsg.status = 'seen';
-      renderMessages();
-      triggerAutoReply(chat);
-    }, 2500);
+    setTimeout(() => { newMsg.status = 'sent'; renderMessages(); }, 800);
+    setTimeout(() => { newMsg.status = 'seen'; renderMessages(); triggerAutoReply(chat); }, 2000);
   }
 
   function triggerAutoReply(chat) {
@@ -1255,16 +1592,13 @@
       const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
       const replies = [
-        "Sounds good to me!",
-        "Thanks for the update.",
-        "Got it! Let's touch base later.",
-        "Awesome! ASL Messenger is working great."
+        "Received! Thanks.",
+        "Got it! Looks good.",
+        "ASL Messenger media feature received."
       ];
-      const randomReply = replies[Math.floor(Math.random() * replies.length)];
-
       chat.messages.push({
         sender: 'them',
-        text: randomReply,
+        text: replies[Math.floor(Math.random() * replies.length)],
         time: timeStr,
         status: 'seen'
       });
@@ -1272,11 +1606,42 @@
     }, 2000);
   }
 
-  // --- CALLS RENDERING ---
+  // --- RICH MEDIA UPLOAD & VOICE ---
+  function triggerFileInput(type) {
+    currentFileTypeToUpload = type;
+    const fileInput = document.getElementById('media-file-input');
+    if (type === 'photo') fileInput.accept = 'image/*';
+    else if (type === 'video') fileInput.accept = 'video/*';
+    else fileInput.accept = '*/*';
+    fileInput.click();
+  }
+
+  function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      postMessageToChat(`[${currentFileTypeToUpload.toUpperCase()}]`, currentFileTypeToUpload, e.target.result, file.name);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  }
+
+  function toggleVoiceRecording() {
+    const badge = document.getElementById('audio-recorder-badge');
+    badge.style.display = badge.style.display === 'flex' ? 'none' : 'flex';
+  }
+
+  function sendVoiceMessage() {
+    document.getElementById('audio-recorder-badge').style.display = 'none';
+    postMessageToChat("🎤 Voice Message", "voice", null, null);
+  }
+
+  // --- CALLS & STATUS ---
   function renderCalls() {
     const container = document.getElementById('calls-list');
     container.innerHTML = '';
-
     calls.forEach(call => {
       const item = document.createElement('div');
       item.className = 'list-item';
@@ -1318,72 +1683,9 @@
     document.getElementById('call-overlay').classList.remove('active');
   }
 
-  // --- CONTACTS RENDERING & FRIEND ADDING ---
-  function renderContacts() {
-    const container = document.getElementById('contacts-list');
-    const t = translations[currentLang];
-    container.innerHTML = '';
-
-    contacts.forEach(contact => {
-      const item = document.createElement('div');
-      item.className = 'list-item';
-      
-      let actionBtn = '';
-      if (contact.status === 'Pending') {
-        actionBtn = `<button class="btn btn-secondary" style="font-size:0.75rem; padding: 4px 8px;" onclick="confirmFriend(${contact.id})">${t.confirm}</button>`;
-      } else {
-        actionBtn = `<span style="font-size:0.75rem; color:var(--text-muted);">${contact.online ? t.online : t.offline}</span>`;
-      }
-
-      item.innerHTML = `
-        <div class="avatar-wrapper">
-          <div class="avatar" style="background-color: ${contact.bg}">${contact.name.charAt(0)}</div>
-          <div class="status-dot ${contact.online ? '' : 'offline'}"></div>
-        </div>
-        <div class="list-info">
-          <div class="list-title">${contact.name}</div>
-          <div class="list-subtext">${contact.status === 'Pending' ? t.pending : ''}</div>
-        </div>
-        ${actionBtn}
-      `;
-      container.appendChild(item);
-    });
-  }
-
-  function openAddFriendModal() {
-    document.getElementById('add-friend-modal').classList.add('active');
-  }
-
-  function addFriend() {
-    const input = document.getElementById('friend-name-input');
-    const name = input.value.trim();
-    if (name) {
-      contacts.push({
-        id: Date.now(),
-        name: name,
-        online: true,
-        status: 'Pending',
-        bg: '#8bc34a'
-      });
-      input.value = '';
-      closeModal('add-friend-modal');
-      renderContacts();
-    }
-  }
-
-  function confirmFriend(id) {
-    const contact = contacts.find(c => c.id === id);
-    if (contact) {
-      contact.status = 'Accepted';
-      renderContacts();
-    }
-  }
-
-  // --- STATUS RENDERING ---
   function renderStatuses() {
     const container = document.getElementById('status-list');
     container.innerHTML = '';
-
     statuses.forEach(st => {
       const item = document.createElement('div');
       item.className = 'list-item';
@@ -1400,33 +1702,31 @@
     });
   }
 
-  // --- PROFILE EDITING ---
+  // --- PROFILE & SETTINGS ---
   function renderProfile() {
-    document.getElementById('my-name').textContent = userProfile.name;
-    document.getElementById('my-about').textContent = userProfile.about;
-    document.getElementById('my-avatar').textContent = userProfile.name.charAt(0);
+    document.getElementById('my-name').textContent = currentUser.name;
+    document.getElementById('my-about').textContent = currentUser.about;
+    document.getElementById('my-avatar').textContent = currentUser.name.charAt(0);
   }
 
   function openEditProfileModal() {
-    document.getElementById('edit-name-input').value = userProfile.name;
-    document.getElementById('edit-about-input').value = userProfile.about;
+    document.getElementById('edit-name-input').value = currentUser.name;
+    document.getElementById('edit-about-input').value = currentUser.about;
     document.getElementById('edit-profile-modal').classList.add('active');
   }
 
   function saveProfile() {
     const name = document.getElementById('edit-name-input').value.trim();
     const about = document.getElementById('edit-about-input').value.trim();
-    if (name) userProfile.name = name;
-    if (about) userProfile.about = about;
+    if (name) currentUser.name = name;
+    if (about) currentUser.about = about;
     renderProfile();
     closeModal('edit-profile-modal');
   }
 
-  // --- SETTINGS RESET & LOGOUT ---
   function resetSettings() {
     document.getElementById('lang-select').value = 'en';
     document.getElementById('font-select').value = 'font-default';
-    document.getElementById('ringtone-select').value = 'default';
     changeLanguage('en');
     changeFont('font-default');
     alert("Settings reset to default.");
@@ -1436,19 +1736,9 @@
     document.getElementById('logout-modal').classList.add('active');
   }
 
-  function confirmLogout() {
-    closeModal('logout-modal');
-    document.getElementById('login-screen').style.display = 'flex';
-  }
-
-  function login() {
-    document.getElementById('login-screen').style.display = 'none';
-  }
-
   function closeModal(id) {
     document.getElementById(id).classList.remove('active');
   }
 </script>
-
 </body>
 </html>
