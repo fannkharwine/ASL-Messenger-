@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ASL Messenger</title>
   <style>
-    * { box-sizing: border-box; font-family: sans-serif; }
+    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
     body { margin: 0; padding: 0; background: #f0f2f5; display: flex; height: 100vh; overflow: hidden; }
     
     #auth-screen { width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; gap: 15px; }
@@ -58,13 +58,113 @@
     .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
     .modal-content { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 350px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
 
-    /* Call Screen Overlay (WebRTC Video Screen) */
-    #call-screen { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #111; z-index: 999; flex-direction: column; align-items: center; justify-content: center; }
-    .video-container { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+    /* Custom Beautiful Call Screen Overlay */
+    #call-screen {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg, #308ce8 0%, #764ba2 60%, #61348f 100%);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 60px 20px 40px 20px;
+      color: white;
+    }
+
+    /* Video Overlay Area */
+    .video-container {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: none;
+      z-index: 1;
+    }
     #remote-video { width: 100%; height: 100%; object-fit: cover; }
-    #local-video { width: 100px; height: 140px; object-fit: cover; position: absolute; top: 20px; right: 20px; border-radius: 10px; border: 2px solid white; background: #222; }
-    .call-controls { position: absolute; bottom: 30px; display: flex; gap: 20px; }
-    .btn-end-call { background: #ff4d4f; color: white; padding: 12px 24px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; }
+    #local-video { width: 110px; height: 150px; object-fit: cover; position: absolute; top: 20px; right: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.8); background: #222; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+
+    /* Call User Info UI */
+    .call-user-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 40px;
+      z-index: 2;
+    }
+    .call-avatar-wrapper {
+      position: relative;
+      width: 130px;
+      height: 130px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .call-avatar-wrapper::before {
+      content: '';
+      position: absolute;
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      animation: pulse 2s infinite;
+    }
+    .call-avatar-img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(255,255,255,0.8);
+      z-index: 2;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 0.2; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    .call-name { font-size: 26px; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+    .call-status { font-size: 15px; opacity: 0.85; letter-spacing: 0.5px; }
+
+    /* Bottom Control Bar */
+    .call-controls-bar {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      max-width: 400px;
+      z-index: 2;
+    }
+    .action-btn-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .action-btn-item span {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .ctrl-circle-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .ctrl-circle-btn:active { transform: scale(0.9); }
+    .ctrl-circle-btn.off { background: rgba(255, 255, 255, 0.8); color: #333; }
+    .btn-end { background: #ff3b30; color: white; }
 
     @media (max-width: 600px) {
       #sidebar { width: 100%; display: flex; }
@@ -132,7 +232,7 @@
           </div>
           <div>
             <label>About / Bio Status</label>
-            <textarea id="edit-about" rows="2" placeholder=" Bio စာသား..."></textarea>
+            <textarea id="edit-about" rows="2" placeholder="Bio စာသား..."></textarea>
           </div>
           <button id="btn-save-profile" style="border-radius: 6px; margin-top: 5px;">Profile ပြင်ဆင်မှု သိမ်းမည်</button>
         </div>
@@ -161,14 +261,41 @@
         <button id="btn-send">ပို့မည်</button>
       </div>
 
-      <!-- Real-Time Call Interface Screen -->
+      <!-- Real-Time Call Interface Screen (Custom Redesigned Screen) -->
       <div id="call-screen">
-        <div class="video-container">
+        <!-- Live Video Container -->
+        <div class="video-container" id="video-wrapper">
           <video id="remote-video" autoplay playsinline></video>
           <video id="local-video" autoplay playsinline muted></video>
         </div>
-        <div class="call-controls">
-          <button class="btn-end-call" onclick="endCall()">ဖုန်းချမည် 📵</button>
+
+        <!-- Call User Profile UI -->
+        <div class="call-user-area" id="call-user-ui">
+          <div class="call-avatar-wrapper">
+            <img id="call-screen-avatar" class="call-avatar-img" src="https://via.placeholder.com/150" alt="Caller">
+          </div>
+          <div id="call-screen-name" class="call-name">-</div>
+          <div id="call-screen-status" class="call-status">Waiting . .</div>
+        </div>
+
+        <!-- Call Actions Bar -->
+        <div class="call-controls-bar">
+          <div class="action-btn-item">
+            <button class="ctrl-circle-btn" id="btn-speaker" onclick="toggleSpeaker()">🔊</button>
+            <span>Speaker</span>
+          </div>
+          <div class="action-btn-item">
+            <button class="ctrl-circle-btn" id="btn-cam" onclick="toggleCamera()">📹</button>
+            <span id="label-cam">Start Video</span>
+          </div>
+          <div class="action-btn-item">
+            <button class="ctrl-circle-btn" id="btn-mic" onclick="toggleMic()">🎙️</button>
+            <span id="label-mic">Mute</span>
+          </div>
+          <div class="action-btn-item">
+            <button class="ctrl-circle-btn btn-end" onclick="endCall()">📞</button>
+            <span>End Call</span>
+          </div>
         </div>
       </div>
     </div>
@@ -216,10 +343,12 @@
     let activeTargetUserData = null;
     let unsubscribeMessages = null;
 
-    // WebRTC Real-Time Call Variables
+    // WebRTC Variables
     let localStream = null;
     let remoteStream = null;
     let peerConnection = null;
+    let isMicMuted = false;
+    let isCamOff = false;
     const servers = { iceServers: [{ urls: ['stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302'] }] };
 
     // Login
@@ -388,13 +517,26 @@
       });
     }
 
-    // --- WebRTC Video & Voice Call System ---
+    // --- Modern Custom Call System ---
     window.startWebRTCCall = async (isVideo) => {
       if (!activeTargetUserData) return;
+
+      // Call Screen UI setup
       document.getElementById('call-screen').style.display = 'flex';
+      document.getElementById('call-screen-name').innerText = activeTargetUserData.name;
+      document.getElementById('call-screen-avatar').src = activeTargetUserData.photoURL || 'https://via.placeholder.com/150';
+      document.getElementById('call-screen-status').innerText = 'Calling . .';
+      
+      toggleVideoDisplay(isVideo);
 
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+        localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        
+        // Default Cam Status based on call type
+        localStream.getVideoTracks()[0].enabled = isVideo;
+        isCamOff = !isVideo;
+        updateCamBtnUI();
+
         document.getElementById('local-video').srcObject = localStream;
         
         peerConnection = new RTCPeerConnection(servers);
@@ -402,7 +544,10 @@
         document.getElementById('remote-video').srcObject = remoteStream;
 
         localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        peerConnection.ontrack = (event) => event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+        peerConnection.ontrack = (event) => {
+          event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+          document.getElementById('call-screen-status').innerText = 'Connected';
+        };
 
         const callDocRef = doc(db, "calls", activeChatId);
         const offerCandidates = collection(callDocRef, "offerCandidates");
@@ -419,6 +564,7 @@
           offer: { type: offerDescription.type, sdp: offerDescription.sdp },
           targetUid: activeTargetUserData.uid,
           callerName: auth.currentUser.displayName || "User",
+          callerPhoto: auth.currentUser.photoURL || "https://via.placeholder.com/150",
           isVideo: isVideo
         });
 
@@ -427,25 +573,24 @@
           if (peerConnection && !peerConnection.currentRemoteDescription && data?.answer) {
             const answerDescription = new RTCSessionDescription(data.answer);
             peerConnection.setRemoteDescription(answerDescription);
+            document.getElementById('call-screen-status').innerText = 'Connected';
           }
         });
 
         onSnapshot(answerCandidates, (snapshot) => {
           snapshot.docChanges().forEach((change) => {
             if (change.type === "added") {
-              const candidate = new RTCIceCandidate(change.doc.data());
-              peerConnection.addIceCandidate(candidate);
+              peerConnection.addIceCandidate(new RTCIceCandidate(change.doc.data()));
             }
           });
         });
 
       } catch (err) {
-        alert("Camera သို့မဟုတ် Microphone ခွင့်ပြုချက်မရပါ: " + err.message);
+        alert("Camera / Microphone သုံးစွဲခွင့် လိုအပ်ပါသည်: " + err.message);
         endCall();
       }
     };
 
-    // Listen For Incoming Calls
     function listenForIncomingCalls() {
       onSnapshot(collection(db, "calls"), (snapshot) => {
         snapshot.forEach(async (callDoc) => {
@@ -461,7 +606,17 @@
 
     async function answerCall(callId, callData) {
       document.getElementById('call-screen').style.display = 'flex';
-      localStream = await navigator.mediaDevices.getUserMedia({ video: callData.isVideo, audio: true });
+      document.getElementById('call-screen-name').innerText = callData.callerName;
+      document.getElementById('call-screen-avatar').src = callData.callerPhoto || 'https://via.placeholder.com/150';
+      document.getElementById('call-screen-status').innerText = 'Connecting . .';
+
+      toggleVideoDisplay(callData.isVideo);
+
+      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      localStream.getVideoTracks()[0].enabled = callData.isVideo;
+      isCamOff = !callData.isVideo;
+      updateCamBtnUI();
+
       document.getElementById('local-video').srcObject = localStream;
 
       peerConnection = new RTCPeerConnection(servers);
@@ -469,7 +624,10 @@
       document.getElementById('remote-video').srcObject = remoteStream;
 
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-      peerConnection.ontrack = (event) => event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+      peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach(track => remoteStream.addTrack(track));
+        document.getElementById('call-screen-status').innerText = 'Connected';
+      };
 
       const callDocRef = doc(db, "calls", callId);
       const answerCandidates = collection(callDocRef, "answerCandidates");
@@ -494,11 +652,47 @@
       });
     }
 
+    // Call Control Buttons Logic
+    window.toggleMic = () => {
+      if (!localStream) return;
+      isMicMuted = !isMicMuted;
+      localStream.getAudioTracks()[0].enabled = !isMicMuted;
+      const btn = document.getElementById('btn-mic');
+      const label = document.getElementById('label-mic');
+      btn.classList.toggle('off', isMicMuted);
+      label.innerText = isMicMuted ? 'Unmute' : 'Mute';
+    };
+
+    window.toggleCamera = () => {
+      if (!localStream) return;
+      isCamOff = !isCamOff;
+      localStream.getVideoTracks()[0].enabled = !isCamOff;
+      toggleVideoDisplay(!isCamOff);
+      updateCamBtnUI();
+    };
+
+    function updateCamBtnUI() {
+      const btn = document.getElementById('btn-cam');
+      const label = document.getElementById('label-cam');
+      btn.classList.toggle('off', !isCamOff);
+      label.innerText = isCamOff ? 'Start Video' : 'Stop Video';
+    }
+
+    function toggleVideoDisplay(showVideo) {
+      const videoWrapper = document.getElementById('video-wrapper');
+      videoWrapper.style.display = showVideo ? 'block' : 'none';
+    }
+
+    window.toggleSpeaker = () => {
+      const btn = document.getElementById('btn-speaker');
+      btn.classList.toggle('off');
+    };
+
     window.endCall = async () => {
       document.getElementById('call-screen').style.display = 'none';
       if (localStream) localStream.getTracks().forEach(track => track.stop());
       if (peerConnection) peerConnection.close();
-      if (activeChatId) await deleteDoc(doc(db, "calls", activeChatId)).catch(() => {});
+      if (activeChatId) await deleteDoc(doc(doc(db, "calls", activeChatId))).catch(() => {});
     };
 
     window.viewCurrentContactProfile = () => {
