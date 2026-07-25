@@ -159,21 +159,40 @@
     }
     .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); }
 
+    /* CALL OVERLAY & FLOATING WIDGET */
     .call-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: #0A0204; color: white; z-index: 100; display: none;
       flex-direction: column; align-items: center; justify-content: space-between; padding: 30px 20px;
     }
+    .call-overlay.minimized {
+      width: 70px; height: 70px; border-radius: 35px; top: 15px; right: 15px; left: auto;
+      padding: 0; border: 2px solid var(--gold-bright); box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      background: var(--primary-color); overflow: hidden; cursor: pointer; justify-content: center;
+    }
+    .call-overlay.minimized .call-overlay-header,
+    .call-overlay.minimized .call-controls,
+    .call-overlay.minimized .call-actions,
+    .call-overlay.minimized .call-avatar,
+    .call-overlay.minimized video#localVideo { display: none !important; }
+    
+    .call-overlay.minimized video#remoteVideo {
+      width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+    }
+    .call-overlay.minimized .floating-call-icon {
+      display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 24px; color: var(--gold-bright);
+    }
+
     .video-container { position: relative; width: 100%; height: 55%; display: flex; justify-content: center; align-items: center; }
     video#remoteVideo { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; background: #1A050A; border: 2px solid var(--gold-color); }
-    video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid var(--gold-bright); }
+    video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid var(--gold-bright); z-index: 5; }
     .call-avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--gold-color); object-fit: cover; margin-top: 20px; }
     
-    .call-controls { display: flex; gap: 15px; margin-bottom: 10px; }
+    .call-controls { display: flex; gap: 15px; margin-bottom: 10px; z-index: 2; }
     .control-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
     .control-btn.active { background: var(--gold-color); color: black; }
 
-    .call-actions { display: flex; gap: 20px; }
+    .call-actions { display: flex; gap: 20px; z-index: 2; }
     .call-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: none; cursor: pointer; color: white; }
     .call-accept-btn { background: #2ab738; }
     .call-end-btn { background: #ea4335; }
@@ -440,13 +459,20 @@
   </div>
 
   <!-- WEBRTC CALL OVERLAY -->
-  <div id="callOverlay" class="call-overlay">
-    <div style="text-align:center; z-index:2;">
+  <div id="callOverlay" class="call-overlay" onclick="app.toggleMinimizeCall(event)">
+    <div class="call-overlay-header" style="width:100%; display:flex; justify-content:space-between; align-items:center; z-index:2;">
+      <button class="icon-btn" style="color:#fff;" onclick="app.minimizeCall(event)"><i class="fa-solid fa-chevron-down"></i></button>
+      <span style="font-size:12px; color:var(--gold-bright);">In-Call Mode</span>
+      <div style="width:24px;"></div>
+    </div>
+
+    <div style="text-align:center; z-index:2;" class="call-overlay-header">
       <h3 id="callTargetName" style="color:var(--gold-bright);">User</h3>
       <p id="callStatusText" style="color:#aaa; font-size:14px; margin-top:4px;">ဖုန်းဝင်နေသည်...</p>
     </div>
 
     <div class="video-container" id="videoContainer">
+      <div class="floating-call-icon hidden" id="floatingIcon"><i class="fa-solid fa-phone-volume"></i></div>
       <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
       <video id="remoteVideo" autoplay playsinline class="hidden"></video>
       <video id="localVideo" autoplay playsinline muted class="hidden"></video>
@@ -454,15 +480,15 @@
 
     <!-- Speaker, Mute, Rotate Camera, Switch Video Controls -->
     <div class="call-controls">
-      <button id="muteBtn" class="control-btn" onclick="app.toggleMute()"><i class="fa-solid fa-microphone-slash"></i></button>
-      <button id="speakerBtn" class="control-btn" onclick="app.toggleSpeaker()"><i class="fa-solid fa-volume-high"></i></button>
-      <button id="switchVideoBtn" class="control-btn" onclick="app.switchCallTypeToVideo()" title="Switch to Video Call"><i class="fa-solid fa-video"></i></button>
-      <button id="rotateCamBtn" class="control-btn hidden" onclick="app.rotateCamera()"><i class="fa-solid fa-camera-rotate"></i></button>
+      <button id="muteBtn" class="control-btn" onclick="app.toggleMute(event)"><i class="fa-solid fa-microphone-slash"></i></button>
+      <button id="speakerBtn" class="control-btn" onclick="app.toggleSpeaker(event)"><i class="fa-solid fa-volume-high"></i></button>
+      <button id="switchVideoBtn" class="control-btn" onclick="app.switchCallTypeToVideo(event)" title="Switch to Video Call"><i class="fa-solid fa-video"></i></button>
+      <button id="rotateCamBtn" class="control-btn hidden" onclick="app.rotateCamera(event)"><i class="fa-solid fa-camera-rotate"></i></button>
     </div>
 
     <div class="call-actions" style="z-index:2;">
-      <button id="acceptCallBtn" class="call-btn call-accept-btn hidden" onclick="app.acceptCall()"><i class="fa-solid fa-phone"></i></button>
-      <button class="call-btn call-end-btn" onclick="app.endCall()"><i class="fa-solid fa-phone-slash"></i></button>
+      <button id="acceptCallBtn" class="call-btn call-accept-btn hidden" onclick="app.acceptCall(event)"><i class="fa-solid fa-phone"></i></button>
+      <button class="call-btn call-end-btn" onclick="app.endCall(event)"><i class="fa-solid fa-phone-slash"></i></button>
     </div>
   </div>
 
@@ -569,7 +595,9 @@
   let currentCallListener = null;
   let isMuted = false;
   let isSpeakerOn = true;
-  let currentFacingMode = "user"; // front or environment camera
+  let currentFacingMode = "user"; 
+  let callStartTime = null;
+  let isCallMinimized = false;
 
   const rtcConfig = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
 
@@ -592,7 +620,6 @@
           this.saveUserProfile(user);
           this.setUserOnlineStatus(true);
           
-          // Web Notification Permission
           if ("Notification" in window && Notification.permission !== "granted") {
             Notification.requestPermission();
           }
@@ -678,9 +705,7 @@
   class AppController {
     enableAudioContext() {
       const audio = document.getElementById('ringtoneAudio');
-      audio.play().then(() => {
-        audio.pause();
-      }).catch(() => {});
+      audio.play().then(() => { audio.pause(); }).catch(() => {});
     }
 
     playRingtoneWithVibration() {
@@ -747,7 +772,7 @@
       document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
 
       document.getElementById(tabName + 'Tab').classList.remove('hidden');
-      event.currentTarget.classList.add('active');
+      if(event && event.currentTarget) event.currentTarget.classList.add('active');
     }
 
     toggleSetting(field, val) {
@@ -1070,13 +1095,13 @@
             const msgId = doc.id;
             const isMe = msg.sender === currentUser.uid;
 
-            // Delete for Me Check
             if (msg.deletedFor && msg.deletedFor.includes(currentUser.uid)) {
               return;
             }
 
             if (!isMe && !msg.seen) {
               db.collection('chats').doc(roomId).collection('messages').doc(msgId).update({ seen: true });
+              this.playNotificationSound();
             }
 
             const statusIcon = msg.seen ? '<i class="fa-solid fa-check-double msg-status"></i>' : '<i class="fa-solid fa-check msg-status"></i>';
@@ -1139,7 +1164,6 @@
       document.getElementById('normalChatHeader').style.display = 'flex';
     }
 
-    // Delete Messages (Everyone or For Me)
     deleteSelectedMessages(forEveryone = false) {
       const roomId = this.getChatRoomId();
       selectedMessages.forEach(m => {
@@ -1211,8 +1235,25 @@
       this.clearSelection();
     }
 
-    // Call Actions Controls (Speaker / Mute / Rotate Camera)
-    toggleMute() {
+    // CALL MINIMIZE & FLOATING WIDGET
+    minimizeCall(e) {
+      if(e) e.stopPropagation();
+      const overlay = document.getElementById('callOverlay');
+      overlay.classList.add('minimized');
+      isCallMinimized = true;
+    }
+
+    toggleMinimizeCall(e) {
+      if (isCallMinimized) {
+        const overlay = document.getElementById('callOverlay');
+        overlay.classList.remove('minimized');
+        isCallMinimized = false;
+      }
+    }
+
+    // CALL ACTIONS CONTROLS
+    toggleMute(e) {
+      if(e) e.stopPropagation();
       if (localStream) {
         const audioTrack = localStream.getAudioTracks()[0];
         if (audioTrack) {
@@ -1225,7 +1266,8 @@
       }
     }
 
-    toggleSpeaker() {
+    toggleSpeaker(e) {
+      if(e) e.stopPropagation();
       const remoteVid = document.getElementById('remoteVideo');
       isSpeakerOn = !isSpeakerOn;
       remoteVid.muted = !isSpeakerOn;
@@ -1234,54 +1276,69 @@
       else btn.classList.remove('active');
     }
 
-    async rotateCamera() {
+    async rotateCamera(e) {
+      if(e) e.stopPropagation();
       if (localStream) {
         localStream.getVideoTracks().forEach(track => track.stop());
         currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
         
-        const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: currentFacingMode },
-          audio: true
-        });
-        localStream = newStream;
-        document.getElementById('localVideo').srcObject = newStream;
+        try {
+          const newStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: currentFacingMode },
+            audio: true
+          });
+          localStream = newStream;
+          document.getElementById('localVideo').srcObject = newStream;
 
-        const videoSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (videoSender) {
-          videoSender.replaceTrack(newStream.getVideoTracks()[0]);
+          const videoSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+          if (videoSender) {
+            videoSender.replaceTrack(newStream.getVideoTracks()[0]);
+          }
+        } catch(err) {
+          console.error("Camera rotate permission error:", err);
         }
       }
     }
 
-    async switchCallTypeToVideo() {
-      if (peerConnection && localStream) {
-        const videoTrack = localStream.getVideoTracks()[0];
-        if (!videoTrack) {
+    async switchCallTypeToVideo(e) {
+      if(e) e.stopPropagation();
+      if (peerConnection) {
+        try {
           const vStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
           vStream.getTracks().forEach(track => {
             peerConnection.addTrack(track, vStream);
           });
           localStream = vStream;
           document.getElementById('localVideo').srcObject = vStream;
-        }
-        document.getElementById('localVideo').classList.remove('hidden');
-        document.getElementById('remoteVideo').classList.remove('hidden');
-        document.getElementById('callTargetAvatar').classList.add('hidden');
-        document.getElementById('rotateCamBtn').classList.remove('hidden');
 
-        if (callDocRef) {
-          callDocRef.update({ type: 'Video Call' });
+          document.getElementById('localVideo').classList.remove('hidden');
+          document.getElementById('remoteVideo').classList.remove('hidden');
+          document.getElementById('callTargetAvatar').classList.add('hidden');
+          document.getElementById('rotateCamBtn').classList.remove('hidden');
+
+          if (callDocRef) {
+            callDocRef.update({ type: 'Video Call' });
+          }
+        } catch(err) {
+          alert("ကင်မရာ သို့မဟုတ် မိုက်ခရိုဖုန်း ခွင့်ပြုချက်လိုပါသည်: " + err.message);
         }
       }
     }
 
+    // WEBRTC CALL ENGINE (Permission Requests & Tracks setup)
     async startCall(type) {
       if (!activeChatUid) return;
       const isVideo = type === 'Video Call';
       
       callDocRef = db.collection('calls').doc(activeChatUid);
       peerConnection = new RTCPeerConnection(rtcConfig);
-      localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+      } catch (err) {
+        alert("ကင်မရာ/မိုက်ခရိုဖုန်း Permission ပိတ်ထားပါသည်: " + err.message);
+        return;
+      }
       
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -1292,11 +1349,19 @@
         document.getElementById('callTargetAvatar').classList.add('hidden');
         document.getElementById('rotateCamBtn').classList.remove('hidden');
       } else {
+        document.getElementById('localVideo').classList.add('hidden');
+        document.getElementById('remoteVideo').classList.add('hidden');
+        document.getElementById('callTargetAvatar').classList.remove('hidden');
         document.getElementById('rotateCamBtn').classList.add('hidden');
       }
 
       peerConnection.ontrack = event => {
-        document.getElementById('remoteVideo').srcObject = event.streams[0];
+        const remoteVideo = document.getElementById('remoteVideo');
+        if (event.streams && event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+          remoteVideo.classList.remove('hidden');
+          document.getElementById('callTargetAvatar').classList.add('hidden');
+        }
       };
 
       const offerCandidates = callDocRef.collection('offerCandidates');
@@ -1328,6 +1393,7 @@
         const data = snapshot.data();
         if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
           this.stopRingtoneAndVibration();
+          callStartTime = new Date();
           document.getElementById('callStatusText').textContent = "ချိတ်ဆက်ပြီးပါပြီ";
           const answerDescription = new RTCSessionDescription(data.answer);
           peerConnection.setRemoteDescription(answerDescription);
@@ -1361,16 +1427,24 @@
       });
     }
 
-    async acceptCall() {
+    async acceptCall(e) {
+      if(e) e.stopPropagation();
       this.stopRingtoneAndVibration();
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callStatusText').textContent = "ချိတ်ဆက်ပြီးပါပြီ";
+      callStartTime = new Date();
 
       const callData = (await callDocRef.get()).data();
       const isVideo = callData.type === 'Video Call';
 
       peerConnection = new RTCPeerConnection(rtcConfig);
-      localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
+      } catch (err) {
+        alert("ကင်မရာ/မိုက်ခရိုဖုန်း Permission တောင်းခံမှုကို ခွင့်ပြုပေးပါ: " + err.message);
+        return;
+      }
 
       localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
 
@@ -1383,7 +1457,12 @@
       }
 
       peerConnection.ontrack = event => {
-        document.getElementById('remoteVideo').srcObject = event.streams[0];
+        const remoteVideo = document.getElementById('remoteVideo');
+        if (event.streams && event.streams[0]) {
+          remoteVideo.srcObject = event.streams[0];
+          remoteVideo.classList.remove('hidden');
+          document.getElementById('callTargetAvatar').classList.add('hidden');
+        }
       };
 
       const answerCandidates = callDocRef.collection('answerCandidates');
@@ -1401,7 +1480,8 @@
       });
     }
 
-    async endCall() {
+    async endCall(e) {
+      if(e) e.stopPropagation();
       if (callDocRef) {
         await callDocRef.update({ status: "ended" }).catch(()=>{});
         await callDocRef.delete().catch(()=>{});
@@ -1411,7 +1491,11 @@
 
     cleanupCall() {
       this.stopRingtoneAndVibration();
-      document.getElementById('callOverlay').style.display = 'none';
+      const overlay = document.getElementById('callOverlay');
+      overlay.style.display = 'none';
+      overlay.classList.remove('minimized');
+      isCallMinimized = false;
+
       document.getElementById('localVideo').classList.add('hidden');
       document.getElementById('remoteVideo').classList.add('hidden');
       document.getElementById('callTargetAvatar').classList.remove('hidden');
@@ -1420,12 +1504,25 @@
       if (peerConnection) { peerConnection.close(); peerConnection = null; }
       if (currentCallListener) { currentCallListener(); currentCallListener = null; }
       callDocRef = null;
+      callStartTime = null;
     }
 
     logCall(targetUid, type, direction) {
       if(!targetUid) return;
+      let durationStr = "0 စက္ကန့်";
+      if (callStartTime) {
+        const sec = Math.floor((new Date() - callStartTime) / 1000);
+        const mins = Math.floor(sec / 60);
+        const remSec = sec % 60;
+        durationStr = mins > 0 ? `${mins} မိနစ် ${remSec} စက္ကန့်` : `${remSec} စက္ကန့်`;
+      }
+
       db.collection('users').doc(currentUser.uid).collection('callLogs').add({
-        targetUid: targetUid, type: type, direction: direction, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        targetUid: targetUid,
+        type: type,
+        direction: direction,
+        duration: durationStr,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
       });
     }
 
@@ -1469,10 +1566,19 @@
           list.innerHTML = '';
           snap.forEach(doc => {
             const c = doc.data();
+            const timeFormatted = c.timestamp ? new Date(c.timestamp.toDate()).toLocaleString('my-MM') : 'မကြာသေးမီက';
             list.innerHTML += `
-              <div style="padding:8px 0; border-bottom:1px solid var(--border-color); font-size:13px;">
-                <i class="fa-solid ${c.direction === 'Outgoing' ? 'fa-phone' : 'fa-phone-arrow-down-left'}" style="color:var(--primary-color);"></i>
-                ${c.direction} ${c.type}
+              <div style="padding:10px 0; border-bottom:1px solid var(--border-color); font-size:13px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <i class="fa-solid ${c.direction === 'Outgoing' ? 'fa-phone' : 'fa-phone-arrow-down-left'}" style="color:var(--primary-color);"></i>
+                    <strong>${c.direction} ${c.type}</strong>
+                  </div>
+                  <span style="font-size:10px; color:var(--text-muted);">${timeFormatted}</span>
+                </div>
+                <div style="font-size:11px; color:var(--gold-bright); margin-top:3px;">
+                  <i class="fa-regular fa-clock"></i> ပြောဆိုချိန်: ${c.duration || '0 စက္ကန့်'}
+                </div>
               </div>`;
           });
           this.openModal('callDetailModal');
