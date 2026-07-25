@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aung San's Land (Natmauk) - Private Messenger</title>
   
-  <!-- App Logo & Favicon -->
   <link rel="icon" type="image/png" href="logo.png">
   <link rel="apple-touch-icon" href="logo.png">
   <link rel="manifest" href="manifest.json">
@@ -33,7 +32,7 @@
       --sent-text: #FFFFFF;
       --received-msg: #FFFFFF;
       --received-text: #1C1E21;
-      --font-family: 'Padauk', 'Inter', sans-serif;
+      --font-family: 'Inter', sans-serif; /* Messenger Standard Font Size & Family */
     }
 
     body.dark-theme {
@@ -54,7 +53,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
 
-    /* Fix Full Height Auto Fit */
     html, body {
       height: 100%;
       height: 100dvh;
@@ -62,7 +60,7 @@
       background-color: #0A0204;
     }
 
-    body { display: flex; justify-content: center; align-items: center; }
+    body { display: flex; justify-content: center; align-items: center; font-size: 14px; }
 
     .app-container {
       width: 100%; max-width: 480px; height: 100dvh;
@@ -80,7 +78,7 @@
       justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color);
       position: sticky; top: 0; z-index: 10; color: #FFFFFF; flex-shrink: 0;
     }
-    header h2 { font-size: 18px; color: var(--gold-bright); font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    header h2 { font-size: 17px; color: var(--gold-bright); font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
 
     .icon-btn {
       background: none; border: none; color: var(--gold-color); font-size: 18px;
@@ -90,14 +88,13 @@
 
     .btn {
       background: var(--primary-color); color: var(--gold-bright); border: 1px solid var(--gold-color); padding: 10px 16px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; font-size: 13px; text-align: center; text-decoration: none; display: inline-block;
+      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; font-size: 14px; text-align: center; text-decoration: none; display: inline-block;
     }
     .btn:hover { background: var(--primary-hover); box-shadow: 0 0 10px rgba(212,175,55,0.4); }
     .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
     .btn-gold { background: var(--gold-color); color: #000; border: none; font-weight: bold; }
     .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; }
     .btn-danger { background: #d93025; color: #fff; border: none; }
-    .btn-download { background: #28a745; color: #fff; border: none; margin-top: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
     .input-field {
       width: 100%; padding: 10px 12px; margin-bottom: 10px;
@@ -105,19 +102,17 @@
     }
     .input-field:focus { border-color: var(--gold-color); box-shadow: 0 0 5px rgba(212,175,55,0.5); }
 
-    label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+    label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
 
-    /* Tab Content Auto Fit Scroll */
     .tab-content { flex: 1; overflow-y: auto; padding-bottom: 70px; }
 
-    /* Tab Bar Fixed to Bottom Always visible */
     nav.tab-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 60px;
       background: var(--card-bg); display: flex; border-top: 2px solid var(--gold-color); z-index: 20;
     }
     .tab-item {
       flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      color: var(--text-muted); font-size: 11px; cursor: pointer; gap: 3px; position: relative;
+      color: var(--text-muted); font-size: 12px; cursor: pointer; gap: 3px; position: relative;
     }
     .tab-item i { font-size: 18px; }
     .tab-item.active { color: var(--primary-color); font-weight: bold; }
@@ -132,8 +127,8 @@
       display: flex; align-items: center; padding: 12px 16px; background: var(--card-bg);
       border-bottom: 1px solid var(--border-color); cursor: pointer; position: relative; color: var(--text-main);
     }
-    .avatar-wrapper { position: relative; margin-right: 12px; }
-    .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #ccc; border: 2px solid var(--gold-color); }
+    .avatar-wrapper { position: relative; margin-right: 12px; flex-shrink: 0; }
+    .avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #ccc; border: 2px solid var(--gold-color); cursor: pointer; }
     .online-indicator {
       width: 12px; height: 12px; background: #888; border: 2px solid var(--card-bg);
       border-radius: 50%; position: absolute; bottom: 2px; right: 2px;
@@ -147,7 +142,7 @@
 
     .selection-bar {
       display: none; background: var(--primary-color); color: white; padding: 10px 16px;
-      justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color);
+      justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color); z-index: 35;
     }
 
     .chat-view {
@@ -164,17 +159,25 @@
       max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 14px;
       line-height: 1.4; position: relative; word-wrap: break-word; cursor: pointer; user-select: none;
     }
-    .message-bubble.selected { border: 2px solid var(--gold-bright); opacity: 0.8; }
+    .message-bubble.selected { border: 2px solid var(--gold-bright); background-color: rgba(212, 175, 55, 0.2) !important; }
     .message-bubble.sent { align-self: flex-end; background: var(--sent-msg); color: var(--sent-text); border-bottom-right-radius: 2px; border: 1px solid var(--gold-color); }
     .message-bubble.received { align-self: flex-start; background: var(--received-msg); color: var(--received-text); border-bottom-left-radius: 2px; border: 1px solid var(--border-color); }
     .msg-status { font-size: 10px; margin-left: 5px; color: var(--gold-bright); }
+    
+    /* Telegram style selection checkmark */
+    .msg-checkbox {
+      display: none; position: absolute; top: 50%; left: -25px; transform: translateY(-50%);
+      width: 18px; height: 18px; border: 2px solid var(--gold-bright); border-radius: 50%;
+      background: var(--card-bg); align-items: center; justify-content: center; font-size: 10px; color: var(--primary-color);
+    }
+    .message-bubble.selectable .msg-checkbox { display: flex; }
+    .message-bubble.selected .msg-checkbox { background: var(--gold-bright); color: #000; }
 
     .chat-input-bar {
       background: var(--card-bg); padding: 10px 12px; display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border-color); flex-shrink: 0;
     }
-    .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); }
+    .chat-input-bar input { flex: 1; border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 14px; outline: none; background: var(--bg-color); color: var(--text-main); font-size: 14px; }
 
-    /* Floating Call Bubble Indicator when Back button is pressed */
     .call-minimized-bubble {
       position: absolute; top: 15px; right: 15px; background: var(--primary-color);
       border: 2px solid var(--gold-bright); border-radius: 30px; padding: 6px 14px;
@@ -211,7 +214,7 @@
     .media-preview { max-width: 100%; border-radius: 8px; margin-top: 4px; }
     .download-btn { font-size: 11px; color: var(--gold-bright); text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block; }
     
-    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+    .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
     .switch input { opacity: 0; width: 0; height: 0; }
     .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
@@ -222,7 +225,6 @@
     .auth-box { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--gold-color); margin-top: 10px; text-align: left; }
     .status-card { background: var(--card-bg); border-radius: 10px; padding: 12px; margin: 8px 16px; border: 1px solid var(--border-color); }
 
-    /* MESSAGE DESIGN FOR LOGIN SCREEN */
     .msg-login-card {
       background: rgba(255, 255, 255, 0.95);
       border-radius: 18px;
@@ -237,38 +239,24 @@
       gap: 12px;
       position: relative;
     }
-    .msg-login-card::after {
-      content: '';
-      position: absolute;
-      bottom: -10px;
-      left: 30px;
-      border-width: 10px 10px 0;
-      border-style: solid;
-      border-color: rgba(255, 255, 255, 0.95) transparent;
-      display: block;
-      width: 0;
-    }
   </style>
 </head>
 <body onclick="app.enableAudioContext()">
 
 <div class="app-container">
 
-  <!-- FLOATING MINIMIZED CALL NOTIFICATION BUBBLE -->
   <div id="callMinimizedBubble" class="call-minimized-bubble" onclick="app.maximizeCall()">
     <i class="fa-solid fa-phone-volume"></i> <span id="callBubbleTime">00:00</span>
   </div>
 
-  <!-- AUTH / SIGN IN SCREEN WITH MESSAGE BUBBLE & LOGO DESIGN -->
+  <!-- AUTH SCREEN -->
   <div id="authScreen" class="screen active" style="background: linear-gradient(135deg, #4A0012 0%, #800020 50%, #2A000A 100%); color: white;">
     <div style="padding: 24px 20px; text-align: center; margin: auto 0; overflow-y: auto;">
       
-      <!-- LOGO PNG INTEGRATION -->
       <div style="width: 90px; height: 90px; margin: 0 auto 12px; border-radius: 50%; overflow: hidden; border: 2px solid var(--gold-color); box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
         <img src="logo.png" alt="App Logo" style="width: 100%; height: 100%; object-fit: cover;">
       </div>
 
-      <!-- MESSAGE BUBBLE STYLE LOGIN HEADER -->
       <div class="msg-login-card">
         <img src="logo.png" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gold-color);">
         <div style="text-align: left;">
@@ -277,9 +265,9 @@
         </div>
       </div>
 
-      <!-- DIRECT DOWNLOAD APK BUTTON FOR USERS -->
-      <a href="logo.png" download="ASL_Messenger.apk" class="btn btn-download">
-        <i class="fa-solid fa-download"></i> App File (APK) Download ရယူရန်
+      <!-- App Download link သီးသန့် (Chrome တွင် သပ်သပ်ဒေါင်းရန်) -->
+      <a href="https://github.com/fannkharwine/ASL-Messenger-/releases" target="_blank" class="btn" style="background: #28a745; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <i class="fa-solid fa-download"></i> Chrome တွင် App (APK) ဒေါင်းရန်လင့်ခ်
       </a>
 
       <div style="display: flex; align-items: center; margin: 16px 0 12px;">
@@ -300,7 +288,7 @@
         <input type="password" id="authPassword" class="input-field" placeholder="••••••••">
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-          <a href="#" onclick="authApp.forgotPassword()" style="font-size: 11px; color: var(--primary-color); text-decoration: none; font-weight: 600;">စကားဝှက်မေ့နေပါသလား?</a>
+          <a href="#" onclick="authApp.forgotPassword()" style="font-size: 12px; color: var(--primary-color); text-decoration: none; font-weight: 600;">စကားဝှက်မေ့နေပါသလား?</a>
         </div>
 
         <div style="display: flex; gap: 8px;">
@@ -358,7 +346,7 @@
       <div id="statusList"></div>
     </div>
 
-    <!-- SETTINGS TAB -->
+    <!-- SETTINGS TAB (Viber Style Full Options + Block List & Privacy & Passcode) -->
     <div id="settingsTab" class="tab-content hidden">
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
@@ -373,29 +361,42 @@
           <p id="settingsPersonalId" onclick="app.copyUID()" style="font-size:11px; color:var(--primary-color); word-break:break-all; cursor:pointer; margin-top:2px; font-weight:600;" title="Click to copy UID">UID: - <i class="fa-regular fa-copy"></i></p>
         </div>
 
-        <!-- APP DIRECT DOWNLOAD LINK IN SETTINGS -->
-        <a href="logo.png" download="ASL_Messenger.apk" class="btn btn-download" style="margin-bottom: 12px;">
-          <i class="fa-solid fa-file-arrow-down"></i> App Download Link တိုက်ရိုက်ရယူရန်
-        </a>
-
-        <!-- PROFILE & BIO -->
+        <!-- PROFILE & BIO SETTINGS -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-regular fa-id-card"></i> Profile & Bio Data</h4>
-          <label>Display Name</label>
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-regular fa-id-card"></i> Profile & Account</h4>
+          <label>Display Name (အမည်ပြောင်းရန်)</label>
           <input type="text" id="setName" class="input-field">
           <label>Phone / Email ID</label>
           <input type="text" id="setContact" class="input-field" placeholder="09xxxxxxxxx သို့ email">
           <label>About / Bio</label>
           <textarea id="setAbout" class="input-field" style="height:60px; resize:none;" placeholder="ကိုယ်ပိုင်အမှတ်ထည့်သွင်းရန်"></textarea>
-          <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()">Profile သိမ်းဆည်းမည်</button>
+          <button class="btn" style="padding:8px; font-size:13px;" onclick="app.saveProfile()">Profile သိမ်းဆည်းမည်</button>
         </div>
 
-        <!-- NOTIFICATIONS & SOUND SETTINGS -->
+        <!-- PRIVACY & SECURITY / BLOCK LIST / PASSCODE -->
+        <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-shield-halved"></i> Privacy & Security</h4>
+          
+          <div class="setting-row" onclick="app.openBlockListModal()" style="cursor:pointer;">
+            <span style="font-size:13px; color:var(--text-main);">ဘလော့စာရင်း (Blocked Users List)</span>
+            <i class="fa-solid fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
+          </div>
+
+          <div class="setting-row">
+            <span style="font-size:13px; color:var(--text-main);">Passcode Lock (အပلیکေးရှင်း သော့ခတ်ရန်)</span>
+            <label class="switch">
+              <input type="checkbox" id="passcodeToggle" onchange="app.togglePasscode(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- NOTIFICATIONS & SOUND SETTINGS (Every Sound Included) -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-bell"></i> Notifications & Sounds</h4>
           
           <div class="setting-row">
-            <span style="font-size:13px; color:var(--text-main);">စာဝင် သတိပေးသံ (Message Notification)</span>
+            <span style="font-size:13px; color:var(--text-main);">စာဝင် သတိပေးသံ (Message Notification & Ring)</span>
             <label class="switch">
               <input type="checkbox" id="msgNotiToggle" checked onchange="app.toggleSetting('msgNoti', this.checked)">
               <span class="slider"></span>
@@ -418,16 +419,15 @@
             <option value="custom">Local File/Custom MP3</option>
           </select>
 
-          <!-- Local Audio Upload Option -->
           <div id="localRingtoneBox" class="hidden" style="margin-top:5px;">
             <label>ဖုန်းထဲမှ Sound File (MP3) ရွေးရန်:</label>
             <input type="file" accept="audio/*" class="input-field" onchange="app.uploadCustomRingtone(event)">
           </div>
         </div>
 
-        <!-- APPEARANCE & PREFERENCES -->
+        <!-- APPEARANCE & FONT SIZE -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-palette"></i> Appearance & Preferences</h4>
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-palette"></i> Appearance & Font</h4>
           
           <div class="setting-row">
             <span style="font-size:13px; color:var(--text-main);">Dark Mode</span>
@@ -437,10 +437,10 @@
             </label>
           </div>
 
-          <label style="margin-top:8px;">Font Style</label>
+          <label style="margin-top:8px;">Font Style (Messenger Standard)</label>
           <select id="fontSelect" class="input-field" onchange="app.changeFont(this.value)">
+            <option value="default">Standard (Inter)</option>
             <option value="unicode">Myanmar (Padauk)</option>
-            <option value="default">Default (Inter)</option>
             <option value="serif">Serif (Merriweather)</option>
             <option value="mono">Monospace (Roboto)</option>
           </select>
@@ -450,7 +450,6 @@
       </div>
     </div>
 
-    <!-- TAB BAR -->
     <nav class="tab-bar">
       <div class="tab-item active" onclick="app.switchTab('chats')">
         <i class="fa-solid fa-comment-dots"></i><span>Chats</span>
@@ -483,20 +482,18 @@
 
     <div class="chat-header" id="normalChatHeader">
       <button class="icon-btn" style="color:#fff;" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
-      <img id="activeChatAvatar" src="logo.png" class="avatar" style="width:36px; height:36px;">
-      <div style="flex:1;">
+      <img id="activeChatAvatar" src="logo.png" class="avatar" style="width:36px; height:36px;" onclick="app.openProfileModalFromChat()">
+      <div style="flex:1; cursor:pointer;" onclick="app.openProfileModalFromChat()">
         <div id="activeChatTitle" style="font-weight:600; font-size:14px; color:var(--gold-bright);">User</div>
-        <div id="activeChatSub" style="font-size:10px; color:#E0E0E0;">Offline</div>
+        <div id="activeChatSub" style="font-size:11px; color:#E0E0E0;">Offline</div>
       </div>
       <button class="icon-btn" onclick="app.startCall('Voice Call')"><i class="fa-solid fa-phone"></i></button>
       <button class="icon-btn" onclick="app.startCall('Video Call')"><i class="fa-solid fa-video"></i></button>
-      <button class="icon-btn" onclick="app.toggleBlockUser()" title="Block/Unblock"><i class="fa-solid fa-ban"></i></button>
     </div>
 
     <div id="chatMessages" class="chat-messages"></div>
 
     <div class="chat-input-bar">
-      <!-- Direct Camera Capture & Gallery Upload -->
       <label class="icon-btn" style="cursor:pointer;" title="Camera Capture">
         <i class="fa-solid fa-camera"></i>
         <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="app.handleFileUpload(event)">
@@ -505,6 +502,7 @@
         <i class="fa-solid fa-paperclip"></i>
         <input type="file" accept="image/*,video/*" style="display:none;" onchange="app.handleFileUpload(event)">
       </label>
+      <button id="micBtn" class="icon-btn" title="Voice Message" onclick="app.toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
       <input type="text" id="msgInput" placeholder="စာရိုက်ပါ..." onkeypress="if(event.key==='Enter') app.sendMessage()">
       <button class="icon-btn" onclick="app.sendMessage()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -529,7 +527,6 @@
       <video id="localVideo" autoplay playsinline muted class="hidden"></video>
     </div>
 
-    <!-- Speaker, Mute, Rotate Camera, Switch Video Controls -->
     <div class="call-controls">
       <button id="muteBtn" class="control-btn" onclick="app.toggleMute()"><i class="fa-solid fa-microphone-slash"></i></button>
       <button id="speakerBtn" class="control-btn" onclick="app.toggleSpeaker()"><i class="fa-solid fa-volume-high"></i></button>
@@ -589,17 +586,28 @@
     </div>
   </div>
 
+  <!-- PROFILE MODAL WITH BLOCK BUTTON -->
   <div id="userProfileModal" class="modal">
     <div class="modal-content" style="text-align:center;">
       <img id="profileModalAvatar" src="" class="avatar" style="width:90px; height:90px; margin-bottom:10px;">
       <h3 id="profileModalName" style="color:var(--text-main);">User Name</h3>
       <p id="profileModalBio" style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">Bio details</p>
 
-      <div style="display:flex; gap:10px;">
-        <button class="btn" onclick="app.startChatFromProfile()"><i class="fa-solid fa-comment"></i> Chat</button>
-        <button class="btn btn-gold" onclick="app.startCallFromProfile()"><i class="fa-solid fa-phone"></i> Call</button>
+      <div style="display:flex; gap:10px; margin-bottom:10px;">
+        <button class="btn" style="flex:1;" onclick="app.startChatFromProfile()"><i class="fa-solid fa-comment"></i> Chat</button>
+        <button class="btn btn-gold" style="flex:1;" onclick="app.startCallFromProfile()"><i class="fa-solid fa-phone"></i> Call</button>
       </div>
-      <button class="btn btn-secondary" style="margin-top:10px;" onclick="app.closeModal('userProfileModal')">ပိတ်မည်</button>
+      <button id="profileBlockBtn" class="btn btn-danger" style="width:100%; margin-bottom:8px;" onclick="app.toggleBlockUser()">User ကို ဘလော့မည် (Block)</button>
+      <button class="btn btn-secondary" style="width:100%;" onclick="app.closeModal('userProfileModal')">ပိတ်မည်</button>
+    </div>
+  </div>
+
+  <!-- BLOCK LIST MODAL -->
+  <div id="blockListModal" class="modal">
+    <div class="modal-content">
+      <h3 style="margin-bottom:10px; color:var(--primary-color);">ဘလော့ထားသောသူများ (Blocked Users)</h3>
+      <div id="blockedUsersList" style="max-height:220px; overflow-y:auto; margin-bottom:10px;"></div>
+      <button class="btn btn-secondary" onclick="app.closeModal('blockListModal')">ပိတ်မည်</button>
     </div>
   </div>
 
@@ -621,7 +629,7 @@
 
 </div>
 
-<!-- Sound Audio Elements -->
+<!-- Sound Audio Elements (All Ringtone Enabled Everywhere) -->
 <audio id="ringtoneAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
 <audio id="dialingAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1358/1358-preview.mp3"></audio>
 <audio id="msgAudio" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
@@ -659,6 +667,9 @@
   let activeChatUid = null;
   let selectedMessages = [];
   let selectedProfileUser = null;
+  let mediaRecorder = null;
+  let audioChunks = [];
+  let isRecording = false;
 
   let ringtoneMap = {
     classic: "https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3",
@@ -725,10 +736,10 @@
     }
 
     forgotPassword() {
-      const rawInput = prompt("စကားဝှက်ပြန်လည်ရယူရန် зарегистрированный Email ရိုက်ထည့်ပါ:");
+      const rawInput = prompt("စကားဝှက်ပြန်လည်ရယူရန် Email ရိုက်ထည့်ပါ:");
       if (rawInput && rawInput.includes('@')) {
         auth.sendPasswordResetEmail(rawInput.trim())
-          .then(() => alert("Password Reset Email ပို့ပြီးပါပြီ! Inbox ကိုစစ်ဆေးပါ။"))
+          .then(() => alert("Password Reset Email ပို့ပြီးပါပြီ!"))
           .catch(err => alert("Error: " + err.message));
       }
     }
@@ -763,7 +774,6 @@
       audio.play().then(() => { audio.pause(); }).catch(() => {});
     }
 
-    // Caller Side Sound (Messenger Dialing Sound)
     playDialingSound() {
       const audio = document.getElementById('dialingAudio');
       audio.currentTime = 0;
@@ -776,7 +786,6 @@
       audio.currentTime = 0;
     }
 
-    // Receiver Side Sound (Incoming Ringtone)
     playRingtoneWithVibration() {
       const audio = document.getElementById('ringtoneAudio');
       audio.currentTime = 0;
@@ -813,7 +822,6 @@
       if (!timestamp) return 'Offline';
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
       const seconds = Math.floor((new Date() - date) / 1000);
-
       let interval = Math.floor(seconds / 3600);
       if (interval >= 1) return `Offline ${interval}h ago`;
       interval = Math.floor(seconds / 60);
@@ -872,7 +880,7 @@
       if (file) {
         const url = URL.createObjectURL(file);
         document.getElementById('ringtoneAudio').src = url;
-        alert("Local Custom Audio ကို Ringtone အဖြစ် သတ်မှတ်လိုက်ပါပြီ!");
+        alert("Custom Audio ကို Ringtone အဖြစ် သတ်မှတ်လိုက်ပါပြီ!");
       }
     }
 
@@ -886,6 +894,21 @@
       if (fontStyle === 'serif') document.body.classList.add('font-serif');
       if (fontStyle === 'mono') document.body.classList.add('font-mono');
       if (fontStyle === 'unicode') document.body.classList.add('font-unicode');
+    }
+
+    togglePasscode(enabled) {
+      if (enabled) {
+        const pin = prompt("Passcode (PIN) အသစ် သတ်မှတ်ရန် နံပါတ် ၄ လုံး ရိုက်ထည့်ပါ:");
+        if (pin && pin.length >= 4) {
+          localStorage.setItem('app_passcode', pin);
+          alert("Passcode အောင်မြင်စွာ သတ်မှတ်ပြီးပါပြီ!");
+        } else {
+          document.getElementById('passcodeToggle').checked = false;
+        }
+      } else {
+        localStorage.removeItem('app_passcode');
+        alert("Passcode ဖြုတ်လိုက်ပါပြီ!");
+      }
     }
 
     uploadProfilePhoto(e) {
@@ -922,7 +945,7 @@
       if (!query) return alert('Target ဖုန်း / Email / UID ထည့်ပါ');
 
       if (query === currentUser.email || query === currentUser.uid) {
-        alert("Own Account: ဒါဟာ သင့်ကိုယ်ပိုင်အကောင့်ဖြစ်ပါတယ်!");
+        alert("ဒါဟာ သင့်ကိုယ်ပိုင်အကောင့်ဖြစ်ပါတယ်!");
         return;
       }
 
@@ -936,10 +959,7 @@
         });
 
         if (targetUser) {
-          if (targetUser.uid === currentUser.uid) {
-            alert("Own Account: ဒါဟာ သင့်ကိုယ်ပိုင်အကောင့်ဖြစ်ပါတယ်!");
-            return;
-          }
+          if (targetUser.uid === currentUser.uid) return alert("သင့်ကိုယ်ပိုင်အကောင့်ဖြစ်ပါတယ်!");
           db.collection('requests').doc(targetUser.uid).collection('incoming').doc(currentUser.uid).set({
             fromUid: currentUser.uid,
             fromName: currentUser.displayName || currentUser.email || "User",
@@ -969,7 +989,7 @@
             this.triggerSystemNotification("Friend Request", "သင့်ထံ မိတ်ဆွေတောင်းဆိုမှု အသစ်ရောက်ရှိနေပါသည်။");
           } else {
             badge.style.display = 'none';
-            list.innerHTML = '<div style="padding:10px 16px; font-size:12px; color:var(--text-muted);">တောင်းဆိုမှုများ မရှိပါ</div>';
+            list.innerHTML = '<div style="padding:10px 16px; font-size:13px; color:var(--text-muted);">တောင်းဆိုမှုများ မရှိပါ</div>';
           }
 
           snapshot.forEach(doc => {
@@ -979,8 +999,8 @@
                 <img src="${req.fromPhoto || 'logo.png'}" class="avatar">
                 <div class="item-details"><div class="item-title">${req.fromName}</div></div>
                 <div style="display:flex; gap:6px;">
-                  <button class="btn" style="width:auto; padding:6px 10px; font-size:11px;" onclick="app.acceptFriend('${req.fromUid}')">လက်ခံမည်</button>
-                  <button class="btn btn-secondary" style="width:auto; padding:6px 10px; font-size:11px;" onclick="app.declineFriend('${req.fromUid}')">ငြင်းပယ်မည်</button>
+                  <button class="btn" style="width:auto; padding:6px 10px; font-size:12px;" onclick="app.acceptFriend('${req.fromUid}')">လက်ခံမည်</button>
+                  <button class="btn btn-secondary" style="width:auto; padding:6px 10px; font-size:12px;" onclick="app.declineFriend('${req.fromUid}')">ငြင်းပယ်မည်</button>
                 </div>
               </div>`;
           });
@@ -1023,7 +1043,7 @@
               const friendPeopleHTML = `
                 <div class="list-item" id="people_${u.uid}" onclick="app.showUserProfile('${u.uid}', '${u.name}', '${userPhoto}', '${u.about||''}')">
                   <div class="avatar-wrapper">
-                    <img src="${userPhoto}" class="avatar">
+                    <img src="${userPhoto}" class="avatar" onclick="event.stopPropagation(); app.showUserProfile('${u.uid}', '${u.name}', '${userPhoto}', '${u.about||''}')">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
                   </div>
                   <div class="item-details">
@@ -1035,7 +1055,7 @@
               const chatHTML = `
                 <div class="list-item" id="chat_item_${u.uid}" onclick="app.openChat('${u.uid}', '${u.name}', '${userPhoto}')">
                   <div class="avatar-wrapper">
-                    <img src="${userPhoto}" class="avatar">
+                    <img src="${userPhoto}" class="avatar" onclick="event.stopPropagation(); app.showUserProfile('${u.uid}', '${u.name}', '${userPhoto}', '${u.about||''}')">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
                   </div>
                   <div class="item-details">
@@ -1068,18 +1088,42 @@
             } else if (m.deletedFor && m.deletedFor.includes(currentUser.uid)) {
               el.textContent = 'စာဖျက်ထားသည်';
             } else {
-              el.textContent = m.text || '[Attachment]';
+              el.textContent = m.text || '[Media]';
             }
           }
         });
     }
 
     showUserProfile(uid, name, photo, bio) {
-      selectedProfileUser = { uid, name, photo };
+      selectedProfileUser = { uid, name, photo, bio };
       document.getElementById('profileModalAvatar').src = photo || 'logo.png';
       document.getElementById('profileModalName').textContent = name;
       document.getElementById('profileModalBio').textContent = bio || 'ကိုယ်ပိုင်အမှတ်မရှိပါ';
+      
+      // Check if blocked to update button text
+      db.collection('users').doc(currentUser.uid).collection('blocked').doc(uid).get().then(doc => {
+        const blockBtn = document.getElementById('profileBlockBtn');
+        if (doc.exists) {
+          blockBtn.textContent = "ဘလော့ဖြုတ်မည် (Unblock)";
+          blockBtn.className = "btn btn-gold";
+        } else {
+          blockBtn.textContent = "ဘလော့မည် (Block)";
+          blockBtn.className = "btn btn-danger";
+        }
+      });
+
       this.openModal('userProfileModal');
+    }
+
+    openProfileModalFromChat() {
+      if (activeChatUid) {
+        db.collection('users').doc(activeChatUid).get().then(doc => {
+          const u = doc.data();
+          if (u) {
+            this.showUserProfile(u.uid, u.name, u.photo, u.about);
+          }
+        });
+      }
     }
 
     startChatFromProfile() {
@@ -1091,6 +1135,54 @@
       this.closeModal('userProfileModal');
       this.openChat(selectedProfileUser.uid, selectedProfileUser.name, selectedProfileUser.photo);
       this.startCall('Voice Call');
+    }
+
+    async toggleBlockUser() {
+      const targetUid = selectedProfileUser ? selectedProfileUser.uid : activeChatUid;
+      if (!targetUid) return;
+
+      const docRef = db.collection('users').doc(currentUser.uid).collection('blocked').doc(targetUid);
+      const doc = await docRef.get();
+      if (doc.exists) {
+        await docRef.delete();
+        alert("Unblocked Successfully!");
+        this.closeModal('userProfileModal');
+      } else {
+        await docRef.set({ blocked: true });
+        alert("User ကို ဘလော့လိုက်ပါပြီ!");
+        this.closeModal('userProfileModal');
+        this.closeChat();
+      }
+    }
+
+    openBlockListModal() {
+      db.collection('users').doc(currentUser.uid).collection('blocked').get().then(snap => {
+        const list = document.getElementById('blockedUsersList');
+        list.innerHTML = '';
+        if (snap.empty) {
+          list.innerHTML = '<div style="padding:10px; font-size:13px; color:var(--text-muted);">ဘလော့ထားသူများ မရှိပါ</div>';
+        }
+        snap.forEach(doc => {
+          const bUid = doc.id;
+          db.collection('users').doc(bUid).get().then(uDoc => {
+            const u = uDoc.data() || { name: 'User', photo: 'logo.png' };
+            list.innerHTML += `
+              <div class="list-item">
+                <img src="${u.photo || 'logo.png'}" class="avatar" style="width:36px; height:36px;">
+                <div class="item-details" style="margin-left:10px;"><div class="item-title">${u.name}</div></div>
+                <button class="btn btn-gold" style="width:auto; padding:6px 12px; font-size:11px;" onclick="app.unblockUser('${bUid}')">ဖြုတ်မည်</button>
+              </div>`;
+          });
+        });
+        this.openModal('blockListModal');
+      });
+    }
+
+    unblockUser(targetUid) {
+      db.collection('users').doc(currentUser.uid).collection('blocked').doc(targetUid).delete().then(() => {
+        alert("Unblocked လုပ်ပြီးပါပြီ!");
+        this.closeModal('blockListModal');
+      });
     }
 
     openChat(uid, name, photo) {
@@ -1114,19 +1206,6 @@
     getChatRoomId() {
       if (activeChatUid.startsWith("group_")) return activeChatUid;
       return currentUser.uid < activeChatUid ? `${currentUser.uid}_${activeChatUid}` : `${activeChatUid}_${currentUser.uid}`;
-    }
-
-    async toggleBlockUser() {
-      const docRef = db.collection('users').doc(currentUser.uid).collection('blocked').doc(activeChatUid);
-      const doc = await docRef.get();
-      if (doc.exists()) {
-        await docRef.delete();
-        alert("Unblocked user!");
-      } else {
-        await docRef.set({ blocked: true });
-        alert("User ကို Block လိုက်ပါပြီ!");
-        this.closeChat();
-      }
     }
 
     sendMessage() {
@@ -1164,6 +1243,42 @@
       }
     }
 
+    // Voice Message Record Function
+    toggleVoiceRecording() {
+      const micBtn = document.getElementById('micBtn');
+      if (!isRecording) {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/mp3' });
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const roomId = this.getChatRoomId();
+              db.collection('chats').doc(roomId).collection('messages').add({
+                sender: currentUser.uid,
+                text: '[Voice Message]',
+                media: e.target.result,
+                mediaType: 'audio/mp3',
+                seen: false,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+              });
+            };
+            reader.readAsDataURL(audioBlob);
+          };
+          mediaRecorder.start();
+          isRecording = true;
+          micBtn.style.color = '#e41e3f';
+          alert("Voice Message စတင် καταγραφει လုပ်နေပါပြီ... ရပ်ရန် ထပ်နှိပ်ပါ။");
+        }).catch(err => alert("Microphone access denied: " + err.message));
+      } else {
+        if (mediaRecorder) mediaRecorder.stop();
+        isRecording = false;
+        micBtn.style.color = '';
+      }
+    }
+
     listenForMessages() {
       const roomId = this.getChatRoomId();
       db.collection('chats').doc(roomId).collection('messages').orderBy('timestamp', 'asc')
@@ -1197,6 +1312,8 @@
               if (msg.mediaType && msg.mediaType.startsWith('video')) {
                 mediaHTML = `<video src="${msg.media}" controls class="media-preview"></video><br>
                 <a href="${msg.media}" download="video_${msgId}.mp4" class="download-btn"><i class="fa-solid fa-download"></i> Save Video</a><br>`;
+              } else if (msg.mediaType && msg.mediaType.includes('audio')) {
+                mediaHTML = `<audio src="${msg.media}" controls style="width:200px; height:35px;"></audio><br>`;
               } else {
                 mediaHTML = `<img src="${msg.media}" class="media-preview"><br>
                 <a href="${msg.media}" download="image_${msgId}.png" class="download-btn"><i class="fa-solid fa-download"></i> Save Photo</a><br>`;
@@ -1204,10 +1321,12 @@
             }
 
             const isSelected = selectedMessages.some(m => m.id === msgId);
+            const selectionClass = selectedMessages.length > 0 ? 'selectable' : '';
 
             container.innerHTML += `
-              <div id="msg_${msgId}" class="message-bubble ${isMe ? 'sent' : 'received'} ${isSelected ? 'selected' : ''}" 
+              <div id="msg_${msgId}" class="message-bubble ${isMe ? 'sent' : 'received'} ${selectionClass} ${isSelected ? 'selected' : ''}" 
                    onclick="app.toggleSelectMessage('${msgId}', '${encodeURIComponent(msg.text)}')">
+                <div class="msg-checkbox"><i class="fa-solid fa-check"></i></div>
                 ${mediaHTML}
                 <span id="txt_${msgId}">${msg.text}</span>
                 ${isMe ? statusIcon : ''}
@@ -1240,6 +1359,7 @@
       selectedMessages = [];
       document.getElementById('selectionBar').style.display = 'none';
       document.getElementById('normalChatHeader').style.display = 'flex';
+      this.listenForMessages();
     }
 
     deleteSelectedMessages(forEveryone = false) {
@@ -1365,7 +1485,6 @@
       if (localStream) {
         localStream.getVideoTracks().forEach(track => track.stop());
         currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
-        
         try {
           const newStream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: currentFacingMode },
@@ -1375,9 +1494,7 @@
           document.getElementById('localVideo').srcObject = newStream;
 
           const videoSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-          if (videoSender) {
-            videoSender.replaceTrack(newStream.getVideoTracks()[0]);
-          }
+          if (videoSender) videoSender.replaceTrack(newStream.getVideoTracks()[0]);
         } catch(e) {
           alert("Camera Error: " + e.message);
         }
@@ -1390,9 +1507,7 @@
           const videoTrack = localStream.getVideoTracks()[0];
           if (!videoTrack) {
             const vStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-            vStream.getTracks().forEach(track => {
-              peerConnection.addTrack(track, vStream);
-            });
+            vStream.getTracks().forEach(track => { peerConnection.addTrack(track, vStream); });
             localStream = vStream;
             document.getElementById('localVideo').srcObject = vStream;
           }
@@ -1403,7 +1518,7 @@
 
           if (callDocRef) callDocRef.update({ type: 'Video Call' });
         } catch(e) {
-          alert("Video Call Permission Error: " + e.message);
+          alert("Video Permission Error: " + e.message);
         }
       }
     }
@@ -1418,7 +1533,7 @@
       try {
         localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
       } catch (err) {
-        alert("Camera သို့မဟုတ် Microphone သုံးခွင့် (Permission) အကန့်အသတ်ရှိနေပါသည်။ ကျေးဇူးပြု၍ ခွင့်ပြုပေးပါ!");
+        alert("Camera သို့မဟုတ် Microphone ခွင့်ပြုချက်လိုပါသည်။");
         return;
       }
       
@@ -1449,11 +1564,7 @@
       const offerDescription = await peerConnection.createOffer();
       await peerConnection.setLocalDescription(offerDescription);
 
-      activeCallData = {
-        targetUid: activeChatUid,
-        type: type,
-        direction: "Outgoing"
-      };
+      activeCallData = { targetUid: activeChatUid, type: type, direction: "Outgoing" };
 
       const callData = {
         offer: { type: offerDescription.type, sdp: offerDescription.sdp },
@@ -1471,7 +1582,6 @@
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
       
-      // Khaw thu taraf - Messenger Dialing tone thap pya
       this.playDialingSound();
 
       currentCallListener = callDocRef.onSnapshot(snapshot => {
@@ -1495,11 +1605,7 @@
         if (data && data.status === "calling" && !peerConnection) {
           callDocRef = db.collection('calls').doc(currentUser.uid);
           
-          activeCallData = {
-            targetUid: data.callerUid,
-            type: data.type,
-            direction: "Incoming"
-          };
+          activeCallData = { targetUid: data.callerUid, type: data.type, direction: "Incoming" };
 
           document.getElementById('callTargetName').textContent = data.callerName;
           document.getElementById('callStatusText').textContent = "ဖုန်းဝင်နေသည် (" + data.type + ")...";
@@ -1507,7 +1613,6 @@
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
           
-          // Let khan thu taraf - Ringtone + Vibration
           this.playRingtoneWithVibration();
           this.triggerSystemNotification("Incoming Call", `${data.callerName} ထံမှ ဖုန်းဝင်နေပါသည်။`);
         } else if ((!data || data.status === "ended") && peerConnection) {
@@ -1698,7 +1803,6 @@
         container.innerHTML = '';
         snapshot.forEach(doc => {
           const st = doc.data();
-          
           if (st.privacy === 'only_me' && st.uid !== currentUser.uid) return;
 
           let mediaHTML = '';
