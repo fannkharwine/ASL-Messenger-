@@ -5,7 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Aung San's Land (Natmauk) - Private Messenger</title>
   
+  <!-- App Logo & Favicon -->
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
   <link rel="manifest" href="manifest.json">
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -76,7 +80,7 @@
       justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color);
       position: sticky; top: 0; z-index: 10; color: #FFFFFF; flex-shrink: 0;
     }
-    header h2 { font-size: 18px; color: var(--gold-bright); font-weight: 700; letter-spacing: 0.5px; }
+    header h2 { font-size: 18px; color: var(--gold-bright); font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
 
     .icon-btn {
       background: none; border: none; color: var(--gold-color); font-size: 18px;
@@ -86,13 +90,14 @@
 
     .btn {
       background: var(--primary-color); color: var(--gold-bright); border: 1px solid var(--gold-color); padding: 10px 16px;
-      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; font-size: 13px;
+      border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; font-size: 13px; text-align: center; text-decoration: none; display: inline-block;
     }
     .btn:hover { background: var(--primary-hover); box-shadow: 0 0 10px rgba(212,175,55,0.4); }
     .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
     .btn-gold { background: var(--gold-color); color: #000; border: none; font-weight: bold; }
     .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; }
     .btn-danger { background: #d93025; color: #fff; border: none; }
+    .btn-download { background: #28a745; color: #fff; border: none; margin-top: 10px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
     .input-field {
       width: 100%; padding: 10px 12px; margin-bottom: 10px;
@@ -216,6 +221,33 @@
 
     .auth-box { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--gold-color); margin-top: 10px; text-align: left; }
     .status-card { background: var(--card-bg); border-radius: 10px; padding: 12px; margin: 8px 16px; border: 1px solid var(--border-color); }
+
+    /* MESSAGE DESIGN FOR LOGIN SCREEN */
+    .msg-login-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 18px;
+      padding: 14px 18px;
+      color: #1C1E21;
+      max-width: 320px;
+      margin: 0 auto 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      border: 2px solid var(--gold-color);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+    .msg-login-card::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 30px;
+      border-width: 10px 10px 0;
+      border-style: solid;
+      border-color: rgba(255, 255, 255, 0.95) transparent;
+      display: block;
+      width: 0;
+    }
   </style>
 </head>
 <body onclick="app.enableAudioContext()">
@@ -227,28 +259,38 @@
     <i class="fa-solid fa-phone-volume"></i> <span id="callBubbleTime">00:00</span>
   </div>
 
-  <!-- AUTH / SIGN IN SCREEN -->
+  <!-- AUTH / SIGN IN SCREEN WITH MESSAGE BUBBLE & LOGO DESIGN -->
   <div id="authScreen" class="screen active" style="background: linear-gradient(135deg, #4A0012 0%, #800020 50%, #2A000A 100%); color: white;">
     <div style="padding: 24px 20px; text-align: center; margin: auto 0; overflow-y: auto;">
       
-      <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.1); border: 2px solid var(--gold-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-        <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: var(--gold-bright);"></i>
+      <!-- LOGO PNG INTEGRATION -->
+      <div style="width: 90px; height: 90px; margin: 0 auto 12px; border-radius: 50%; overflow: hidden; border: 2px solid var(--gold-color); box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+        <img src="logo.png" alt="App Logo" style="width: 100%; height: 100%; object-fit: cover;">
       </div>
 
-      <h1 style="font-size: 20px; color: var(--gold-bright); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">
-        Aung San's Land
-      </h1>
-      <p style="font-size: 11px; color: #E0E0E0; margin-bottom: 16px;">Private Encrypted Messenger</p>
+      <!-- MESSAGE BUBBLE STYLE LOGIN HEADER -->
+      <div class="msg-login-card">
+        <img src="logo.png" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--gold-color);">
+        <div style="text-align: left;">
+          <h4 style="font-size: 13px; color: var(--primary-color); font-weight: bold;">Aung San's Land</h4>
+          <p style="font-size: 11px; color: #555;">Private Encrypted Messenger သို့ ကြိုဆိုပါသည်!</p>
+        </div>
+      </div>
+
+      <!-- DIRECT DOWNLOAD APK BUTTON FOR USERS -->
+      <a href="logo.png" download="ASL_Messenger.apk" class="btn btn-download">
+        <i class="fa-solid fa-download"></i> App File (APK) Download ရယူရန်
+      </a>
+
+      <div style="display: flex; align-items: center; margin: 16px 0 12px;">
+        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
+        <span style="padding:0 10px; font-size:10px; color: var(--gold-color);">အကောင့်ဝင်ရန် ရွေးချယ်ပါ</span>
+        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
+      </div>
 
       <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
         <i class="fa-brands fa-google" style="color: #EA4335;"></i> Google ဖြင့် ဝင်မည်
       </button>
-
-      <div style="display: flex; align-items: center; margin: 12px 0;">
-        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
-        <span style="padding:0 10px; font-size:10px; color: var(--gold-color);">သို့မဟုတ် EMAIL / PHONE ဖြင့်</span>
-        <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
-      </div>
 
       <div class="auth-box">
         <label style="color: var(--text-main);">Email သို့မဟုတ် ဖုန်းနံပါတ်</label>
@@ -273,7 +315,7 @@
   <!-- MAIN DASHBOARD -->
   <div id="mainDashboard" class="screen">
     <header>
-      <h2 id="appHeaderTitle">Aung San's Land</h2>
+      <h2><img src="logo.png" style="width: 28px; height: 28px; border-radius: 50%; vertical-align: middle;"> Aung San's Land</h2>
       <div>
         <button class="icon-btn" onclick="app.openModal('addFriendModal')"><i class="fa-solid fa-user-plus"></i></button>
         <button class="icon-btn" onclick="app.openModal('createGroupModal')"><i class="fa-solid fa-users"></i></button>
@@ -304,7 +346,7 @@
     <div id="statusTab" class="tab-content hidden">
       <div class="list-item" onclick="app.openModal('postStatusModal')">
         <div class="avatar-wrapper">
-          <img id="statusMyAvatar" src="https://picsum.photos/id/64/200" class="avatar">
+          <img id="statusMyAvatar" src="logo.png" class="avatar">
           <div style="position:absolute; bottom:0; right:0; background:var(--gold-color); color:black; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:bold;">+</div>
         </div>
         <div class="item-details">
@@ -321,7 +363,7 @@
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
           <label style="cursor:pointer; display:inline-block; position:relative;">
-            <img id="settingsAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:84px; height:84px;">
+            <img id="settingsAvatar" src="logo.png" class="avatar" style="width:84px; height:84px;">
             <div style="position:absolute; bottom:0; right:0; background:var(--gold-color); color:#000; padding:6px; border-radius:50%; font-size:12px;">
               <i class="fa-solid fa-camera"></i>
             </div>
@@ -330,6 +372,11 @@
           <h3 id="settingsName" style="margin-top:6px; color:var(--text-main);">User Name</h3>
           <p id="settingsPersonalId" onclick="app.copyUID()" style="font-size:11px; color:var(--primary-color); word-break:break-all; cursor:pointer; margin-top:2px; font-weight:600;" title="Click to copy UID">UID: - <i class="fa-regular fa-copy"></i></p>
         </div>
+
+        <!-- APP DIRECT DOWNLOAD LINK IN SETTINGS -->
+        <a href="logo.png" download="ASL_Messenger.apk" class="btn btn-download" style="margin-bottom: 12px;">
+          <i class="fa-solid fa-file-arrow-down"></i> App Download Link တိုက်ရိုက်ရယူရန်
+        </a>
 
         <!-- PROFILE & BIO -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
@@ -436,7 +483,7 @@
 
     <div class="chat-header" id="normalChatHeader">
       <button class="icon-btn" style="color:#fff;" onclick="app.closeChat()"><i class="fa-solid fa-arrow-left"></i></button>
-      <img id="activeChatAvatar" src="https://picsum.photos/id/64/200" class="avatar" style="width:36px; height:36px;">
+      <img id="activeChatAvatar" src="logo.png" class="avatar" style="width:36px; height:36px;">
       <div style="flex:1;">
         <div id="activeChatTitle" style="font-weight:600; font-size:14px; color:var(--gold-bright);">User</div>
         <div id="activeChatSub" style="font-size:10px; color:#E0E0E0;">Offline</div>
@@ -477,7 +524,7 @@
     </div>
 
     <div class="video-container" id="videoContainer">
-      <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
+      <img id="callTargetAvatar" src="logo.png" class="call-avatar">
       <video id="remoteVideo" autoplay playsinline class="hidden"></video>
       <video id="localVideo" autoplay playsinline muted class="hidden"></video>
     </div>
@@ -576,6 +623,7 @@
 
 <!-- Sound Audio Elements -->
 <audio id="ringtoneAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
+<audio id="dialingAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1358/1358-preview.mp3"></audio>
 <audio id="msgAudio" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
 
 <script>
@@ -668,7 +716,8 @@
       auth.createUserWithEmailAndPassword(email, password)
         .then(res => {
           db.collection('users').doc(res.user.uid).set({
-            contactInput: rawInput
+            contactInput: rawInput,
+            photo: 'logo.png'
           }, { merge: true });
           alert('အကောင့်အောင်မြင်စွာ ပြုလုပ်ပြီးပါပြီ!');
         })
@@ -689,7 +738,7 @@
         uid: user.uid,
         name: user.displayName || user.email || "Natmauk User",
         email: user.email || "",
-        photo: user.photoURL || "https://picsum.photos/200"
+        photo: user.photoURL || "logo.png"
       }, { merge: true });
     }
 
@@ -714,6 +763,20 @@
       audio.play().then(() => { audio.pause(); }).catch(() => {});
     }
 
+    // Caller Side Sound (Messenger Dialing Sound)
+    playDialingSound() {
+      const audio = document.getElementById('dialingAudio');
+      audio.currentTime = 0;
+      audio.play().catch(()=>{});
+    }
+
+    stopDialingSound() {
+      const audio = document.getElementById('dialingAudio');
+      audio.pause();
+      audio.currentTime = 0;
+    }
+
+    // Receiver Side Sound (Incoming Ringtone)
     playRingtoneWithVibration() {
       const audio = document.getElementById('ringtoneAudio');
       audio.currentTime = 0;
@@ -737,7 +800,7 @@
 
     triggerSystemNotification(title, body) {
       if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, { body: body, icon: 'https://picsum.photos/200' });
+        new Notification(title, { body: body, icon: 'logo.png' });
       }
     }
 
@@ -746,7 +809,6 @@
       alert("UID ကို ကူးယူပြီးပါပြီ!");
     }
 
-    // Helper for Time Ago Offline status
     timeAgo(timestamp) {
       if (!timestamp) return 'Offline';
       const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -881,7 +943,7 @@
           db.collection('requests').doc(targetUser.uid).collection('incoming').doc(currentUser.uid).set({
             fromUid: currentUser.uid,
             fromName: currentUser.displayName || currentUser.email || "User",
-            fromPhoto: currentUser.photoURL || "https://picsum.photos/200",
+            fromPhoto: currentUser.photoURL || "logo.png",
             timestamp: firebase.firestore.FieldValue.serverTimestamp()
           }).then(() => {
             alert('Friend Request ပို့လိုက်ပါပြီ!');
@@ -914,7 +976,7 @@
             const req = doc.data();
             list.innerHTML += `
               <div class="list-item">
-                <img src="${req.fromPhoto}" class="avatar">
+                <img src="${req.fromPhoto || 'logo.png'}" class="avatar">
                 <div class="item-details"><div class="item-title">${req.fromName}</div></div>
                 <div style="display:flex; gap:6px;">
                   <button class="btn" style="width:auto; padding:6px 10px; font-size:11px;" onclick="app.acceptFriend('${req.fromUid}')">လက်ခံမည်</button>
@@ -956,11 +1018,12 @@
               let existingChat = document.getElementById(`chat_item_${u.uid}`);
 
               const statusText = u.isOnline ? 'Active Now' : this.timeAgo(u.lastSeen);
+              const userPhoto = u.photo || 'logo.png';
 
               const friendPeopleHTML = `
-                <div class="list-item" id="people_${u.uid}" onclick="app.showUserProfile('${u.uid}', '${u.name}', '${u.photo}', '${u.about||''}')">
+                <div class="list-item" id="people_${u.uid}" onclick="app.showUserProfile('${u.uid}', '${u.name}', '${userPhoto}', '${u.about||''}')">
                   <div class="avatar-wrapper">
-                    <img src="${u.photo}" class="avatar">
+                    <img src="${userPhoto}" class="avatar">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
                   </div>
                   <div class="item-details">
@@ -970,9 +1033,9 @@
                 </div>`;
 
               const chatHTML = `
-                <div class="list-item" id="chat_item_${u.uid}" onclick="app.openChat('${u.uid}', '${u.name}', '${u.photo}')">
+                <div class="list-item" id="chat_item_${u.uid}" onclick="app.openChat('${u.uid}', '${u.name}', '${userPhoto}')">
                   <div class="avatar-wrapper">
-                    <img src="${u.photo}" class="avatar">
+                    <img src="${userPhoto}" class="avatar">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
                   </div>
                   <div class="item-details">
@@ -1013,7 +1076,7 @@
 
     showUserProfile(uid, name, photo, bio) {
       selectedProfileUser = { uid, name, photo };
-      document.getElementById('profileModalAvatar').src = photo;
+      document.getElementById('profileModalAvatar').src = photo || 'logo.png';
       document.getElementById('profileModalName').textContent = name;
       document.getElementById('profileModalBio').textContent = bio || 'ကိုယ်ပိုင်အမှတ်မရှိပါ';
       this.openModal('userProfileModal');
@@ -1033,7 +1096,7 @@
     openChat(uid, name, photo) {
       activeChatUid = uid;
       document.getElementById('activeChatTitle').textContent = name;
-      if (photo) document.getElementById('activeChatAvatar').src = photo;
+      document.getElementById('activeChatAvatar').src = photo || 'logo.png';
       document.getElementById('chatView').style.display = 'flex';
 
       db.collection('users').doc(uid).onSnapshot(doc => {
@@ -1220,7 +1283,7 @@
             const u = uDoc.data();
             list.innerHTML += `
               <div class="list-item" onclick="app.forwardTo('${u.uid}')">
-                <img src="${u.photo}" class="avatar" style="width:32px; height:32px;">
+                <img src="${u.photo || 'logo.png'}" class="avatar" style="width:32px; height:32px;">
                 <div class="item-details" style="margin-left:10px;"><div class="item-title">${u.name}</div></div>
               </div>`;
           });
@@ -1244,7 +1307,6 @@
       this.clearSelection();
     }
 
-    // Timer Logic for Call Duration
     startCallTimer() {
       callSeconds = 0;
       clearInterval(callTimerInterval);
@@ -1267,7 +1329,6 @@
       return durationStr;
     }
 
-    // Call Overlay Minimize and Maximize logic
     minimizeCall() {
       document.getElementById('callOverlay').style.display = 'none';
       document.getElementById('callMinimizedBubble').style.display = 'flex';
@@ -1355,7 +1416,6 @@
       peerConnection = new RTCPeerConnection(rtcConfig);
       
       try {
-        // Automatic Permission Request for Mic & Camera
         localStream = await navigator.mediaDevices.getUserMedia({ video: isVideo, audio: true });
       } catch (err) {
         alert("Camera သို့မဟုတ် Microphone သုံးခွင့် (Permission) အကန့်အသတ်ရှိနေပါသည်။ ကျေးဇူးပြု၍ ခွင့်ပြုပေးပါ!");
@@ -1399,7 +1459,7 @@
         offer: { type: offerDescription.type, sdp: offerDescription.sdp },
         callerUid: currentUser.uid,
         callerName: currentUser.displayName || currentUser.email || "User",
-        callerPhoto: currentUser.photoURL || "https://picsum.photos/200",
+        callerPhoto: currentUser.photoURL || "logo.png",
         type: type,
         status: "calling"
       };
@@ -1410,12 +1470,14 @@
       document.getElementById('callStatusText').textContent = type + " - ဖုန်းခေါ်နေသည်...";
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
-      this.playRingtoneWithVibration();
+      
+      // Khaw thu taraf - Messenger Dialing tone thap pya
+      this.playDialingSound();
 
       currentCallListener = callDocRef.onSnapshot(snapshot => {
         const data = snapshot.data();
         if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
-          this.stopRingtoneAndVibration();
+          this.stopDialingSound();
           document.getElementById('callStatusText').textContent = "ချိတ်ဆက်ပြီးပါပြီ";
           this.startCallTimer();
           const answerDescription = new RTCSessionDescription(data.answer);
@@ -1441,9 +1503,11 @@
 
           document.getElementById('callTargetName').textContent = data.callerName;
           document.getElementById('callStatusText').textContent = "ဖုန်းဝင်နေသည် (" + data.type + ")...";
-          document.getElementById('callTargetAvatar').src = data.callerPhoto;
+          document.getElementById('callTargetAvatar').src = data.callerPhoto || 'logo.png';
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
+          
+          // Let khan thu taraf - Ringtone + Vibration
           this.playRingtoneWithVibration();
           this.triggerSystemNotification("Incoming Call", `${data.callerName} ထံမှ ဖုန်းဝင်နေပါသည်။`);
         } else if ((!data || data.status === "ended") && peerConnection) {
@@ -1509,6 +1573,7 @@
     }
 
     cleanupCall() {
+      this.stopDialingSound();
       this.stopRingtoneAndVibration();
       const durationStr = this.stopCallTimer();
 
@@ -1554,12 +1619,12 @@
 
         Object.keys(grouped).forEach(targetUid => {
           db.collection('users').doc(targetUid).get().then(uDoc => {
-            const u = uDoc.data() || { name: 'User', photo: 'https://picsum.photos/200' };
+            const u = uDoc.data() || { name: 'User', photo: 'logo.png' };
             const lastCall = grouped[targetUid][0];
 
             list.innerHTML += `
               <div class="list-item" onclick="app.showCallDetail('${targetUid}', '${u.name}')">
-                <img src="${u.photo}" class="avatar">
+                <img src="${u.photo || 'logo.png'}" class="avatar">
                 <div class="item-details">
                   <div class="item-title">${u.name}</div>
                   <div class="item-sub">${lastCall.direction} - ${lastCall.type} (${grouped[targetUid].length} ကြိမ်)</div>
@@ -1607,7 +1672,7 @@
         db.collection('statuses').add({
           uid: currentUser.uid,
           name: currentUser.displayName || currentUser.email || "User",
-          photo: currentUser.photoURL || "https://picsum.photos/200",
+          photo: currentUser.photoURL || "logo.png",
           text: text,
           media: mediaData,
           mediaType: mediaType,
@@ -1648,7 +1713,7 @@
           container.innerHTML += `
             <div class="status-card">
               <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
-                <img src="${st.photo}" class="avatar" style="width:36px; height:36px;">
+                <img src="${st.photo || 'logo.png'}" class="avatar" style="width:36px; height:36px;">
                 <div>
                   <div style="font-size:14px; font-weight:bold; color:var(--text-main);">${st.name}</div>
                   <div style="font-size:10px; color:var(--text-muted);"><i class="fa-solid fa-earth-americas"></i> ${st.privacy}</div>
@@ -1666,7 +1731,7 @@
       if (!gName) return alert('Group အမည် ဖြည့်ပါ');
       const groupId = "group_" + Date.now();
       db.collection('users').doc(currentUser.uid).collection('friends').doc(groupId).set({ active: true });
-      db.collection('users').doc(groupId).set({ uid: groupId, name: "[Group] " + gName, photo: "https://picsum.photos/id/1025/200" });
+      db.collection('users').doc(groupId).set({ uid: groupId, name: "[Group] " + gName, photo: "logo.png" });
       this.closeModal('createGroupModal');
     }
 
