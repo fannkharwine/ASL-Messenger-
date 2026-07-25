@@ -162,12 +162,17 @@
     .call-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: #0A0204; color: white; z-index: 100; display: none;
-      flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px;
+      flex-direction: column; align-items: center; justify-content: space-between; padding: 30px 20px;
     }
-    .video-container { position: relative; width: 100%; height: 60%; display: flex; justify-content: center; align-items: center; }
+    .video-container { position: relative; width: 100%; height: 55%; display: flex; justify-content: center; align-items: center; }
     video#remoteVideo { width: 100%; height: 100%; object-fit: cover; border-radius: 16px; background: #1A050A; border: 2px solid var(--gold-color); }
     video#localVideo { position: absolute; width: 100px; height: 140px; bottom: 10px; right: 10px; border-radius: 12px; object-fit: cover; border: 2px solid var(--gold-bright); }
     .call-avatar { width: 110px; height: 110px; border-radius: 50%; border: 3px solid var(--gold-color); object-fit: cover; margin-top: 20px; }
+    
+    .call-controls { display: flex; gap: 15px; margin-bottom: 10px; }
+    .control-btn { width: 45px; height: 45px; border-radius: 50%; background: rgba(255,255,255,0.2); border: 1px solid var(--gold-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+    .control-btn.active { background: var(--gold-color); color: black; }
+
     .call-actions { display: flex; gap: 20px; }
     .call-btn { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; border: none; cursor: pointer; color: white; }
     .call-accept-btn { background: #2ab738; }
@@ -180,6 +185,7 @@
     
     .hidden { display: none !important; }
     .media-preview { max-width: 100%; border-radius: 8px; margin-top: 4px; }
+    .download-btn { font-size: 11px; color: var(--gold-bright); text-decoration: underline; cursor: pointer; margin-top: 4px; display: inline-block; }
     
     .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
     .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -257,16 +263,16 @@
 
     <!-- CALLS TAB -->
     <div id="callsTab" class="tab-content hidden">
-      <div class="section-title">ဖုန်းခေါ်ဆိုမှုမှတ်တမ်းများ (Call Logs)</div>
+      <div class="section-title">ဖုန်းခေါ်ဆိုမှုမှတ်တမ်းများ (CALL LOGS)</div>
       <div id="callsList"></div>
     </div>
 
     <!-- PEOPLE TAB -->
     <div id="peopleTab" class="tab-content hidden">
-      <div class="section-title">မိတ်ဆွေတောင်းဆိုမှုများ (Friend Requests)</div>
+      <div class="section-title">မိတ်ဆွေတောင်းဆိုမှုများ (FRIEND REQUESTS)</div>
       <div id="requestsList"></div>
       
-      <div class="section-title">သူငယ်ချင်းများ (Friends)</div>
+      <div class="section-title">သူငယ်ချင်းများ (FRIENDS)</div>
       <div id="friendsList"></div>
     </div>
 
@@ -282,7 +288,7 @@
           <div class="item-sub">စာ၊ ပုံ သို့မဟုတ် ဗီဒီယို တင်ရန် နှိပ်ပါ</div>
         </div>
       </div>
-      <div class="section-title">နောက်ဆုံးတင်ထားသော Status များ</div>
+      <div class="section-title">နောက်ဆုံးတင်ထားသော STATUS များ</div>
       <div id="statusList"></div>
     </div>
 
@@ -338,7 +344,14 @@
             <option value="classic">Classic Ringtone</option>
             <option value="digital">Phone Bell Tone</option>
             <option value="gentle">Gentle Chime</option>
+            <option value="custom">Local File/Custom MP3</option>
           </select>
+
+          <!-- Local Audio Upload Option -->
+          <div id="localRingtoneBox" class="hidden" style="margin-top:5px;">
+            <label>ဖုန်းထဲမှ Sound File (MP3) ရွေးရန်:</label>
+            <input type="file" accept="audio/*" class="input-field" onchange="app.uploadCustomRingtone(event)">
+          </div>
         </div>
 
         <!-- APPEARANCE & PREFERENCES -->
@@ -392,7 +405,8 @@
       <div style="display:flex; gap:10px;">
         <button class="icon-btn" style="color:#fff;" title="Translate" onclick="app.translateSelected()"><i class="fa-solid fa-language"></i></button>
         <button class="icon-btn" style="color:#fff;" title="Forward" onclick="app.openForwardModal()"><i class="fa-solid fa-share"></i></button>
-        <button class="icon-btn" style="color:#fff;" title="Delete" onclick="app.deleteSelectedMessages()"><i class="fa-solid fa-trash"></i></button>
+        <button class="icon-btn" style="color:#fff;" title="Delete For Everyone" onclick="app.deleteSelectedMessages(true)"><i class="fa-solid fa-trash-can"></i></button>
+        <button class="icon-btn" style="color:#fff;" title="Delete For Me" onclick="app.deleteSelectedMessages(false)"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>
 
@@ -411,7 +425,12 @@
     <div id="chatMessages" class="chat-messages"></div>
 
     <div class="chat-input-bar">
-      <label class="icon-btn" style="cursor:pointer;">
+      <!-- Direct Camera Capture & Gallery Upload -->
+      <label class="icon-btn" style="cursor:pointer;" title="Camera Capture">
+        <i class="fa-solid fa-camera"></i>
+        <input type="file" accept="image/*" capture="environment" style="display:none;" onchange="app.handleFileUpload(event)">
+      </label>
+      <label class="icon-btn" style="cursor:pointer;" title="Attach File">
         <i class="fa-solid fa-paperclip"></i>
         <input type="file" accept="image/*,video/*" style="display:none;" onchange="app.handleFileUpload(event)">
       </label>
@@ -431,6 +450,14 @@
       <img id="callTargetAvatar" src="https://picsum.photos/id/64/200" class="call-avatar">
       <video id="remoteVideo" autoplay playsinline class="hidden"></video>
       <video id="localVideo" autoplay playsinline muted class="hidden"></video>
+    </div>
+
+    <!-- Speaker, Mute, Rotate Camera, Switch Video Controls -->
+    <div class="call-controls">
+      <button id="muteBtn" class="control-btn" onclick="app.toggleMute()"><i class="fa-solid fa-microphone-slash"></i></button>
+      <button id="speakerBtn" class="control-btn" onclick="app.toggleSpeaker()"><i class="fa-solid fa-volume-high"></i></button>
+      <button id="switchVideoBtn" class="control-btn" onclick="app.switchCallTypeToVideo()" title="Switch to Video Call"><i class="fa-solid fa-video"></i></button>
+      <button id="rotateCamBtn" class="control-btn hidden" onclick="app.rotateCamera()"><i class="fa-solid fa-camera-rotate"></i></button>
     </div>
 
     <div class="call-actions" style="z-index:2;">
@@ -540,6 +567,10 @@
   let localStream = null;
   let callDocRef = null;
   let currentCallListener = null;
+  let isMuted = false;
+  let isSpeakerOn = true;
+  let currentFacingMode = "user"; // front or environment camera
+
   const rtcConfig = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
 
   let currentUser = null;
@@ -561,6 +592,11 @@
           this.saveUserProfile(user);
           this.setUserOnlineStatus(true);
           
+          // Web Notification Permission
+          if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
+          }
+
           document.getElementById('authScreen').classList.remove('active');
           document.getElementById('mainDashboard').classList.add('active');
           app.initDashboard();
@@ -672,6 +708,12 @@
       if (navigator.vibrate) navigator.vibrate(200);
     }
 
+    triggerSystemNotification(title, body) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body: body, icon: 'https://picsum.photos/200' });
+      }
+    }
+
     copyUID() {
       navigator.clipboard.writeText(currentUser.uid);
       alert("UID ကို ကူးယူပြီးပါပြီ!");
@@ -698,7 +740,6 @@
       this.loadStatusUpdates();
       this.loadCallLogsGrouped();
       this.listenForIncomingCalls();
-      this.listenForGlobalNotifications();
     }
 
     switchTab(tabName) {
@@ -714,9 +755,23 @@
     }
 
     changeRingtone(val) {
-      const audio = document.getElementById('ringtoneAudio');
-      audio.src = ringtoneMap[val] || ringtoneMap.classic;
-      alert("Ringtone ပြောင်းလဲပြီးပါပြီ!");
+      if (val === 'custom') {
+        document.getElementById('localRingtoneBox').classList.remove('hidden');
+      } else {
+        document.getElementById('localRingtoneBox').classList.add('hidden');
+        const audio = document.getElementById('ringtoneAudio');
+        audio.src = ringtoneMap[val] || ringtoneMap.classic;
+        alert("Ringtone ပြောင်းလဲပြီးပါပြီ!");
+      }
+    }
+
+    uploadCustomRingtone(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        document.getElementById('ringtoneAudio').src = url;
+        alert("Local Custom Audio ကို Ringtone အဖြစ် သတ်မှတ်လိုက်ပါပြီ!");
+      }
     }
 
     toggleDarkMode(isDark) {
@@ -736,8 +791,12 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (evt) => {
-          db.collection('users').doc(currentUser.uid).update({ photo: evt.target.result });
-          alert("Profile ဓာတ်ပုံ ပြောင်းပြီးပါပြီ!");
+          const photoData = evt.target.result;
+          db.collection('users').doc(currentUser.uid).update({ photo: photoData }).then(() => {
+            document.getElementById('settingsAvatar').src = photoData;
+            document.getElementById('statusMyAvatar').src = photoData;
+            alert("Profile ဓာတ်ပုံ ပြောင်းပြီးပါပြီ!");
+          });
         };
         reader.readAsDataURL(file);
       }
@@ -805,6 +864,7 @@
             badge.style.display = 'block';
             badge.textContent = snapshot.size;
             this.playNotificationSound();
+            this.triggerSystemNotification("Friend Request", "သင့်ထံ မိတ်ဆွေတောင်းဆိုမှု အသစ်ရောက်ရှိနေပါသည်။");
           } else {
             badge.style.display = 'none';
             list.innerHTML = '<div style="padding:10px 16px; font-size:12px; color:var(--text-muted);">တောင်းဆိုမှုများ မရှိပါ</div>';
@@ -898,7 +958,13 @@
           const el = document.getElementById(`lastMsg_${targetUid}`);
           if (el && !snap.empty) {
             const m = snap.docs[0].data();
-            el.textContent = m.text || '[Media Attachment]';
+            if (m.deletedForEveryone) {
+              el.textContent = 'စာဖျက်လိုက်ပါပြီ';
+            } else if (m.deletedFor && m.deletedFor.includes(currentUser.uid)) {
+              el.textContent = 'စာဖျက်ထားသည်';
+            } else {
+              el.textContent = m.text || '[Attachment]';
+            }
           }
         });
     }
@@ -1004,6 +1070,11 @@
             const msgId = doc.id;
             const isMe = msg.sender === currentUser.uid;
 
+            // Delete for Me Check
+            if (msg.deletedFor && msg.deletedFor.includes(currentUser.uid)) {
+              return;
+            }
+
             if (!isMe && !msg.seen) {
               db.collection('chats').doc(roomId).collection('messages').doc(msgId).update({ seen: true });
             }
@@ -1011,11 +1082,21 @@
             const statusIcon = msg.seen ? '<i class="fa-solid fa-check-double msg-status"></i>' : '<i class="fa-solid fa-check msg-status"></i>';
 
             let mediaHTML = '';
+            if (msg.deletedForEveryone) {
+              container.innerHTML += `
+                <div class="message-bubble ${isMe ? 'sent' : 'received'}" style="font-style:italic; opacity:0.6;">
+                  <i class="fa-solid fa-ban"></i> စာဖျက်လိုက်ပါပြီ
+                </div>`;
+              return;
+            }
+
             if (msg.media) {
               if (msg.mediaType && msg.mediaType.startsWith('video')) {
-                mediaHTML = `<video src="${msg.media}" controls class="media-preview"></video><br>`;
+                mediaHTML = `<video src="${msg.media}" controls class="media-preview"></video><br>
+                <a href="${msg.media}" download="video_${msgId}.mp4" class="download-btn"><i class="fa-solid fa-download"></i> Save Video</a><br>`;
               } else {
-                mediaHTML = `<img src="${msg.media}" class="media-preview"><br>`;
+                mediaHTML = `<img src="${msg.media}" class="media-preview"><br>
+                <a href="${msg.media}" download="image_${msgId}.png" class="download-btn"><i class="fa-solid fa-download"></i> Save Photo</a><br>`;
               }
             }
 
@@ -1058,12 +1139,24 @@
       document.getElementById('normalChatHeader').style.display = 'flex';
     }
 
-    deleteSelectedMessages() {
+    // Delete Messages (Everyone or For Me)
+    deleteSelectedMessages(forEveryone = false) {
       const roomId = this.getChatRoomId();
       selectedMessages.forEach(m => {
-        db.collection('chats').doc(roomId).collection('messages').doc(m.id).delete();
+        const msgRef = db.collection('chats').doc(roomId).collection('messages').doc(m.id);
+        if (forEveryone) {
+          msgRef.update({
+            text: 'ဒီစာကို နှစ်ဖက်လုံးမှ ဖျက်လိုက်ပါပြီ',
+            media: null,
+            deletedForEveryone: true
+          });
+        } else {
+          msgRef.update({
+            deletedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+          });
+        }
       });
-      alert("ရွေးချယ်ထားသော စာများကို ဖျက်လိုက်ပါပြီ!");
+      alert(forEveryone ? "နှစ်ဖက်လုံးမှ ဖျက်လိုက်ပါပြီ!" : "သင့်ဘက်မှသာ ဖျက်လိုက်ပါပြီ!");
       this.clearSelection();
     }
 
@@ -1118,6 +1211,70 @@
       this.clearSelection();
     }
 
+    // Call Actions Controls (Speaker / Mute / Rotate Camera)
+    toggleMute() {
+      if (localStream) {
+        const audioTrack = localStream.getAudioTracks()[0];
+        if (audioTrack) {
+          isMuted = !isMuted;
+          audioTrack.enabled = !isMuted;
+          const btn = document.getElementById('muteBtn');
+          if (isMuted) btn.classList.add('active');
+          else btn.classList.remove('active');
+        }
+      }
+    }
+
+    toggleSpeaker() {
+      const remoteVid = document.getElementById('remoteVideo');
+      isSpeakerOn = !isSpeakerOn;
+      remoteVid.muted = !isSpeakerOn;
+      const btn = document.getElementById('speakerBtn');
+      if (!isSpeakerOn) btn.classList.add('active');
+      else btn.classList.remove('active');
+    }
+
+    async rotateCamera() {
+      if (localStream) {
+        localStream.getVideoTracks().forEach(track => track.stop());
+        currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+        
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: currentFacingMode },
+          audio: true
+        });
+        localStream = newStream;
+        document.getElementById('localVideo').srcObject = newStream;
+
+        const videoSender = peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (videoSender) {
+          videoSender.replaceTrack(newStream.getVideoTracks()[0]);
+        }
+      }
+    }
+
+    async switchCallTypeToVideo() {
+      if (peerConnection && localStream) {
+        const videoTrack = localStream.getVideoTracks()[0];
+        if (!videoTrack) {
+          const vStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          vStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, vStream);
+          });
+          localStream = vStream;
+          document.getElementById('localVideo').srcObject = vStream;
+        }
+        document.getElementById('localVideo').classList.remove('hidden');
+        document.getElementById('remoteVideo').classList.remove('hidden');
+        document.getElementById('callTargetAvatar').classList.add('hidden');
+        document.getElementById('rotateCamBtn').classList.remove('hidden');
+
+        if (callDocRef) {
+          callDocRef.update({ type: 'Video Call' });
+        }
+      }
+    }
+
     async startCall(type) {
       if (!activeChatUid) return;
       const isVideo = type === 'Video Call';
@@ -1133,6 +1290,9 @@
         document.getElementById('localVideo').classList.remove('hidden');
         document.getElementById('remoteVideo').classList.remove('hidden');
         document.getElementById('callTargetAvatar').classList.add('hidden');
+        document.getElementById('rotateCamBtn').classList.remove('hidden');
+      } else {
+        document.getElementById('rotateCamBtn').classList.add('hidden');
       }
 
       peerConnection.ontrack = event => {
@@ -1192,6 +1352,7 @@
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
           this.playRingtoneWithVibration();
+          this.triggerSystemNotification("Incoming Call", `${data.callerName} ထံမှ ဖုန်းဝင်နေပါသည်။`);
 
           this.logCall(data.callerUid, data.type, "Incoming");
         } else if ((!data || data.status === "ended") && peerConnection) {
@@ -1218,6 +1379,7 @@
         document.getElementById('localVideo').classList.remove('hidden');
         document.getElementById('remoteVideo').classList.remove('hidden');
         document.getElementById('callTargetAvatar').classList.add('hidden');
+        document.getElementById('rotateCamBtn').classList.remove('hidden');
       }
 
       peerConnection.ontrack = event => {
@@ -1380,15 +1542,6 @@
               ${mediaHTML}
             </div>`;
         });
-      });
-    }
-
-    listenForGlobalNotifications() {
-      db.collection('users').doc(currentUser.uid).onSnapshot(doc => {
-        const settings = doc.data() || {};
-        if (settings.msgNoti !== false) {
-          // Listen to unseen messages globally
-        }
       });
     }
 
