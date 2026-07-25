@@ -6,7 +6,7 @@
   <title>Aung San's Land (Natmauk) - Private Messenger</title>
   
   <link rel="manifest" href="manifest.json">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <!-- Firebase SDKs (v9 Compat Mode) -->
@@ -46,6 +46,7 @@
 
     body.font-serif { --font-family: 'Merriweather', serif; }
     body.font-mono { --font-family: 'Roboto Mono', monospace; }
+    body.font-unicode { --font-family: 'Padauk', sans-serif; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: var(--font-family); -webkit-tap-highlight-color: transparent; }
 
@@ -80,8 +81,8 @@
       border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: all 0.2s; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px;
     }
     .btn:hover { background: var(--primary-hover); box-shadow: 0 0 10px rgba(212,175,55,0.4); }
-    .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
-    .btn-google:hover { background: #f1f1f1; color: #000; }
+    .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; text-transform: none; }
+    .btn-facebook { background: #1877F2; color: #FFF; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; text-transform: none; }
     .btn-gold { background: var(--gold-color); color: #000; border: none; font-weight: bold; }
     .btn-gold:hover { background: var(--gold-bright); }
     .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; }
@@ -95,7 +96,7 @@
 
     label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
 
-    .tab-content { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+    .tab-content { flex: 1; overflow-y: auto; padding-bottom: 65px; }
 
     nav.tab-bar {
       position: absolute; bottom: 0; left: 0; width: 100%; height: 60px;
@@ -175,7 +176,7 @@
     }
 
     .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 50; display: none; justify-content: center; align-items: center; }
-    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; color: var(--text-main); border: 1px solid var(--gold-color); }
+    .modal-content { background: var(--card-bg); width: 90%; max-width: 380px; border-radius: 12px; padding: 20px; color: var(--text-main); border: 1px solid var(--gold-color); max-height: 85vh; overflow-y: auto; }
     .section-title { padding: 10px 16px 4px; font-size: 12px; font-weight: bold; color: var(--primary-color); text-transform: uppercase; letter-spacing: 0.5px; }
     body.dark-theme .section-title { color: var(--gold-color); }
     
@@ -191,7 +192,7 @@
     input:checked + .slider:before { transform: translateX(20px); }
 
     .auth-box {
-      background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--gold-color); margin-top: 15px; text-align: left;
+      background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--gold-color); margin-top: 10px; text-align: left;
     }
   </style>
 </head>
@@ -199,39 +200,46 @@
 
 <div class="app-container">
 
-  <!-- SECURE AUTH SCREEN -->
+  <!-- AUTH / SIGN IN SCREEN -->
   <div id="authScreen" class="screen active" style="background: linear-gradient(135deg, #4A0012 0%, #800020 50%, #2A000A 100%); color: white;">
     <div style="padding: 24px 20px; text-align: center; margin: auto 0; overflow-y: auto;">
       
-      <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.1); border: 2px solid var(--gold-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-        <i class="fa-solid fa-shield-halved" style="font-size: 38px; color: var(--gold-bright);"></i>
+      <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.1); border: 2px solid var(--gold-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+        <i class="fa-solid fa-shield-halved" style="font-size: 32px; color: var(--gold-bright);"></i>
       </div>
 
-      <h1 style="font-size: 22px; color: var(--gold-bright); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">
-        Aung San's Land (Natmauk)
+      <h1 style="font-size: 20px; color: var(--gold-bright); font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px;">
+        Aung San's Land
       </h1>
-      <p style="font-size: 12px; color: #E0E0E0; margin-bottom: 20px;">Secure Private Encrypted Messenger</p>
+      <p style="font-size: 11px; color: #E0E0E0; margin-bottom: 16px;">Private Encrypted Messenger</p>
 
-      <!-- GOOGLE LOGIN -->
+      <!-- SOCIAL LOGINS -->
       <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
         <i class="fa-brands fa-google" style="color: #EA4335;"></i> Sign in with Google
       </button>
+      <button class="btn btn-facebook" onclick="authApp.loginWithFacebook()">
+        <i class="fa-brands fa-facebook-f"></i> Sign in with Facebook
+      </button>
 
-      <div style="display: flex; align-items: center; margin: 15px 0;">
+      <div style="display: flex; align-items: center; margin: 12px 0;">
         <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
-        <span style="padding:0 10px; font-size:11px; color: var(--gold-color);">OR SIGN IN WITH EMAIL</span>
+        <span style="padding:0 10px; font-size:10px; color: var(--gold-color);">OR WITH PHONE / EMAIL</span>
         <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
       </div>
 
-      <!-- EMAIL / PASSWORD AUTH FORM -->
+      <!-- EMAIL & PHONE AUTH FORM -->
       <div class="auth-box">
-        <label style="color: var(--text-main);">Email Address</label>
-        <input type="email" id="authEmail" class="input-field" placeholder="name@example.com">
+        <label style="color: var(--text-main);">Email or Phone Number</label>
+        <input type="text" id="authEmail" class="input-field" placeholder="email@gmail.com or 09xxxxxxxxx">
         
         <label style="color: var(--text-main);">Password</label>
         <input type="password" id="authPassword" class="input-field" placeholder="••••••••">
 
-        <div style="display: flex; gap: 8px; margin-top: 5px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <a href="#" onclick="authApp.forgotPassword()" style="font-size: 11px; color: var(--primary-color); text-decoration: none; font-weight: 600;">Forgot Password?</a>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
           <button class="btn" onclick="authApp.loginWithEmail()" style="flex:1;">Sign In</button>
           <button class="btn btn-gold" onclick="authApp.signUpWithEmail()" style="flex:1;">Sign Up</button>
         </div>
@@ -299,7 +307,7 @@
       <div id="statusList"></div>
     </div>
 
-    <!-- SETTINGS TAB -->
+    <!-- SETTINGS TAB (Viber Style Expanded) -->
     <div id="settingsTab" class="tab-content hidden">
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
@@ -311,21 +319,35 @@
             <input type="file" accept="image/*" style="display:none;" onchange="app.uploadProfilePhoto(event)">
           </label>
           <h3 id="settingsName" style="margin-top:6px; color:var(--text-main);">User Name</h3>
-          <p id="settingsPersonalId" style="font-size:11px; color:var(--primary-color); word-break:break-all; user-select:all; margin-top:2px;">UID: -</p>
+          <p id="settingsPersonalId" onclick="app.copyUID()" style="font-size:11px; color:var(--primary-color); word-break:break-all; cursor:pointer; margin-top:2px; font-weight:600;" title="Click to copy UID">UID: - <i class="fa-regular fa-copy"></i></p>
         </div>
 
+        <!-- PROFILE & BIO SECTION -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <h4 style="margin-bottom:8px; color:var(--text-main);">Profile & Bio</h4>
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-regular fa-id-card"></i> Profile & Bio Data</h4>
           <label>Display Name</label>
           <input type="text" id="setName" class="input-field">
+          <label>Phone / Email ID</label>
+          <input type="text" id="setContact" class="input-field" placeholder="09xxxxxxxxx or email">
           <label>About / Bio</label>
-          <input type="text" id="setAbout" class="input-field">
+          <textarea id="setAbout" class="input-field" style="height:60px; resize:none;" placeholder="Write your Bio Data..."></textarea>
           <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()">Save Profile</button>
+        </div>
+
+        <!-- LANGUAGE SETTINGS -->
+        <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-language"></i> Language (ဘာသာစကား)</h4>
+          <select id="languageSelect" class="input-field" onchange="app.changeLanguage(this.value)">
+            <option value="en">English (US)</option>
+            <option value="mm">မြန်မာစာ (Myanmar)</option>
+            <option value="jp">日本語 (Japanese)</option>
+            <option value="cn">中文 (Chinese)</option>
+          </select>
         </div>
 
         <!-- PRIVACY & SECURITY -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <h4 style="margin-bottom:8px; color:var(--text-main);">Privacy & Security</h4>
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-user-shield"></i> Privacy & Security</h4>
           
           <div class="setting-row">
             <span style="font-size:13px; color:var(--text-main);">Read Receipts (Seen)</span>
@@ -350,11 +372,16 @@
             </div>
             <i class="fa-solid fa-chevron-right" style="color:var(--text-muted); font-size:12px;"></i>
           </div>
+
+          <div class="setting-row" onclick="authApp.changePassword()" style="cursor:pointer;">
+            <span style="font-size:13px; color:var(--text-main);">Change Account Password</span>
+            <i class="fa-solid fa-key" style="color:var(--text-muted); font-size:12px;"></i>
+          </div>
         </div>
 
-        <!-- PREFERENCES -->
+        <!-- APPEARANCE & PREFERENCES -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
-          <h4 style="margin-bottom:8px; color:var(--text-main);">Appearance & Preferences</h4>
+          <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-palette"></i> Appearance & Preferences</h4>
           
           <div class="setting-row">
             <span style="font-size:13px; color:var(--text-main);">Dark Mode</span>
@@ -367,8 +394,9 @@
           <label style="margin-top:8px;">Font Style</label>
           <select id="fontSelect" class="input-field" onchange="app.changeFont(this.value)">
             <option value="default">Default (Inter)</option>
-            <option value="serif">Serif</option>
-            <option value="mono">Monospace</option>
+            <option value="unicode">Myanmar (Padauk)</option>
+            <option value="serif">Serif (Merriweather)</option>
+            <option value="mono">Monospace (Roboto)</option>
           </select>
         </div>
 
@@ -457,7 +485,8 @@
   <div id="addFriendModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">Add Friend</h3>
-      <input type="text" id="friendSearchQuery" class="input-field" placeholder="Paste Target User UID">
+      <label>Search by Phone Number, Email or UID</label>
+      <input type="text" id="friendSearchQuery" class="input-field" placeholder="Phone / Email / User UID">
       <div style="display:flex; justify-content:flex-end; gap:10px;">
         <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')">Cancel</button>
         <button class="btn" onclick="app.sendFriendRequest()">Send Request</button>
@@ -520,8 +549,6 @@
 
   class AuthController {
     constructor() {
-      auth.getRedirectResult().catch(e => console.log("Redirect error: ", e.message));
-
       auth.onAuthStateChanged(user => {
         if (user) {
           currentUser = user;
@@ -547,25 +574,64 @@
 
     loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithRedirect(provider);
+      // Popup login ဖြင့် ERR_CONNECTION_REFUSED မဖြစ်စေရန် ပြောင်းလဲထားပါသည်
+      auth.signInWithPopup(provider).catch(e => alert("Google Login Error: " + e.message));
+    }
+
+    loginWithFacebook() {
+      const provider = new firebase.auth.FacebookAuthProvider();
+      auth.signInWithPopup(provider).catch(e => alert("Facebook Login Error: " + e.message));
+    }
+
+    getFormattedEmail(input) {
+      if (input.includes('@')) return input;
+      // Phone number ရိုက်ထည့်ပါက Internal Email Format သို့ ပြောင်းလဲခြင်း
+      return input.replace(/[^0-9]/g, '') + "@aslmessenger.app";
     }
 
     loginWithEmail() {
-      const email = document.getElementById('authEmail').value.trim();
+      const rawInput = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value.trim();
-      if (!email || !password) return alert('Please enter Email and Password');
+      if (!rawInput || !password) return alert('Please enter Email/Phone and Password');
 
-      auth.signInWithEmailAndPassword(email, password).catch(err => alert(err.message));
+      const email = this.getFormattedEmail(rawInput);
+      auth.signInWithEmailAndPassword(email, password).catch(err => alert("Sign In Failed: " + err.message));
     }
 
     signUpWithEmail() {
-      const email = document.getElementById('authEmail').value.trim();
+      const rawInput = document.getElementById('authEmail').value.trim();
       const password = document.getElementById('authPassword').value.trim();
-      if (!email || !password) return alert('Please enter Email and Password');
+      if (!rawInput || !password) return alert('Please enter Email/Phone and Password');
 
+      const email = this.getFormattedEmail(rawInput);
       auth.createUserWithEmailAndPassword(email, password)
-        .then(res => alert('Account created successfully!'))
-        .catch(err => alert(err.message));
+        .then(res => {
+          db.collection('users').doc(res.user.uid).set({
+            contactInput: rawInput
+          }, { merge: true });
+          alert('Account created successfully!');
+        })
+        .catch(err => alert("Sign Up Failed: " + err.message));
+    }
+
+    forgotPassword() {
+      const rawInput = prompt("Enter your registered Email to reset password:");
+      if (rawInput && rawInput.includes('@')) {
+        auth.sendPasswordResetEmail(rawInput.trim())
+          .then(() => alert("Password Reset Email Sent! Check your inbox."))
+          .catch(err => alert("Error: " + err.message));
+      } else {
+        alert("Please provide a valid Email Address!");
+      }
+    }
+
+    changePassword() {
+      const newPassword = prompt("Enter new password (min 6 characters):");
+      if (newPassword && newPassword.length >= 6) {
+        currentUser.updatePassword(newPassword)
+          .then(() => alert("Password updated successfully!"))
+          .catch(err => alert("Error: " + err.message));
+      }
     }
 
     saveUserProfile(user) {
@@ -599,6 +665,11 @@
       }).catch(() => {});
     }
 
+    copyUID() {
+      navigator.clipboard.writeText(currentUser.uid);
+      alert("UID Copied to Clipboard!");
+    }
+
     verify2StepPin() {
       const enteredPin = document.getElementById('pinInput').value;
       db.collection('users').doc(currentUser.uid).get().then(doc => {
@@ -619,8 +690,9 @@
         if (u) {
           document.getElementById('setName').value = u.name || '';
           document.getElementById('settingsName').textContent = u.name || '';
-          document.getElementById('settingsPersonalId').textContent = "UID: " + u.uid;
+          document.getElementById('settingsPersonalId').innerHTML = "UID: " + u.uid + " <i class='fa-regular fa-copy'></i>";
           document.getElementById('setAbout').value = u.about || '';
+          document.getElementById('setContact').value = u.contactInput || u.email || '';
           if (u.photo) {
             document.getElementById('settingsAvatar').src = u.photo;
             document.getElementById('statusMyAvatar').src = u.photo;
@@ -657,9 +729,14 @@
     }
 
     changeFont(fontStyle) {
-      document.body.classList.remove('font-serif', 'font-mono');
+      document.body.classList.remove('font-serif', 'font-mono', 'font-unicode');
       if (fontStyle === 'serif') document.body.classList.add('font-serif');
       if (fontStyle === 'mono') document.body.classList.add('font-mono');
+      if (fontStyle === 'unicode') document.body.classList.add('font-unicode');
+    }
+
+    changeLanguage(lang) {
+      alert("Language changed to: " + lang.toUpperCase());
     }
 
     setup2StepVerification() {
@@ -685,20 +762,43 @@
     saveProfile() {
       const name = document.getElementById('setName').value.trim();
       const about = document.getElementById('setAbout').value.trim();
-      db.collection('users').doc(currentUser.uid).update({ name: name, about: about });
-      alert("Profile Saved!");
+      const contactInput = document.getElementById('setContact').value.trim();
+      
+      db.collection('users').doc(currentUser.uid).update({
+        name: name,
+        about: about,
+        contactInput: contactInput
+      });
+      alert("Profile & Bio Saved!");
     }
 
+    // Facebook-style Friend Request System
     sendFriendRequest() {
-      const targetUid = document.getElementById('friendSearchQuery').value.trim();
-      if (!targetUid || targetUid === currentUser.uid) return alert('Enter valid Target User UID!');
+      const query = document.getElementById('friendSearchQuery').value.trim();
+      if (!query || query === currentUser.uid) return alert('Enter valid Target User Phone / Email / UID!');
 
-      db.collection('requests').doc(targetUid).collection('incoming').doc(currentUser.uid).set({
-        fromUid: currentUser.uid,
-        fromName: currentUser.displayName || currentUser.email || "User"
-      }).then(() => {
-        alert('Friend Request Sent!');
-        this.closeModal('addFriendModal');
+      // User search query
+      db.collection('users').get().then(snapshot => {
+        let targetUser = null;
+        snapshot.forEach(doc => {
+          const u = doc.data();
+          if (u.uid === query || u.email === query || u.contactInput === query) {
+            targetUser = u;
+          }
+        });
+
+        if (targetUser) {
+          db.collection('requests').doc(targetUser.uid).collection('incoming').doc(currentUser.uid).set({
+            fromUid: currentUser.uid,
+            fromName: currentUser.displayName || currentUser.email || "User",
+            fromPhoto: currentUser.photoURL || "https://picsum.photos/200"
+          }).then(() => {
+            alert('Friend Request Sent to ' + targetUser.name + '!');
+            this.closeModal('addFriendModal');
+          });
+        } else {
+          alert('User not found!');
+        }
       });
     }
 
@@ -707,12 +807,19 @@
         .onSnapshot(snapshot => {
           const list = document.getElementById('requestsList');
           list.innerHTML = '';
+          if (snapshot.empty) {
+            list.innerHTML = '<div style="padding:10px 16px; font-size:12px; color:var(--text-muted);">No incoming requests</div>';
+          }
           snapshot.forEach(doc => {
             const req = doc.data();
             list.innerHTML += `
               <div class="list-item">
+                <img src="${req.fromPhoto}" class="avatar">
                 <div class="item-details"><div class="item-title">${req.fromName}</div></div>
-                <button class="btn" style="width:auto; padding:6px 12px;" onclick="app.acceptFriend('${req.fromUid}')">Accept</button>
+                <div style="display:flex; gap:6px;">
+                  <button class="btn" style="width:auto; padding:6px 10px; font-size:11px;" onclick="app.acceptFriend('${req.fromUid}')">Accept</button>
+                  <button class="btn btn-secondary" style="width:auto; padding:6px 10px; font-size:11px;" onclick="app.declineFriend('${req.fromUid}')">Decline</button>
+                </div>
               </div>`;
           });
         });
@@ -722,7 +829,11 @@
       db.collection('users').doc(currentUser.uid).collection('friends').doc(targetUid).set({ active: true });
       db.collection('users').doc(targetUid).collection('friends').doc(currentUser.uid).set({ active: true });
       db.collection('requests').doc(currentUser.uid).collection('incoming').doc(targetUid).delete();
-      alert('Friend accepted!');
+      alert('Friend Request Accepted!');
+    }
+
+    declineFriend(targetUid) {
+      db.collection('requests').doc(currentUser.uid).collection('incoming').doc(targetUid).delete();
     }
 
     loadFriendsAndChats() {
@@ -747,7 +858,7 @@
                   </div>
                   <div class="item-details">
                     <div class="item-top"><span class="item-title">${u.name}</span></div>
-                    <div class="item-sub">${u.isOnline ? 'Online' : 'Offline'}</div>
+                    <div class="item-sub">${u.about || (u.isOnline ? 'Online' : 'Offline')}</div>
                   </div>
                 </div>`;
 
