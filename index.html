@@ -32,7 +32,7 @@
       --sent-text: #FFFFFF;
       --received-msg: #FFFFFF;
       --received-text: #1C1E21;
-      --font-family: 'Inter', sans-serif; /* Messenger Standard Font Size & Family */
+      --font-family: 'Inter', sans-serif;
     }
 
     body.dark-theme {
@@ -164,7 +164,6 @@
     .message-bubble.received { align-self: flex-start; background: var(--received-msg); color: var(--received-text); border-bottom-left-radius: 2px; border: 1px solid var(--border-color); }
     .msg-status { font-size: 10px; margin-left: 5px; color: var(--gold-bright); }
     
-    /* Telegram style selection checkmark */
     .msg-checkbox {
       display: none; position: absolute; top: 50%; left: -25px; transform: translateY(-50%);
       width: 18px; height: 18px; border: 2px solid var(--gold-bright); border-radius: 50%;
@@ -265,11 +264,6 @@
         </div>
       </div>
 
-      <!-- App Download link သီးသန့် (Chrome တွင် သပ်သပ်ဒေါင်းရန်) -->
-      <a href="https://github.com/fannkharwine/ASL-Messenger-/releases" target="_blank" class="btn" style="background: #28a745; color: #fff; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <i class="fa-solid fa-download"></i> Chrome တွင် App (APK) ဒေါင်းရန်လင့်ခ်
-      </a>
-
       <div style="display: flex; align-items: center; margin: 16px 0 12px;">
         <hr style="flex:1; border:none; border-top:1px solid rgba(255,255,255,0.2);">
         <span style="padding:0 10px; font-size:10px; color: var(--gold-color);">အကောင့်ဝင်ရန် ရွေးချယ်ပါ</span>
@@ -297,6 +291,17 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- OTP VERIFICATION MODAL -->
+  <div id="otpModal" class="modal">
+    <div class="modal-content" style="text-align:center;">
+      <h3 style="margin-bottom:10px; color:var(--primary-color);">ဖုန်းနံပါတ် အတည်ပြုခြင်း (OTP)</h3>
+      <p style="font-size:12px; color:var(--text-muted); margin-bottom:15px;">သင့်ဖုန်းနံပါတ်သို့ ပို့လိုက်သော ၆ လုံးပါ Code ကို ထည့်ပါ (Demo Code: <strong style="color:var(--gold-bright);">123456</strong>)</p>
+      <input type="text" id="otpInput" class="input-field" placeholder="123456" maxlength="6" style="text-align:center; font-size:18px; letter-spacing:4px;">
+      <button class="btn" onclick="authApp.verifyOtp()" style="margin-bottom:8px;">အတည်ပြုမည်</button>
+      <button class="btn btn-secondary" onclick="app.closeModal('otpModal')">မလုပ်တော့ပါ</button>
     </div>
   </div>
 
@@ -346,7 +351,7 @@
       <div id="statusList"></div>
     </div>
 
-    <!-- SETTINGS TAB (Viber Style Full Options + Block List & Privacy & Passcode) -->
+    <!-- SETTINGS TAB -->
     <div id="settingsTab" class="tab-content hidden">
       <div style="padding: 16px;">
         <div style="text-align:center; margin-bottom: 16px; position:relative;">
@@ -361,7 +366,6 @@
           <p id="settingsPersonalId" onclick="app.copyUID()" style="font-size:11px; color:var(--primary-color); word-break:break-all; cursor:pointer; margin-top:2px; font-weight:600;" title="Click to copy UID">UID: - <i class="fa-regular fa-copy"></i></p>
         </div>
 
-        <!-- PROFILE & BIO SETTINGS -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-regular fa-id-card"></i> Profile & Account</h4>
           <label>Display Name (အမည်ပြောင်းရန်)</label>
@@ -373,7 +377,6 @@
           <button class="btn" style="padding:8px; font-size:13px;" onclick="app.saveProfile()">Profile သိမ်းဆည်းမည်</button>
         </div>
 
-        <!-- PRIVACY & SECURITY / BLOCK LIST / PASSCODE -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-shield-halved"></i> Privacy & Security</h4>
           
@@ -391,7 +394,6 @@
           </div>
         </div>
 
-        <!-- NOTIFICATIONS & SOUND SETTINGS (Every Sound Included) -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-bell"></i> Notifications & Sounds</h4>
           
@@ -403,29 +405,14 @@
             </label>
           </div>
 
-          <div class="setting-row">
-            <span style="font-size:13px; color:var(--text-main);">Friend Request သတိပေးသံ</span>
-            <label class="switch">
-              <input type="checkbox" id="friendNotiToggle" checked onchange="app.toggleSetting('friendNoti', this.checked)">
-              <span class="slider"></span>
-            </label>
-          </div>
-
           <label style="margin-top:8px;">ဖုန်းခေါ်ဆိုမှု ဖုန်းသံ (Ringtone Choice)</label>
           <select id="ringtoneSelect" class="input-field" onchange="app.changeRingtone(this.value)">
             <option value="classic">Classic Ringtone</option>
             <option value="digital">Phone Bell Tone</option>
             <option value="gentle">Gentle Chime</option>
-            <option value="custom">Local File/Custom MP3</option>
           </select>
-
-          <div id="localRingtoneBox" class="hidden" style="margin-top:5px;">
-            <label>ဖုန်းထဲမှ Sound File (MP3) ရွေးရန်:</label>
-            <input type="file" accept="audio/*" class="input-field" onchange="app.uploadCustomRingtone(event)">
-          </div>
         </div>
 
-        <!-- APPEARANCE & FONT SIZE -->
         <div style="background: var(--card-bg); border-radius: 8px; padding: 12px; margin-bottom: 12px; border: 1px solid var(--border-color);">
           <h4 style="margin-bottom:8px; color:var(--text-main); font-size:14px;"><i class="fa-solid fa-palette"></i> Appearance & Font</h4>
           
@@ -476,7 +463,8 @@
         <button class="icon-btn" style="color:#fff;" title="Translate" onclick="app.translateSelected()"><i class="fa-solid fa-language"></i></button>
         <button class="icon-btn" style="color:#fff;" title="Forward" onclick="app.openForwardModal()"><i class="fa-solid fa-share"></i></button>
         <button class="icon-btn" style="color:#fff;" title="Delete For Everyone" onclick="app.deleteSelectedMessages(true)"><i class="fa-solid fa-trash-can"></i></button>
-        <button class="icon-btn" style="color:#fff;" title="Delete For Me" onclick="app.deleteSelectedMessages(false)"><i class="fa-solid fa-trash"></i></button>
+        <button class="icon-btn" style="color:#fff;" title="Delete For Me (Sender only)" onclick="app.deleteSelectedMessagesForMe()"><i class="fa-solid fa-eraser"></i></button>
+        <button class="icon-btn" style="color:#fff;" title="Delete For Me (Standard)" onclick="app.deleteSelectedMessages(false)"><i class="fa-solid fa-trash"></i></button>
       </div>
     </div>
 
@@ -586,7 +574,6 @@
     </div>
   </div>
 
-  <!-- PROFILE MODAL WITH BLOCK BUTTON -->
   <div id="userProfileModal" class="modal">
     <div class="modal-content" style="text-align:center;">
       <img id="profileModalAvatar" src="" class="avatar" style="width:90px; height:90px; margin-bottom:10px;">
@@ -602,7 +589,6 @@
     </div>
   </div>
 
-  <!-- BLOCK LIST MODAL -->
   <div id="blockListModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">ဘလော့ထားသောသူများ (Blocked Users)</h3>
@@ -629,7 +615,7 @@
 
 </div>
 
-<!-- Sound Audio Elements (All Ringtone Enabled Everywhere) -->
+<!-- Sound Audio Elements -->
 <audio id="ringtoneAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
 <audio id="dialingAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1358/1358-preview.mp3"></audio>
 <audio id="msgAudio" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
@@ -670,6 +656,7 @@
   let mediaRecorder = null;
   let audioChunks = [];
   let isRecording = false;
+  let pendingSignUpData = null;
 
   let ringtoneMap = {
     classic: "https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3",
@@ -723,7 +710,28 @@
       const password = document.getElementById('authPassword').value.trim();
       if (!rawInput || !password) return alert('Email/Phone နှင့် Password ဖြည့်ပါ');
 
-      const email = this.getFormattedEmail(rawInput);
+      // Phone number check -> trigger OTP verification security
+      if (!rawInput.includes('@')) {
+        pendingSignUpData = { email: this.getFormattedEmail(rawInput), password, rawInput };
+        alert("ဖုန်းနံပါတ်သို့ အတည်ပြုကုဒ် (OTP) ပို့လိုက်ပါပြီ။ Code ကို ထည့်သွင်းအတည်ပြုပါ။");
+        app.openModal('otpModal');
+      } else {
+        this.executeSignUp(this.getFormattedEmail(rawInput), password, rawInput);
+      }
+    }
+
+    verifyOtp() {
+      const code = document.getElementById('otpInput').value.trim();
+      if (code === "123456" && pendingSignUpData) {
+        app.closeModal('otpModal');
+        this.executeSignUp(pendingSignUpData.email, pendingSignUpData.password, pendingSignUpData.rawInput);
+        pendingSignUpData = null;
+      } else {
+        alert("OTP ကုဒ် မှားယွင်းနေပါသည်။ (Demo Code: 123456)");
+      }
+    }
+
+    executeSignUp(email, password, rawInput) {
       auth.createUserWithEmailAndPassword(email, password)
         .then(res => {
           db.collection('users').doc(res.user.uid).set({
@@ -777,6 +785,7 @@
     playDialingSound() {
       const audio = document.getElementById('dialingAudio');
       audio.currentTime = 0;
+      audio.volume = 0.2; // ခေါ်ဆိုသူဘက်တွင် အသံတိုးတိုးဖြစ်စေရန်
       audio.play().catch(()=>{});
     }
 
@@ -789,6 +798,7 @@
     playRingtoneWithVibration() {
       const audio = document.getElementById('ringtoneAudio');
       audio.currentTime = 0;
+      audio.volume = 1.0; // လက်ခံသူဘက်တွင် အသံအပြည့်မြည်စေရန်
       audio.play().catch(()=>{});
       if (navigator.vibrate) navigator.vibrate([1000, 500, 1000, 500]);
     }
@@ -865,23 +875,9 @@
     }
 
     changeRingtone(val) {
-      if (val === 'custom') {
-        document.getElementById('localRingtoneBox').classList.remove('hidden');
-      } else {
-        document.getElementById('localRingtoneBox').classList.add('hidden');
-        const audio = document.getElementById('ringtoneAudio');
-        audio.src = ringtoneMap[val] || ringtoneMap.classic;
-        alert("Ringtone ပြောင်းလဲပြီးပါပြီ!");
-      }
-    }
-
-    uploadCustomRingtone(e) {
-      const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        document.getElementById('ringtoneAudio').src = url;
-        alert("Custom Audio ကို Ringtone အဖြစ် သတ်မှတ်လိုက်ပါပြီ!");
-      }
+      const audio = document.getElementById('ringtoneAudio');
+      audio.src = ringtoneMap[val] || ringtoneMap.classic;
+      alert("Ringtone ပြောင်းလဲပြီးပါပြီ!");
     }
 
     toggleDarkMode(isDark) {
@@ -1085,7 +1081,7 @@
             const m = snap.docs[0].data();
             if (m.deletedForEveryone) {
               el.textContent = 'စာဖျက်လိုက်ပါပြီ';
-            } else if (m.deletedFor && m.deletedFor.includes(currentUser.uid)) {
+            } else if (m.deletedForMe && m.deletedForMe === currentUser.uid) {
               el.textContent = 'စာဖျက်ထားသည်';
             } else {
               el.textContent = m.text || '[Media]';
@@ -1100,7 +1096,6 @@
       document.getElementById('profileModalName').textContent = name;
       document.getElementById('profileModalBio').textContent = bio || 'ကိုယ်ပိုင်အမှတ်မရှိပါ';
       
-      // Check if blocked to update button text
       db.collection('users').doc(currentUser.uid).collection('blocked').doc(uid).get().then(doc => {
         const blockBtn = document.getElementById('profileBlockBtn');
         if (doc.exists) {
@@ -1243,7 +1238,6 @@
       }
     }
 
-    // Voice Message Record Function
     toggleVoiceRecording() {
       const micBtn = document.getElementById('micBtn');
       if (!isRecording) {
@@ -1290,7 +1284,7 @@
             const msgId = doc.id;
             const isMe = msg.sender === currentUser.uid;
 
-            if (msg.deletedFor && msg.deletedFor.includes(currentUser.uid)) return;
+            if (msg.deletedForMe && msg.deletedForMe === currentUser.uid) return;
 
             if (!isMe && !msg.seen) {
               db.collection('chats').doc(roomId).collection('messages').doc(msgId).update({ seen: true });
@@ -1368,11 +1362,20 @@
         const msgRef = db.collection('chats').doc(roomId).collection('messages').doc(m.id);
         if (forEveryone) {
           msgRef.update({ text: 'ဒီစာကို နှစ်ဖက်လုံးမှ ဖျက်လိုက်ပါပြီ', media: null, deletedForEveryone: true });
-        } else {
-          msgRef.update({ deletedFor: firebase.firestore.FieldValue.arrayUnion(currentUser.uid) });
         }
       });
-      alert(forEveryone ? "နှစ်ဖက်လုံးမှ ဖျက်လိုက်ပါပြီ!" : "သင့်ဘက်မှသာ ဖျက်လိုက်ပါပြီ!");
+      alert("နှစ်ဖက်လုံးမှ ဖျက်လိုက်ပါပြီ!");
+      this.clearSelection();
+    }
+
+    deleteSelectedMessagesForMe() {
+      const roomId = this.getChatRoomId();
+      selectedMessages.forEach(m => {
+        const msgRef = db.collection('chats').doc(roomId).collection('messages').doc(m.id);
+        // ပြောတဲ့လူဘက်မှာပဲ ပျက်စေရန် (ဟိုဘက်မှာ ဆက်ပေါ်နေစေရန်)
+        msgRef.update({ deletedForMe: currentUser.uid });
+      });
+      alert("သင့်ဘက်မှသာ ပျက်သွားပါပြီ (ဟိုဘက်တွင် ဆက်ရှိနေမည်)!");
       this.clearSelection();
     }
 
@@ -1582,7 +1585,7 @@
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
       
-      this.playDialingSound();
+      this.playDialingSound(); // ခေါ်ဆိုသူဘက်တွင် တိုးတိုးလေးမြည်စေရန်
 
       currentCallListener = callDocRef.onSnapshot(snapshot => {
         const data = snapshot.data();
@@ -1613,7 +1616,7 @@
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
           
-          this.playRingtoneWithVibration();
+          this.playRingtoneWithVibration(); // လက်ခံသူဘက်တွင် အသံအပြည့်မြည်စေရန်
           this.triggerSystemNotification("Incoming Call", `${data.callerName} ထံမှ ဖုန်းဝင်နေပါသည်။`);
         } else if ((!data || data.status === "ended") && peerConnection) {
           this.cleanupCall();
