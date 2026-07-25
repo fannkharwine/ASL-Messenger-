@@ -836,7 +836,6 @@
       db.collection('requests').doc(currentUser.uid).collection('incoming').doc(targetUid).delete();
     }
 
-    // FIX: Unique Target Map ဖြင့် တစ်ယောက်လျှင် တစ်ခါသာ ပေါ်စေရန် ပြင်ဆင်ခြင်း
     loadFriendsAndChats() {
       db.collection('users').doc(currentUser.uid).collection('friends')
         .onSnapshot(snapshot => {
@@ -1119,7 +1118,6 @@
       this.clearSelection();
     }
 
-    // FIX: Voice & Video Call Sync ပြဿနာ ပြင်ဆင်ခြင်း
     async startCall(type) {
       if (!activeChatUid) return;
       const isVideo = type === 'Video Call';
