@@ -82,7 +82,6 @@
     }
     .btn:hover { background: var(--primary-hover); box-shadow: 0 0 10px rgba(212,175,55,0.4); }
     .btn-google { background: #FFFFFF; color: #333; border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 8px; }
-    .btn-facebook { background: #1877F2; color: #FFF; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
     .btn-gold { background: var(--gold-color); color: #000; border: none; font-weight: bold; }
     .btn-secondary { background: var(--border-color); color: var(--text-main); border: none; }
     .btn-danger { background: #d93025; color: #fff; border: none; }
@@ -131,13 +130,11 @@
     .item-title { font-weight: 600; color: var(--text-main); font-size: 15px; }
     .item-sub { font-size: 13px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* Action Bar Selection */
     .selection-bar {
       display: none; background: var(--primary-color); color: white; padding: 10px 16px;
       justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold-color);
     }
 
-    /* Active Chat View */
     .chat-view {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--bg-color); z-index: 30; display: none; flex-direction: column;
@@ -312,7 +309,7 @@
           <label>Phone / Email ID</label>
           <input type="text" id="setContact" class="input-field" placeholder="09xxxxxxxxx သို့ email">
           <label>About / Bio</label>
-          <textarea id="setAbout" class="input-field" style="height:60px; resize:none;" placeholder="Bio အချက်အလက် ရေးပါ..."></textarea>
+          <textarea id="setAbout" class="input-field" style="height:60px; resize:none;" placeholder="ကိုယ်ပိုင်အမှတ်ထည့်သွင်းရန်"></textarea>
           <button class="btn" style="padding:8px; font-size:12px;" onclick="app.saveProfile()">Profile သိမ်းဆည်းမည်</button>
         </div>
 
@@ -339,7 +336,7 @@
           <label style="margin-top:8px;">ဖုန်းခေါ်ဆိုမှု ဖုန်းသံ (Ringtone Choice)</label>
           <select id="ringtoneSelect" class="input-field" onchange="app.changeRingtone(this.value)">
             <option value="classic">Classic Ringtone</option>
-            <option value="digital">Digital Bell</option>
+            <option value="digital">Phone Bell Tone</option>
             <option value="gentle">Gentle Chime</option>
           </select>
         </div>
@@ -387,7 +384,6 @@
 
   <!-- CHAT VIEW -->
   <div id="chatView" class="chat-view">
-    <!-- Chat Action Bar (When message selected) -->
     <div id="selectionBar" class="selection-bar">
       <div style="display:flex; align-items:center; gap:10px;">
         <button class="icon-btn" style="color:#fff;" onclick="app.clearSelection()"><i class="fa-solid fa-xmark"></i></button>
@@ -444,7 +440,6 @@
   </div>
 
   <!-- MODALS -->
-  <!-- ADD FRIEND MODAL -->
   <div id="addFriendModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">သူငယ်ချင်းသစ်ထည့်မည်</h3>
@@ -457,7 +452,6 @@
     </div>
   </div>
 
-  <!-- CREATE GROUP MODAL -->
   <div id="createGroupModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">Group ပြုလုပ်မည်</h3>
@@ -469,7 +463,6 @@
     </div>
   </div>
 
-  <!-- POST STATUS MODAL -->
   <div id="postStatusModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">Status အသစ်တင်မည်</h3>
@@ -492,7 +485,6 @@
     </div>
   </div>
 
-  <!-- USER PROFILE MODAL (Telegram Style) -->
   <div id="userProfileModal" class="modal">
     <div class="modal-content" style="text-align:center;">
       <img id="profileModalAvatar" src="" class="avatar" style="width:90px; height:90px; margin-bottom:10px;">
@@ -507,7 +499,6 @@
     </div>
   </div>
 
-  <!-- FORWARD MODAL -->
   <div id="forwardModal" class="modal">
     <div class="modal-content">
       <h3 style="margin-bottom:10px; color:var(--primary-color);">Forward လွှဲပို့ရန် ရွေးပါ</h3>
@@ -516,7 +507,6 @@
     </div>
   </div>
 
-  <!-- CALL HISTORY DETAIL MODAL -->
   <div id="callDetailModal" class="modal">
     <div class="modal-content">
       <h3 id="callDetailTitle" style="margin-bottom:10px; color:var(--primary-color);">ဖုန်းခေါ်ဆိုမှု မှတ်တမ်း</h3>
@@ -527,9 +517,9 @@
 
 </div>
 
-<!-- Audio Sounds -->
-<audio id="ringtoneAudio" loop src="https://actions.google.com/sounds/v1/ringtones/incoming_call.ogg"></audio>
-<audio id="msgAudio" src="https://actions.google.com/sounds/v1/messages/notification_high_intensity.ogg"></audio>
+<!-- Sound Audio Elements -->
+<audio id="ringtoneAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
+<audio id="msgAudio" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
 
 <script>
   const firebaseConfig = {
@@ -549,16 +539,18 @@
   let peerConnection = null;
   let localStream = null;
   let callDocRef = null;
+  let currentCallListener = null;
   const rtcConfig = { iceServers: [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }] };
 
   let currentUser = null;
   let activeChatUid = null;
   let selectedMessages = [];
   let selectedProfileUser = null;
+
   let ringtoneMap = {
-    classic: "https://actions.google.com/sounds/v1/ringtones/incoming_call.ogg",
-    digital: "https://actions.google.com/sounds/v1/alarms/digital_watch_alarm.ogg",
-    gentle: "https://actions.google.com/sounds/v1/ambiences/morning_birds.ogg"
+    classic: "https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3",
+    digital: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
+    gentle: "https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"
   };
 
   class AuthController {
@@ -649,9 +641,35 @@
 
   class AppController {
     enableAudioContext() {
-      document.getElementById('ringtoneAudio').play().then(() => {
-        document.getElementById('ringtoneAudio').pause();
+      const audio = document.getElementById('ringtoneAudio');
+      audio.play().then(() => {
+        audio.pause();
       }).catch(() => {});
+    }
+
+    playRingtoneWithVibration() {
+      const audio = document.getElementById('ringtoneAudio');
+      audio.currentTime = 0;
+      audio.play().catch(()=>{});
+      if (navigator.vibrate) {
+        navigator.vibrate([1000, 500, 1000, 500]);
+      }
+    }
+
+    stopRingtoneAndVibration() {
+      const audio = document.getElementById('ringtoneAudio');
+      audio.pause();
+      audio.currentTime = 0;
+      if (navigator.vibrate) {
+        navigator.vibrate(0);
+      }
+    }
+
+    playNotificationSound() {
+      const audio = document.getElementById('msgAudio');
+      audio.currentTime = 0;
+      audio.play().catch(()=>{});
+      if (navigator.vibrate) navigator.vibrate(200);
     }
 
     copyUID() {
@@ -786,6 +804,7 @@
           if (snapshot.size > 0) {
             badge.style.display = 'block';
             badge.textContent = snapshot.size;
+            this.playNotificationSound();
           } else {
             badge.style.display = 'none';
             list.innerHTML = '<div style="padding:10px 16px; font-size:12px; color:var(--text-muted);">တောင်းဆိုမှုများ မရှိပါ</div>';
@@ -817,23 +836,28 @@
       db.collection('requests').doc(currentUser.uid).collection('incoming').doc(targetUid).delete();
     }
 
+    // FIX: Unique Target Map ဖြင့် တစ်ယောက်လျှင် တစ်ခါသာ ပေါ်စေရန် ပြင်ဆင်ခြင်း
     loadFriendsAndChats() {
       db.collection('users').doc(currentUser.uid).collection('friends')
         .onSnapshot(snapshot => {
+          const friendUids = new Set();
+          snapshot.forEach(doc => friendUids.add(doc.id));
+
           const chatsList = document.getElementById('chatsList');
           const friendsList = document.getElementById('friendsList');
           chatsList.innerHTML = '';
           friendsList.innerHTML = '';
 
-          snapshot.forEach(doc => {
-            const friendUid = doc.id;
+          friendUids.forEach(friendUid => {
             db.collection('users').doc(friendUid).onSnapshot(uSnap => {
               const u = uSnap.data();
               if (!u) return;
 
-              // Telegram style profile viewing from People tab
+              let existingPeople = document.getElementById(`people_${u.uid}`);
+              let existingChat = document.getElementById(`chat_item_${u.uid}`);
+
               const friendPeopleHTML = `
-                <div class="list-item" onclick="app.showUserProfile('${u.uid}', '${u.name}', '${u.photo}', '${u.about||''}')">
+                <div class="list-item" id="people_${u.uid}" onclick="app.showUserProfile('${u.uid}', '${u.name}', '${u.photo}', '${u.about||''}')">
                   <div class="avatar-wrapper">
                     <img src="${u.photo}" class="avatar">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
@@ -845,7 +869,7 @@
                 </div>`;
 
               const chatHTML = `
-                <div class="list-item" onclick="app.openChat('${u.uid}', '${u.name}', '${u.photo}')">
+                <div class="list-item" id="chat_item_${u.uid}" onclick="app.openChat('${u.uid}', '${u.name}', '${u.photo}')">
                   <div class="avatar-wrapper">
                     <img src="${u.photo}" class="avatar">
                     <div class="online-indicator ${u.isOnline ? 'online' : ''}"></div>
@@ -856,8 +880,11 @@
                   </div>
                 </div>`;
 
-              chatsList.innerHTML += chatHTML;
-              friendsList.innerHTML += friendPeopleHTML;
+              if (existingPeople) existingPeople.outerHTML = friendPeopleHTML;
+              else friendsList.innerHTML += friendPeopleHTML;
+
+              if (existingChat) existingChat.outerHTML = chatHTML;
+              else chatsList.innerHTML += chatHTML;
 
               this.loadLastMessage(u.uid);
             });
@@ -881,7 +908,7 @@
       selectedProfileUser = { uid, name, photo };
       document.getElementById('profileModalAvatar').src = photo;
       document.getElementById('profileModalName').textContent = name;
-      document.getElementById('profileModalBio').textContent = bio || 'Bio မရှိပါ';
+      document.getElementById('profileModalBio').textContent = bio || 'ကိုယ်ပိုင်အမှတ်မရှိပါ';
       this.openModal('userProfileModal');
     }
 
@@ -993,7 +1020,7 @@
               }
             }
 
-            const isSelected = selectedMessages.includes(msgId);
+            const isSelected = selectedMessages.some(m => m.id === msgId);
 
             container.innerHTML += `
               <div id="msg_${msgId}" class="message-bubble ${isMe ? 'sent' : 'received'} ${isSelected ? 'selected' : ''}" 
@@ -1092,6 +1119,7 @@
       this.clearSelection();
     }
 
+    // FIX: Voice & Video Call Sync ပြဿနာ ပြင်ဆင်ခြင်း
     async startCall(type) {
       if (!activeChatUid) return;
       const isVideo = type === 'Video Call';
@@ -1136,17 +1164,19 @@
       document.getElementById('callStatusText').textContent = type + " - ဖုန်းခေါ်နေသည်...";
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
-      document.getElementById('ringtoneAudio').play().catch(()=>{});
+      this.playRingtoneWithVibration();
 
-      callDocRef.onSnapshot(snapshot => {
+      currentCallListener = callDocRef.onSnapshot(snapshot => {
         const data = snapshot.data();
         if (peerConnection && !peerConnection.currentRemoteDescription && data && data.answer) {
-          document.getElementById('ringtoneAudio').pause();
+          this.stopRingtoneAndVibration();
           document.getElementById('callStatusText').textContent = "ချိတ်ဆက်ပြီးပါပြီ";
           const answerDescription = new RTCSessionDescription(data.answer);
           peerConnection.setRemoteDescription(answerDescription);
         }
-        if (!data) this.cleanupCall();
+        if (!data || data.status === "ended") {
+          this.cleanupCall();
+        }
       });
 
       this.logCall(activeChatUid, type, "Outgoing");
@@ -1163,17 +1193,17 @@
           document.getElementById('callTargetAvatar').src = data.callerPhoto;
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
-          document.getElementById('ringtoneAudio').play().catch(()=>{});
+          this.playRingtoneWithVibration();
 
           this.logCall(data.callerUid, data.type, "Incoming");
-        } else if (!data && peerConnection) {
+        } else if ((!data || data.status === "ended") && peerConnection) {
           this.cleanupCall();
         }
       });
     }
 
     async acceptCall() {
-      document.getElementById('ringtoneAudio').pause();
+      this.stopRingtoneAndVibration();
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callStatusText').textContent = "ချိတ်ဆက်ပြီးပါပြီ";
 
@@ -1212,12 +1242,15 @@
     }
 
     async endCall() {
-      if (callDocRef) await callDocRef.delete();
+      if (callDocRef) {
+        await callDocRef.update({ status: "ended" }).catch(()=>{});
+        await callDocRef.delete().catch(()=>{});
+      }
       this.cleanupCall();
     }
 
     cleanupCall() {
-      document.getElementById('ringtoneAudio').pause();
+      this.stopRingtoneAndVibration();
       document.getElementById('callOverlay').style.display = 'none';
       document.getElementById('localVideo').classList.add('hidden');
       document.getElementById('remoteVideo').classList.add('hidden');
@@ -1225,6 +1258,7 @@
 
       if (localStream) { localStream.getTracks().forEach(track => track.stop()); localStream = null; }
       if (peerConnection) { peerConnection.close(); peerConnection = null; }
+      if (currentCallListener) { currentCallListener(); currentCallListener = null; }
       callDocRef = null;
     }
 
@@ -1235,7 +1269,6 @@
       });
     }
 
-    // Call logs grouped by user
     loadCallLogsGrouped() {
       db.collection('users').doc(currentUser.uid).collection('callLogs').orderBy('timestamp', 'desc').onSnapshot(snap => {
         const list = document.getElementById('callsList');
