@@ -240,7 +240,7 @@
     }
   </style>
 </head>
-<body onclick="app.enableAudioContext()">
+<body onclick="app.enableAudioContext(); app.playClickSound();">
 
 <div class="app-container">
 
@@ -619,6 +619,8 @@
 <audio id="ringtoneAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1359/1359-preview.mp3"></audio>
 <audio id="dialingAudio" loop src="https://assets.mixkit.co/active_storage/sfx/1358/1358-preview.mp3"></audio>
 <audio id="msgAudio" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
+<!-- Click/Tap Sound Element -->
+<audio id="clickAudio" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
 <script>
   const firebaseConfig = {
@@ -713,7 +715,7 @@
       // Phone number check -> trigger OTP verification security
       if (!rawInput.includes('@')) {
         pendingSignUpData = { email: this.getFormattedEmail(rawInput), password, rawInput };
-        alert("ဖုန်းနံပါတ်သို့ အတည်ပြုကုဒ် (OTP) ပို့လိုက်ပါပြီ။ Code ကို ထည့်သွင်းအတည်ပြုပါ။");
+        alert("ဖုန်းနံပါတ်သို့ အတည်ပြုကုဒ် (OTP) ို့လိုက်ပါပြီ။ Code ကို ထည့်သွင်းအတည်ပြုပါ။ (Demo Code: 123456)");
         app.openModal('otpModal');
       } else {
         this.executeSignUp(this.getFormattedEmail(rawInput), password, rawInput);
@@ -782,10 +784,19 @@
       audio.play().then(() => { audio.pause(); }).catch(() => {});
     }
 
+    playClickSound() {
+      const audio = document.getElementById('clickAudio');
+      if (audio) {
+        audio.currentTime = 0;
+        audio.volume = 0.4;
+        audio.play().catch(() => {});
+      }
+    }
+
     playDialingSound() {
       const audio = document.getElementById('dialingAudio');
       audio.currentTime = 0;
-      audio.volume = 0.2; // ခေါ်ဆိုသူဘက်တွင် အသံတိုးတိုးဖြစ်စေရန်
+      audio.volume = 0.2;
       audio.play().catch(()=>{});
     }
 
@@ -798,7 +809,7 @@
     playRingtoneWithVibration() {
       const audio = document.getElementById('ringtoneAudio');
       audio.currentTime = 0;
-      audio.volume = 1.0; // လက်ခံသူဘက်တွင် အသံအပြည့်မြည်စေရန်
+      audio.volume = 1.0;
       audio.play().catch(()=>{});
       if (navigator.vibrate) navigator.vibrate([1000, 500, 1000, 500]);
     }
@@ -1372,7 +1383,6 @@
       const roomId = this.getChatRoomId();
       selectedMessages.forEach(m => {
         const msgRef = db.collection('chats').doc(roomId).collection('messages').doc(m.id);
-        // ပြောတဲ့လူဘက်မှာပဲ ပျက်စေရန် (ဟိုဘက်မှာ ဆက်ပေါ်နေစေရန်)
         msgRef.update({ deletedForMe: currentUser.uid });
       });
       alert("သင့်ဘက်မှသာ ပျက်သွားပါပြီ (ဟိုဘက်တွင် ဆက်ရှိနေမည်)!");
@@ -1585,7 +1595,7 @@
       document.getElementById('acceptCallBtn').classList.add('hidden');
       document.getElementById('callOverlay').style.display = 'flex';
       
-      this.playDialingSound(); // ခေါ်ဆိုသူဘက်တွင် တိုးတိုးလေးမြည်စေရန်
+      this.playDialingSound();
 
       currentCallListener = callDocRef.onSnapshot(snapshot => {
         const data = snapshot.data();
@@ -1616,7 +1626,7 @@
           document.getElementById('acceptCallBtn').classList.remove('hidden');
           document.getElementById('callOverlay').style.display = 'flex';
           
-          this.playRingtoneWithVibration(); // လက်ခံသူဘက်တွင် အသံအပြည့်မြည်စေရန်
+          this.playRingtoneWithVibration();
           this.triggerSystemNotification("Incoming Call", `${data.callerName} ထံမှ ဖုန်းဝင်နေပါသည်။`);
         } else if ((!data || data.status === "ended") && peerConnection) {
           this.cleanupCall();
