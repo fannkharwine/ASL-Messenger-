@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#7360F2">
+  <meta name="description" content="ASL Messenger - Professional Private Messaging Application">
+  <title>ASL Messenger</title>
+  
+  <!-- Favicons and PWA Manifest -->
+  <link rel="icon" type="image/png" href="assets/images/logo.png">
+  <link rel="apple-touch-icon" href="assets/images/logo.png">
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Web Fonts & Font Awesome Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@400;700&family=Roboto+Mono:wght@400;500&family=Padauk:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Application CSS Bundles -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/call.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/dark.css">
+
+  <!-- Firebase SDKs (v9 Compat Mode) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-messaging-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+<body onclick="app.enableAudioContext(); app.playClickSound();">
+
+<div class="app-container">
+
+  <!-- Floating Minimized Call Bubble -->
+  <div id="callMinimizedBubble" class="call-minimized-bubble hidden" onclick="app.maximizeCall()" role="button" aria-label="Maximize active call">
+    <i class="fa-solid fa-phone-volume"></i>
+    <span id="callBubbleTime">00:00</span>
+  </div>
+
+  <!-- AUTH SCREEN (LOGIN & REGISTER) -->
+  <div id="authScreen" class="screen active auth-screen-bg">
+    <div class="auth-wrapper">
+      
+      <div class="brand-header">
+        <div class="brand-logo-container">
+          <img src="assets/images/logo.png" alt="ASL Messenger Logo" class="brand-logo">
+        </div>
+        <h1 class="brand-title">ASL Messenger</h1>
+        <p class="brand-subtitle">Private Encrypted Messenger</p>
+      </div>
+
+      <div class="auth-card glassmorphism">
+        <div class="auth-tabs">
+          <button id="tabLoginBtn" class="auth-tab-btn active" onclick="authApp.switchAuthMode('login')">Login</button>
+          <button id="tabRegisterBtn" class="auth-tab-btn" onclick="authApp.switchAuthMode('register')">Register</button>
+        </div>
+
+        <!-- Login / Register Form Controls -->
+        <form id="authForm" onsubmit="event.preventDefault();">
+          <div id="usernameFieldGroup" class="form-group hidden">
+            <label for="authUsername">Display Name</label>
+            <input type="text" id="authUsername" class="input-field" placeholder="John Doe" autocomplete="nickname">
+          </div>
+
+          <div class="form-group">
+            <label for="authEmail">Email or Phone Number</label>
+            <input type="text" id="authEmail" class="input-field" placeholder="user@example.com or +1234567890" autocomplete="username">
+          </div>
+          
+          <div class="form-group">
+            <label for="authPassword">Password</label>
+            <input type="password" id="authPassword" class="input-field" placeholder="••••••••" autocomplete="current-password">
+          </div>
+
+          <div id="loginOptions" class="auth-options">
+            <a href="#" onclick="authApp.forgotPassword()" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <button id="authPrimaryBtn" class="btn btn-viber" onclick="authApp.handlePrimaryAuth()">Sign In</button>
+        </form>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <button class="btn btn-google" onclick="authApp.loginWithGoogle()">
+          <i class="fa-brands fa-google" style="color: #EA4335;"></i> Continue with Google
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- OTP VERIFICATION MODAL -->
+  <div id="otpModal" class="modal">
+    <div class="modal-content glassmorphism text-center">
+      <h3 class="modal-title">Phone Verification</h3>
+      <p class="modal-subtitle">Enter the 6-digit verification code sent to your mobile device.</p>
+      <input type="text" id="otpInput" class="input-field otp-input" placeholder="123456" maxlength="6">
+      <button class="btn btn-viber" onclick="authApp.verifyOtp()">Verify Code</button>
+      <button class="btn btn-secondary" onclick="app.closeModal('otpModal')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD -->
+  <div id="mainDashboard" class="screen">
+    <header class="main-header glassmorphism">
+      <div class="header-branding">
+        <img src="assets/images/logo.png" alt="Logo" class="header-logo">
+        <h2 id="headerAppTitle">ASL Messenger</h2>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="app.openModal('searchModal')" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <button class="icon-btn" onclick="app.openModal('addFriendModal')" aria-label="Add Contact"><i class="fa-solid fa-user-plus"></i></button>
+        <button class="icon-btn" onclick="app.openModal('createGroupModal')" aria-label="Create Group"><i class="fa-solid fa-users"></i></button>
+      </div>
+    </header>
+
+    <!-- CHATS TAB -->
+    <div id="chatsTab" class="tab-content">
+      <div class="chat-filters">
+        <button class="filter-chip active" onclick="app.filterChats('all')">All</button>
+        <button class="filter-chip" onclick="app.filterChats('pinned')">Pinned</button>
+        <button class="filter-chip" onclick="app.filterChats('archived')">Archived</button>
+      </div>
+      <div id="chatsList" class="list-container"></div>
+    </div>
+
+    <!-- CALLS TAB -->
+    <div id="callsTab" class="tab-content hidden">
+      <div class="section-title">Recent Calls</div>
+      <div id="callsList" class="list-container"></div>
+    </div>
+
+    <!-- CONTACTS TAB -->
+    <div id="contactsTab" class="tab-content hidden">
+      <div class="contacts-action-bar">
+        <button class="btn btn-secondary btn-sm" onclick="app.openModal('qrAddModal')"><i class="fa-solid fa-qrcode"></i> QR Add</button>
+        <button class="btn btn-viber btn-sm" onclick="app.openModal('addFriendModal')"><i class="fa-solid fa-plus"></i> Add Contact</button>
+      </div>
+      <div class="section-title">Friend Requests</div>
+      <div id="requestsList" class="list-container"></div>
+      
+      <div class="section-title">All Contacts</div>
+      <div id="friendsList" class="list-container"></div>
+    </div>
+
+    <!-- STATUS TAB -->
+    <div id="statusTab" class="tab-content hidden">
+      <div class="list-item" onclick="app.openModal('postStatusModal')">
+        <div class="avatar-wrapper">
+          <img id="statusMyAvatar" src="assets/images/logo.png" class="avatar" alt="My Profile">
+          <div class="avatar-add-badge">+</div>
+        </div>
+        <div class="item-details">
+          <div class="item-title">My Status</div>
+          <div class="item-sub">Tap to add status update</div>
+        </div>
+      </div>
+      <div class="section-title">Recent Status Updates</div>
+      <div id="statusList" class="list-container"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settingsTab" class="tab-content hidden">
+      <div class="settings-container">
+        <div class="profile-summary-card glassmorphism">
+          <label class="avatar-picker-label">
+            <img id="settingsAvatar" src="assets/images/logo.png" class="avatar avatar-lg" alt="Profile Picture">
+            <div class="avatar-edit-overlay"><i class="fa-solid fa-camera"></i></div>
+            <input type="file" accept="image/*" class="hidden-input" onchange="app.uploadProfilePhoto(event)">
+          </label>
+          <h3 id="settingsName" class="profile-name">User Name</h3>
+          <p id="settingsPersonalId" class="profile-uid" onclick="app.copyUID()" title="Click to copy UID">
+            UID: - <i class="fa-regular fa-copy"></i>
+          </p>
+        </div>
+
+        <div class="settings-group glassmorphism">
+          <h4><i class="fa-regular fa-id-card"></i> Account Settings</h4>
+          <label for="setName">Display Name</label>
+          <input type="text" id="setName" class="input-field">
+          <label for="setContact">Phone / Email ID</label>
+          <input type="text" id="setContact" class="input-field">
+          <label for="setAbout">Bio / About Status</label>
+          <textarea id="setAbout" class="input-field textarea-field" placeholder="Available"></textarea>
+          <button class="btn btn-viber btn-sm" onclick="app.saveProfile()">Save Profile</button>
+        </div>
+
+        <div class="settings-group glassmorphism">
+          <h4><i class="fa-solid fa-shield-halved"></i> Privacy & Security</h4>
+          <div class="setting-row" onclick="app.openBlockListModal()">
+            <span>Blocked Users</span>
+            <i class="fa-solid fa-chevron-right text-muted"></i>
+          </div>
+          <div class="setting-row">
+            <span>Passcode Lock</span>
+            <label class="switch">
+              <input type="checkbox" id="passcodeToggle" onchange="app.togglePasscode(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-group glassmorphism">
+          <h4><i class="fa-solid fa-bell"></i> Notifications & Sounds</h4>
+          <div class="setting-row">
+            <span>Message Notifications</span>
+            <label class="switch">
+              <input type="checkbox" id="msgNotiToggle" checked onchange="app.toggleSetting('msgNoti', this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <label for="ringtoneSelect">Ringtone Preference</label>
+          <select id="ringtoneSelect" class="input-field" onchange="app.changeRingtone(this.value)">
+            <option value="classic">Viber Classic</option>
+            <option value="digital">Digital Ring</option>
+            <option value="gentle">Gentle Chime</option>
+          </select>
+        </div>
+
+        <div class="settings-group glassmorphism">
+          <h4><i class="fa-solid fa-palette"></i> Appearance & Customization</h4>
+          <div class="setting-row">
+            <span>Dark Mode</span>
+            <label class="switch">
+              <input type="checkbox" id="darkModeToggle" onchange="app.toggleDarkMode(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <label for="fontSelect">Font Style</label>
+          <select id="fontSelect" class="input-field" onchange="app.changeFont(this.value)">
+            <option value="default">Standard (Inter)</option>
+            <option value="unicode">Myanmar (Padauk)</option>
+            <option value="serif">Serif (Merriweather)</option>
+            <option value="mono">Monospace (Roboto)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-danger" onclick="authApp.logout()">Logout</button>
+      </div>
+    </div>
+
+    <!-- TAB NAVIGATION BAR -->
+    <nav class="tab-bar glassmorphism">
+      <div class="tab-item active" onclick="app.switchTab('chats')">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>Chats</span>
+        <span id="chatBadge" class="badge">0</span>
+      </div>
+      <div class="tab-item" onclick="app.switchTab('calls')">
+        <i class="fa-solid fa-phone"></i>
+        <span>Calls</span>
+      </div>
+      <div class="tab-item" onclick="app.switchTab('contacts')">
+        <i class="fa-solid fa-address-book"></i>
+        <span>Contacts</span>
+        <span id="reqBadge" class="badge">0</span>
+      </div>
+      <div class="tab-item" onclick="app.switchTab('status')">
+        <i class="fa-solid fa-circle-notch"></i>
+        <span>Status</span>
+      </div>
+      <div class="tab-item" onclick="app.switchTab('settings')">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- CHAT VIEW CONTAINER -->
+  <div id="chatView" class="chat-view">
+    
+    <!-- Bulk Selection Bar -->
+    <div id="selectionBar" class="selection-bar glassmorphism">
+      <div class="selection-info">
+        <button class="icon-btn text-white" onclick="app.clearSelection()" aria-label="Cancel Selection"><i class="fa-solid fa-xmark"></i></button>
+        <span id="selectedCount">0 selected</span>
+      </div>
+      <div class="selection-actions">
+        <button class="icon-btn text-white" title="Translate" onclick="app.translateSelected()"><i class="fa-solid fa-language"></i></button>
+        <button class="icon-btn text-white" title="Reply" onclick="app.replyToSelected()"><i class="fa-solid fa-reply"></i></button>
+        <button class="icon-btn text-white" title="Forward" onclick="app.openForwardModal()"><i class="fa-solid fa-share"></i></button>
+        <button class="icon-btn text-white" title="Delete For Everyone" onclick="app.deleteSelectedMessages(true)"><i class="fa-solid fa-trash-can"></i></button>
+        <button class="icon-btn text-white" title="Delete For Me" onclick="app.deleteSelectedMessages(false)"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+
+    <!-- Active Chat Header -->
+    <div class="chat-header glassmorphism" id="normalChatHeader">
+      <button class="icon-btn text-white" onclick="app.closeChat()" aria-label="Back to Conversations"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="avatar-wrapper" onclick="app.openProfileModalFromChat()">
+        <img id="activeChatAvatar" src="assets/images/logo.png" class="avatar avatar-sm" alt="Contact Avatar">
+        <div id="activeHeaderOnlineDot" class="online-indicator"></div>
+      </div>
+      <div class="chat-header-info" onclick="app.openProfileModalFromChat()">
+        <div id="activeChatTitle" class="chat-title">User</div>
+        <div id="activeChatSub" class="chat-subtitle">Offline</div>
+      </div>
+      <button class="icon-btn text-white" onclick="app.startCall('Voice Call')" aria-label="Voice Call"><i class="fa-solid fa-phone"></i></button>
+      <button class="icon-btn text-white" onclick="app.startCall('Video Call')" aria-label="Video Call"><i class="fa-solid fa-video"></i></button>
+      <button class="icon-btn text-white" onclick="app.toggleChatPin()" aria-label="Pin Chat"><i class="fa-solid fa-thumbtack"></i></button>
+    </div>
+
+    <!-- Chat Messages Stream -->
+    <div id="chatMessages" class="chat-messages"></div>
+
+    <!-- Reply & Typing Indicator Overlays -->
+    <div id="replyPreviewContainer" class="reply-preview-container hidden">
+      <div class="reply-content">
+        <span id="replyTargetAuthor" class="reply-author">Author</span>
+        <p id="replyTargetText" class="reply-text">Message preview...</p>
+      </div>
+      <button class="icon-btn btn-sm" onclick="app.cancelReply()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    
+    <div id="typingIndicator" class="typing-indicator hidden">
+      <span>User is typing...</span>
+    </div>
+
+    <!-- Input Control Bar -->
+    <div class="chat-input-bar glassmorphism">
+      <button class="icon-btn" onclick="app.toggleMediaPicker()" aria-label="Media Attachment"><i class="fa-solid fa-circle-plus"></i></button>
+      <button class="icon-btn" onclick="app.toggleEmojiPicker()" aria-label="Emoji Picker"><i class="fa-regular fa-face-smile"></i></button>
+      
+      <input type="text" id="msgInput" placeholder="Type a message..." oninput="app.handleTypingEvent()" onkeypress="if(event.key==='Enter') app.sendMessage()">
+      
+      <label class="icon-btn cursor-pointer" title="Camera Capture">
+        <i class="fa-solid fa-camera"></i>
+        <input type="file" accept="image/*" capture="environment" class="hidden-input" onchange="app.handleFileUpload(event)">
+      </label>
+      <label class="icon-btn cursor-pointer" title="Attach Document/Media">
+        <i class="fa-solid fa-paperclip"></i>
+        <input type="file" accept="image/*,video/*,application/*" class="hidden-input" onchange="app.handleFileUpload(event)">
+      </label>
+
+      <button id="micBtn" class="icon-btn" title="Hold/Tap to Record Voice" onclick="app.toggleVoiceRecording()"><i class="fa-solid fa-microphone"></i></button>
+      <button class="icon-btn btn-viber-send" onclick="app.sendMessage()" aria-label="Send Message"><i class="fa-solid fa-paper-plane"></i></button>
+    </div>
+
+    <!-- Extended Attachment Drawer (GIFs, Stickers, Location) -->
+    <div id="extendedMediaDrawer" class="media-drawer hidden glassmorphism">
+      <button class="drawer-item" onclick="app.sendLocation()"><i class="fa-solid fa-location-dot"></i> Location</button>
+      <button class="drawer-item" onclick="app.openStickerPicker()"><i class="fa-solid fa-note-sticky"></i> Stickers</button>
+      <button class="drawer-item" onclick="app.openGifPicker()"><i class="fa-solid fa-film"></i> GIFs</button>
+    </div>
+  </div>
+
+  <!-- WEBRTC CALL OVERLAY CONTAINER -->
+  <div id="callOverlay" class="call-overlay">
+    <div class="call-top-bar">
+      <button class="icon-btn text-white" onclick="app.minimizeCall()" aria-label="Minimize Call"><i class="fa-solid fa-chevron-down"></i></button>
+      <span id="callOverlayDuration" class="call-timer">00:00</span>
+      <div id="networkQualityIndicator" class="network-status" title="Network Quality: Good"><i class="fa-solid fa-signal"></i></div>
+    </div>
+
+    <div class="call-user-details">
+      <h3 id="callTargetName">Contact Name</h3>
+      <p id="callStatusText">Ringing...</p>
+    </div>
+
+    <div class="video-container" id="videoContainer">
+      <img id="callTargetAvatar" src="assets/images/logo.png" class="call-avatar" alt="Calling User">
+      <video id="remoteVideo" autoplay playsinline class="remote-video hidden"></video>
+      <video id="localVideo" autoplay playsinline muted class="local-video hidden"></video>
+    </div>
+
+    <div class="call-controls-panel glassmorphism">
+      <button id="muteBtn" class="control-btn" onclick="app.toggleMute()" title="Mute Microphone"><i class="fa-solid fa-microphone-slash"></i></button>
+      <button id="speakerBtn" class="control-btn" onclick="app.toggleSpeaker()" title="Toggle Speaker"><i class="fa-solid fa-volume-high"></i></button>
+      <button id="switchVideoBtn" class="control-btn" onclick="app.switchCallTypeToVideo()" title="Toggle Camera"><i class="fa-solid fa-video"></i></button>
+      <button id="screenShareBtn" class="control-btn" onclick="app.toggleScreenShare()" title="Share Screen"><i class="fa-solid fa-desktop"></i></button>
+      <button id="blurBgBtn" class="control-btn" onclick="app.toggleBackgroundBlur()" title="Blur Background"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+      <button id="rotateCamBtn" class="control-btn hidden" onclick="app.rotateCamera()" title="Switch Camera"><i class="fa-solid fa-camera-rotate"></i></button>
+    </div>
+
+    <div class="call-actions-panel">
+      <button id="acceptCallBtn" class="call-btn call-accept-btn hidden" onclick="app.acceptCall()" aria-label="Accept Call"><i class="fa-solid fa-phone"></i></button>
+      <button class="call-btn call-end-btn" onclick="app.endCall()" aria-label="End Call"><i class="fa-solid fa-phone-slash"></i></button>
+    </div>
+  </div>
+
+  <!-- APPLICATION MODALS -->
+
+  <!-- Add Friend Modal -->
+  <div id="addFriendModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 class="modal-title">Add New Contact</h3>
+      <label for="friendSearchQuery">Enter Phone Number, Email, or UID</label>
+      <input type="text" id="friendSearchQuery" class="input-field" placeholder="User ID / Email / Phone">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="app.closeModal('addFriendModal')">Cancel</button>
+        <button class="btn btn-viber" onclick="app.sendFriendRequest()">Send Request</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Add Friend Modal -->
+  <div id="qrAddModal" class="modal">
+    <div class="modal-content glassmorphism text-center">
+      <h3 class="modal-title">My QR Code</h3>
+      <div id="qrCodeContainer" class="qr-container">
+        <img id="myQrCodeImg" src="assets/images/logo.png" alt="My QR Code" class="qr-image">
+      </div>
+      <p class="modal-subtitle">Scan this QR Code from another device to add as a contact.</p>
+      <button class="btn btn-secondary" onclick="app.closeModal('qrAddModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div id="createGroupModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 class="modal-title">Create New Group</h3>
+      <label for="groupNameInput">Group Subject</label>
+      <input type="text" id="groupNameInput" class="input-field" placeholder="Group Name">
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="app.closeModal('createGroupModal')">Cancel</button>
+        <button class="btn btn-viber" onclick="app.createGroup()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Status Modal -->
+  <div id="postStatusModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 class="modal-title">Create Status Update</h3>
+      <textarea id="statusTextInput" class="input-field textarea-field" placeholder="What's on your mind?"></textarea>
+      
+      <label for="statusMediaInput">Attach Media (Optional)</label>
+      <input type="file" id="statusMediaInput" accept="image/*,video/*" class="input-field">
+
+      <label for="statusPrivacy">Privacy Audience</label>
+      <select id="statusPrivacy" class="input-field">
+        <option value="public">Public</option>
+        <option value="friends">Contacts Only</option>
+        <option value="only_me">Only Me</option>
+      </select>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="app.closeModal('postStatusModal')">Cancel</button>
+        <button class="btn btn-viber" onclick="app.publishStatus()">Post Status</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Modal -->
+  <div id="userProfileModal" class="modal">
+    <div class="modal-content glassmorphism text-center">
+      <img id="profileModalAvatar" src="assets/images/logo.png" class="avatar avatar-lg" alt="User Profile">
+      <h3 id="profileModalName" class="profile-title">User Name</h3>
+      <p id="profileModalBio" class="profile-bio">Bio details...</p>
+
+      <div class="profile-modal-actions">
+        <button class="btn btn-viber" onclick="app.startChatFromProfile()"><i class="fa-solid fa-comment"></i> Chat</button>
+        <button class="btn btn-gold" onclick="app.startCallFromProfile()"><i class="fa-solid fa-phone"></i> Call</button>
+      </div>
+      <button id="profileBlockBtn" class="btn btn-danger btn-block" onclick="app.toggleBlockUser()">Block User</button>
+      <button class="btn btn-secondary btn-block" onclick="app.closeModal('userProfileModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Blocked Users Modal -->
+  <div id="blockListModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 class="modal-title">Blocked Contacts</h3>
+      <div id="blockedUsersList" class="scrollable-list"></div>
+      <button class="btn btn-secondary btn-block" onclick="app.closeModal('blockListModal')">Close</button>
+    </div>
+  </div>
+
+  <!-- Forward Message Modal -->
+  <div id="forwardModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 class="modal-title">Forward Message To</h3>
+      <div id="forwardFriendsList" class="scrollable-list"></div>
+      <button class="btn btn-secondary btn-block" onclick="app.closeModal('forwardModal')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Call History Detail Modal -->
+  <div id="callDetailModal" class="modal">
+    <div class="modal-content glassmorphism">
+      <h3 id="callDetailTitle" class="modal-title">Call History</h3>
+      <div id="callDetailList" class="scrollable-list"></div>
+      <button class="btn btn-secondary btn-block" onclick="app.closeModal('callDetailModal')">Close</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Audio Assets -->
+<audio id="ringtoneAudio" loop src="assets/sounds/ringtone.mp3"></audio>
+<audio id="dialingAudio" loop src="assets/sounds/dialing.mp3"></audio>
+<audio id="msgAudio" src="assets/sounds/message.mp3"></audio>
+<audio id="clickAudio" src="assets/sounds/click.mp3"></audio>
+
+<!-- Application Core Scripts -->
+<script src="js/firebase.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/contacts.js"></script>
+<script src="js/chat.js"></script>
+<script src="js/call.js"></script>
+<script src="js/video.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Service Worker Registration -->
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('ServiceWorker registered with scope: ', reg.scope))
+        .catch(err => console.error('ServiceWorker registration failed: ', err));
+    });
+  }
+</script>
+
+</body>
+</html>
